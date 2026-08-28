@@ -6,6 +6,7 @@ import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useBuilds } from "../hooks/useBuilds";
 import { supabase } from "../lib/supabaseClient";
+import { startCheckout } from "../lib/billing";
 import { buildFullyMatches } from "../lib/matching";
 import BuildCard from "../components/BuildCard";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET } from "../lib/theme";
@@ -21,11 +22,24 @@ export default function Results({ onRequireAuth }) {
   const [requestSent, setRequestSent] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);
   const [requestError, setRequestError] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const lookupConsumed = useRef(false);
 
   useEffect(() => {
     if (!isAuthed) onRequireAuth();
   }, [isAuthed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSubscribe = async () => {
+    setCheckoutError("");
+    setCheckoutLoading(true);
+    try {
+      await startCheckout();
+    } catch (err) {
+      setCheckoutError(err.message || "Something went wrong starting checkout.");
+      setCheckoutLoading(false);
+    }
+  };
 
   const handleSubmitRequest = async () => {
     setRequestError("");
@@ -134,9 +148,7 @@ export default function Results({ onRequireAuth }) {
     );
   }
 
-  // Gate the reveal behind the subscription once free lookups are used up —
-  // Stripe isn't wired yet, so this is a real, honest paywall message rather
-  // than a fake "coming soon" placeholder pretending to unlock anything.
+  // Gate the reveal behind the subscription once free lookups are used up.
   if (matching.length > 0 && outOfLookups) {
     return (
       <div style={{ padding: "24px", maxWidth: 640, margin: "0 auto" }}>
@@ -145,11 +157,18 @@ export default function Results({ onRequireAuth }) {
           <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
             {matching.length} build{matching.length > 1 ? "s" : ""} found for floor {stage}
           </p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>
+          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px" }}>
             You're out of free lookups ({profile.trial_lookups_used}/{profile.trial_lookups_limit} used).
-            Unlimited lookups are coming soon with the subscription — for now, this is
-            as far as the free tier goes.
+            Subscribe for unlimited lookups.
           </p>
+          <button
+            onClick={handleSubscribe}
+            disabled={checkoutLoading}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+          >
+            {checkoutLoading ? "Redirecting…" : "Subscribe — $4.99/mo"}
+          </button>
+          {checkoutError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "12px 0 0" }}>{checkoutError}</p>}
         </div>
       </div>
     );
@@ -202,7 +221,11 @@ export default function Results({ onRequireAuth }) {
             {alternativesBlocked && (
               <p style={{ fontSize: 12.5, color: MUTED, margin: "10px 0 0", lineHeight: 1.5 }}>
                 You're out of free lookups. Viewing alternative builds also uses a lookup,
-                same as a full match — unlimited lookups are coming soon with the subscription.
+                same as a full match.{" "}
+                <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: VIOLET, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
+                  Subscribe for unlimited
+                </button>
+                .
               </p>
             )}
           </div>
@@ -228,13 +251,21 @@ export default function Results({ onRequireAuth }) {
               </button>
             </div>
           ) : (
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-              <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.6 }}>
+            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 12.5, color: MUTED }}>
                 Subscribers can post a request so other players attempt this floor using
-                only your pets and items. Subscriptions are coming soon.
-              </p>
+                only your pets and items.
+              </span>
+              <button
+                onClick={handleSubscribe}
+                disabled={checkoutLoading}
+                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", flexShrink: 0, marginLeft: 12 }}
+              >
+                {checkoutLoading ? "Redirecting…" : "Subscribe"}
+              </button>
             </div>
           )}
+          {checkoutError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "-14px 0 20px" }}>{checkoutError}</p>}
           {requestError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "-14px 0 20px" }}>{requestError}</p>}
 
           {showAlternatives &&

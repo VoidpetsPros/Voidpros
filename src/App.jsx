@@ -12,12 +12,26 @@ import Admin from "./pages/Admin";
 import FulfillRequests from "./pages/FulfillRequests";
 import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
+import BillingSuccess from "./pages/BillingSuccess";
+import BillingCancelled from "./pages/BillingCancelled";
+import { openBillingPortal } from "./lib/billing";
 import { INK, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER, VIOLET } from "./lib/theme";
 
 export default function App() {
   const { isAuthed, profile, signOut, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleManageBilling = async () => {
+    setPortalLoading(true);
+    try {
+      await openBillingPortal();
+    } catch (err) {
+      alert(err.message || "Couldn't open billing portal");
+      setPortalLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -79,8 +93,18 @@ export default function App() {
                 </Link>
               )}
               <span style={{ fontSize: 12.5, color: MUTED }}>
-                {profile?.username || "player"} · {profile?.karma ?? 0} karma · {profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left
+                {profile?.username || "player"} · {profile?.karma ?? 0} karma ·{" "}
+                {profile?.is_subscribed ? "unlimited lookups" : `${profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left`}
               </span>
+              {profile?.is_subscribed && (
+                <button
+                  onClick={handleManageBilling}
+                  disabled={portalLoading}
+                  style={{ background: "none", border: `1px solid ${LINE}`, color: MUTED, fontSize: 12.5, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}
+                >
+                  {portalLoading ? "Opening…" : "Manage billing"}
+                </button>
+              )}
               <button
                 onClick={async () => {
                   await signOut();
@@ -112,6 +136,8 @@ export default function App() {
         <Route path="/fulfill" element={<FulfillRequests />} />
         <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
         <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/billing/success" element={<BillingSuccess />} />
+        <Route path="/billing/cancelled" element={<BillingCancelled />} />
       </Routes>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
