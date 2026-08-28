@@ -1,0 +1,10 @@
+export const INK = "#FAF7F1";
+export const PANEL = "#FFFFFF";
+export const PANEL_2 = "#F3EEE3";
+export const LINE = "#E5DDCB";
+export const CREAM = "#2B2620";
+export const MUTED = "#8A8271";
+export const GOLD = "#C4791F";
+export const GOLD_DIM = "#E8A94C";
+export const VIOLET = "#6C56C9";
+export const DANGER = "#B3453B";

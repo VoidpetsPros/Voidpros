@@ -1,0 +1,99 @@
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "../lib/supabaseClient";
+
+// Wraps Supabase auth + the matching row in `profiles` (karma, subscription
+// status, trial usage). Any component can call useAuth() and get the same
+// live session — this hook subscribes once and shares state via React context
+// in App.jsx, so it should only be instantiated at the top of the tree.
+export function useAuthState() {
+  const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = useCallback(async (userId) => {
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+    if (error) {
+      console.error("Failed to load profile:", error.message);
+      return;
+    }
+    setProfile(data);
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user?.id) fetchProfile(session.user.id);
+      setLoading(false);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.id) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, [fetchProfile]);
+
+  const signUp = async (email, password, username) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } },
+    });
+    return { data, error };
+  };
+
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    return { data, error };
+  };
+
+  const signInWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+    return { data, error };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const refreshProfile = () => fetchProfile(session?.user?.id);
+
+  // Only call this once a search has actually returned a full match — per
+  // the product rule, searches with no result don't cost a free lookup.
+  // Runs through a database function (see migrations/0004) rather than a
+  // direct table update, so it can't be gamed from the browser.
+  const consumeTrialLookup = async () => {
+    if (!session?.user?.id) return;
+    const { data, error } = await supabase.rpc("increment_trial_lookup");
+    if (error) {
+      console.error(error.message);
+      return;
+    }
+    if (data !== null) {
+      setProfile((p) => ({ ...p, trial_lookups_used: data }));
+    }
+  };
+
+  return {
+    session,
+    user: session?.user ?? null,
+    profile,
+    loading,
+    isAuthed: !!session,
+    signUp,
+    signIn,
+    signInWithGoogle,
+    signOut,
+    refreshProfile,
+    consumeTrialLookup,
+  };
+}
