@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Check, Plus, Minus } from "lucide-react";
+import { Search, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
@@ -7,10 +7,19 @@ import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
 
+const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
+const RARITY_COLORS = {
+  Common: "#7FC97F",
+  Rare: "#6FA8DC",
+  Epic: "#A98FE0",
+  Legendary: "#E8B33D",
+  Uber: "#D9534F",
+};
+
 export default function Collection({ onRequireAuth }) {
   const { isAuthed, user } = useAuth();
   const { pets, itemsByType, loading: catalogLoading } = useCatalog();
-  const { ownedPets, ownedItems, loading: collectionLoading, togglePet, setItemCount } = useCollection(user?.id);
+  const { ownedPets, ownedItems, loading: collectionLoading, togglePet, setItemCount, bulkSetPets, bulkSetItemCounts } = useCollection(user?.id);
   const [tab, setTab] = useState("pets");
   const [query, setQuery] = useState("");
 
@@ -43,6 +52,30 @@ export default function Collection({ onRequireAuth }) {
 
   const currentOptions = tab === "pets" ? pets : itemsByType[tab];
   const filtered = currentOptions.filter((o) => o.name.toLowerCase().includes(query.toLowerCase()));
+
+  // Only show a "select all X" button for rarities that actually exist in
+  // this tab's data — pets currently have no Common tier, for example, so
+  // no empty/no-op button shows up for it.
+  const rarityOptions = RARITY_ORDER.filter((r) => currentOptions.some((o) => o.rarity === r));
+
+  const handleRarityToggle = (rarity) => {
+    const idsInRarity = currentOptions.filter((o) => o.rarity === rarity).map((o) => o.id);
+    if (tab === "pets") {
+      const allOwned = idsInRarity.every((id) => ownedPets.includes(id));
+      bulkSetPets(idsInRarity, !allOwned);
+    } else {
+      const allOwned = idsInRarity.every((id) => (ownedItems[id] || 0) > 0);
+      bulkSetItemCounts(idsInRarity, !allOwned);
+    }
+  };
+
+  const isRarityFullyOwned = (rarity) => {
+    const idsInRarity = currentOptions.filter((o) => o.rarity === rarity).map((o) => o.id);
+    if (idsInRarity.length === 0) return false;
+    return tab === "pets"
+      ? idsInRarity.every((id) => ownedPets.includes(id))
+      : idsInRarity.every((id) => (ownedItems[id] || 0) > 0);
+  };
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
@@ -77,6 +110,34 @@ export default function Collection({ onRequireAuth }) {
         ))}
       </div>
 
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+        {rarityOptions.map((rarity) => {
+          const fullyOwned = isRarityFullyOwned(rarity);
+          return (
+            <button
+              key={rarity}
+              onClick={() => handleRarityToggle(rarity)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 12,
+                padding: "6px 12px",
+                borderRadius: 999,
+                border: `1px solid ${fullyOwned ? RARITY_COLORS[rarity] : LINE}`,
+                background: fullyOwned ? `${RARITY_COLORS[rarity]}22` : PANEL,
+                color: fullyOwned ? RARITY_COLORS[rarity] : MUTED,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: RARITY_COLORS[rarity], flexShrink: 0 }} />
+              {fullyOwned ? <Check size={12} /> : null}
+              {fullyOwned ? `All ${rarity}` : `Select all ${rarity}`}
+            </button>
+          );
+        })}
+      </div>
+
       <div style={{ position: "relative", marginBottom: 16 }}>
         <Search size={15} color={MUTED} style={{ position: "absolute", left: 12, top: 11 }} />
         <input
@@ -106,8 +167,8 @@ export default function Collection({ onRequireAuth }) {
               <ItemTile
                 key={item.id}
                 item={item}
-                count={ownedItems[item.id] || 0}
-                onChange={(n) => setItemCount(item.id, n)}
+                owned={(ownedItems[item.id] || 0) > 0}
+                onToggle={() => setItemCount(item.id, ownedItems[item.id] > 0 ? 0 : 1)}
               />
             ))}
         {filtered.length === 0 && <p style={{ color: MUTED, fontSize: 13 }}>No matches.</p>}
@@ -144,10 +205,10 @@ function PetTile({ pet, owned, onToggle }) {
   );
 }
 
-function ItemTile({ item, count, onChange }) {
-  const active = count > 0;
+function ItemTile({ item, owned, onToggle }) {
   return (
-    <div
+    <button
+      onClick={onToggle}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -155,28 +216,19 @@ function ItemTile({ item, count, onChange }) {
         gap: 6,
         padding: "10px 6px",
         borderRadius: 12,
-        border: `1px solid ${active ? GOLD : LINE}`,
-        background: active ? "rgba(196,121,31,0.08)" : PANEL,
+        border: `1px solid ${owned ? GOLD : LINE}`,
+        background: owned ? "rgba(196,121,31,0.08)" : PANEL,
+        cursor: "pointer",
+        position: "relative",
       }}
     >
+      {owned && (
+        <div style={{ position: "absolute", top: 6, right: 6, width: 16, height: 16, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Check size={10} color="#FFFFFF" strokeWidth={3} />
+        </div>
+      )}
       <ItemAvatar item={item} size={44} />
-      <span style={{ fontSize: 11.5, color: active ? GOLD : CREAM, textAlign: "center" }}>{item.name}</span>
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <button
-          onClick={() => onChange(Math.max(0, count - 1))}
-          disabled={count === 0}
-          style={{ width: 20, height: 20, borderRadius: 6, border: `1px solid ${LINE}`, background: PANEL_2, color: count === 0 ? MUTED : CREAM, display: "flex", alignItems: "center", justifyContent: "center", cursor: count === 0 ? "default" : "pointer", padding: 0 }}
-        >
-          <Minus size={11} />
-        </button>
-        <span style={{ fontSize: 12.5, color: CREAM, minWidth: 12, textAlign: "center" }}>{count}</span>
-        <button
-          onClick={() => onChange(count + 1)}
-          style={{ width: 20, height: 20, borderRadius: 6, border: `1px solid ${LINE}`, background: PANEL_2, color: CREAM, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
-        >
-          <Plus size={11} />
-        </button>
-      </div>
-    </div>
+      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center" }}>{item.name}</span>
+    </button>
   );
 }
