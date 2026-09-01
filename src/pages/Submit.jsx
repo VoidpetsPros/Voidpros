@@ -2,21 +2,17 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Send } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { useCatalog } from "../hooks/useCatalog";
 import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
 import { containsProfanity } from "../lib/profanity";
-import PetSlotEditor, { emptySlot, slotIsComplete } from "../components/PetSlotEditor";
 import ImageUploadSlot from "../components/ImageUploadSlot";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
 export default function Submit({ onRequireAuth }) {
   const { isAuthed, user } = useAuth();
-  const { pets, itemsByType, loading: catalogLoading } = useCatalog();
   const navigate = useNavigate();
 
   const [floor, setFloor] = useState("");
-  const [team, setTeam] = useState([emptySlot(), emptySlot(), emptySlot(), emptySlot()]);
   const [showAuthor, setShowAuthor] = useState(true);
   const [note, setNote] = useState("");
   const [completionFiles, setCompletionFiles] = useState([]);
@@ -35,21 +31,6 @@ export default function Submit({ onRequireAuth }) {
     );
   }
 
-  if (catalogLoading) {
-    return (
-      <div style={{ padding: 40, textAlign: "center" }}>
-        <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
-      </div>
-    );
-  }
-
-  const updateSlot = (i, newSlot) => setTeam((prev) => prev.map((s, idx) => (idx === i ? newSlot : s)));
-
-  // Compute the picked files and their preview URLs OUTSIDE the state
-  // updater. Doing this work (URL.createObjectURL is a real side effect)
-  // inside a setState updater is unsafe — React can invoke updaters more
-  // than once per update in development, which was causing images to
-  // sometimes not appear and to get stuck after the first upload.
   const addFiles = (currentFiles, setter, max) => (fileList) => {
     const room = max - currentFiles.length;
     const picked = Array.from(fileList).slice(0, room);
@@ -64,12 +45,6 @@ export default function Submit({ onRequireAuth }) {
     const missing = [];
     const floorNum = parseInt(floor, 10);
     if (!floorNum || floorNum < 1) missing.push("which floor this is for");
-
-    const incompleteCount = team.filter((s) => !slotIsComplete(s)).length;
-    if (incompleteCount > 0) missing.push(`the pet, level, and full loadout for all 4 team slots (${incompleteCount} incomplete)`);
-    const petIds = team.map((s) => s.petId).filter(Boolean);
-    if (new Set(petIds).size !== petIds.length && petIds.length > 0) missing.push("4 distinct pets — you've repeated one");
-
     if (completionFiles.length === 0) missing.push("a screenshot showing the floor cleared");
     if (petFiles.length === 0) missing.push("a screenshot of the pets you used");
     if (itemFiles.length === 0) missing.push("at least one screenshot of the items you used");
@@ -85,41 +60,15 @@ export default function Submit({ onRequireAuth }) {
 
     setSubmitting(true);
     try {
-      // Upload every image first — Storage isn't part of the DB transaction,
-      // so this happens before we call the function that writes everything else.
       const uploaded = [];
-      for (const f of completionFiles) {
-        const path = await uploadSubmissionImage(f.file, user.id);
-        uploaded.push({ kind: "completion", storage_path: path });
-      }
-      for (const f of petFiles) {
-        const path = await uploadSubmissionImage(f.file, user.id);
-        uploaded.push({ kind: "pets", storage_path: path });
-      }
-      for (const f of itemFiles) {
-        const path = await uploadSubmissionImage(f.file, user.id);
-        uploaded.push({ kind: "items", storage_path: path });
-      }
-
-      const teamPayload = team.map((s, i) => ({
-        slot_index: i,
-        pet_id: s.petId,
-        pet_level: s.petLevel,
-        hat_id: s.hat.id,
-        hat_level: s.hat.level,
-        scarf_id: s.scarf.id,
-        scarf_level: s.scarf.level,
-        accessory1_id: s.accessories[0].id,
-        accessory1_level: s.accessories[0].level,
-        accessory2_id: s.accessories[1].id,
-        accessory2_level: s.accessories[1].level,
-      }));
+      for (const f of completionFiles) uploaded.push({ kind: "completion", storage_path: await uploadSubmissionImage(f.file, user.id) });
+      for (const f of petFiles) uploaded.push({ kind: "pets", storage_path: await uploadSubmissionImage(f.file, user.id) });
+      for (const f of itemFiles) uploaded.push({ kind: "items", storage_path: await uploadSubmissionImage(f.file, user.id) });
 
       const { error: rpcError } = await supabase.rpc("submit_build", {
         p_stage: floorNum,
         p_note: note,
         p_show_author: showAuthor,
-        p_team: teamPayload,
         p_images: uploaded,
       });
 
@@ -128,7 +77,6 @@ export default function Submit({ onRequireAuth }) {
         setSubmitting(false);
         return;
       }
-
       setSuccess(true);
     } catch (err) {
       setError(err.message || "Something went wrong uploading your screenshots.");
@@ -139,10 +87,11 @@ export default function Submit({ onRequireAuth }) {
   if (success) {
     return (
       <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: `1px solid rgba(196,121,31,0.35)`, borderRadius: 12, padding: "32px 24px" }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(196,121,31,0.35)", borderRadius: 12, padding: "32px 24px" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
-            It's in review — once two other players confirm it worked, it'll show up as verified in search.
+            It's in review — once approved, it'll show up as verified in search and you'll
+            earn a free lookup.
           </p>
           <button
             onClick={() => navigate(`/results/${floor}`)}
@@ -166,8 +115,8 @@ export default function Submit({ onRequireAuth }) {
 
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Once two other players confirm it worked, you'll earn a free lookup. Tell us
-        exactly which pet wore what — including levels — plus the required screenshots.
+        Just the screenshots — no need to type out your team. We'll review them and add
+        it to search once approved, and you'll earn a free lookup.
       </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -187,22 +136,6 @@ export default function Submit({ onRequireAuth }) {
           style={{ width: "100%", boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 12px 12px 36px", color: CREAM, fontSize: 16, outline: "none" }}
         />
       </div>
-
-      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
-        Your team <span style={{ color: DANGER }}>*</span>
-      </p>
-      {team.map((slot, i) => (
-        <PetSlotEditor
-          key={i}
-          index={i}
-          slot={slot}
-          onChange={(s) => updateSlot(i, s)}
-          petOptions={pets}
-          hatOptions={itemsByType.hat}
-          scarfOptions={itemsByType.scarf}
-          accessoryOptions={itemsByType.accessory}
-        />
-      ))}
 
       <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 22px", cursor: "pointer" }}>
         <input type="checkbox" checked={showAuthor} onChange={(e) => setShowAuthor(e.target.checked)} style={{ width: 15, height: 15 }} />
@@ -224,7 +157,7 @@ export default function Submit({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Pets used"
-          hint="Screenshot of your team going into the fight."
+          hint="Screenshot of your team going into the fight — make sure names/icons are visible."
           files={petFiles}
           onAdd={addFiles(petFiles, setPetFiles, 2)}
           onRemove={removeFile(setPetFiles)}

@@ -5,7 +5,7 @@ import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, VIOLET, DANGER } fr
 
 export default function AuthModal({ onClose, headline, subhead }) {
   const { signUp, signIn, signInWithGoogle } = useAuth();
-  const [mode, setMode] = useState("signup");
+  const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");

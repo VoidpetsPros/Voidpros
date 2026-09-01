@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight, Sparkles, Award } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { GOLD, MUTED, CREAM } from "../lib/theme";
+import { startCheckout } from "../lib/billing";
+import { GOLD, MUTED, CREAM, VIOLET } from "../lib/theme";
 
 export default function Home({ onRequireAuth }) {
   const { isAuthed, profile } = useAuth();
   const navigate = useNavigate();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const handleStart = () => {
     if (!isAuthed) {
@@ -14,6 +16,16 @@ export default function Home({ onRequireAuth }) {
       return;
     }
     navigate("/search");
+  };
+
+  const handleSubscribe = async () => {
+    setCheckoutLoading(true);
+    try {
+      await startCheckout();
+    } catch (err) {
+      alert(err.message || "Something went wrong starting checkout.");
+      setCheckoutLoading(false);
+    }
   };
 
   return (
@@ -40,24 +52,48 @@ export default function Home({ onRequireAuth }) {
         </p>
       )}
 
-      <button
-        onClick={handleStart}
-        style={{
-          background: GOLD,
-          color: "#FFFFFF",
-          border: "none",
-          borderRadius: 10,
-          padding: "14px 28px",
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-        }}
-      >
-        <Sparkles size={15} /> Find my solution <ChevronRight size={16} />
-      </button>
+      {isAuthed && !profile?.is_subscribed && (
+        <button
+          onClick={handleSubscribe}
+          disabled={checkoutLoading}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "rgba(108,86,201,0.08)",
+            border: "1px solid rgba(108,86,201,0.3)",
+            borderRadius: 999,
+            padding: "8px 16px",
+            fontSize: 13,
+            color: VIOLET,
+            cursor: "pointer",
+            marginBottom: 20,
+          }}
+        >
+          <Award size={13} /> {checkoutLoading ? "Redirecting…" : "Get unlimited — $4.99/month"}
+        </button>
+      )}
+
+      <div>
+        <button
+          onClick={handleStart}
+          style={{
+            background: GOLD,
+            color: "#FFFFFF",
+            border: "none",
+            borderRadius: 10,
+            padding: "14px 28px",
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Sparkles size={15} /> Find my solution <ChevronRight size={16} />
+        </button>
+      </div>
 
       {isAuthed && (
         <p style={{ marginTop: 16 }}>

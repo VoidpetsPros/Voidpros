@@ -17,7 +17,11 @@ export default function Results({ onRequireAuth }) {
   const { isAuthed, user, profile, consumeTrialLookup } = useAuth();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
-  const { builds, loading: buildsLoading, error: buildsError, refresh } = useBuilds(stage, user?.id);
+  const { builds: rawBuilds, loading: buildsLoading, error: buildsError, refresh } = useBuilds(stage, user?.id);
+  // Builds without team data yet are awaiting admin review — not usable in
+  // search until that's added, so they're excluded here entirely rather
+  // than showing up as a phantom "match" or empty alternative.
+  const builds = useMemo(() => rawBuilds.filter((b) => b.team && b.team.length > 0), [rawBuilds]);
   const [showAlternatives, setShowAlternatives] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);

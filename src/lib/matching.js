@@ -18,6 +18,7 @@ export function buildItemCounts(build) {
 }
 
 export function buildFullyMatches(build, ownedPets, ownedItemCounts) {
+  if (!build.team || build.team.length === 0) return false; // no structured data yet — can't match
   const petsOk = buildPetIds(build).every((pid) => ownedPets.includes(pid));
   if (!petsOk) return false;
   const counts = buildItemCounts(build);
