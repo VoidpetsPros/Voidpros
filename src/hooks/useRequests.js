@@ -13,7 +13,7 @@ export function useRequests() {
       .from("requests")
       .select(
         `
-        id, stage, show_requester, fulfilled, created_at,
+        id, stage, show_requester, fulfilled, requester_id, created_at,
         requester:profiles!requester_id(username),
         pets:request_pets(pet_id),
         items:request_items(item_id, count)

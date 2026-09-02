@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Check, ThumbsUp, ThumbsDown } from "lucide-react";
+import { ShieldCheck, Check, ThumbsUp } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import CommentsSection from "./CommentsSection";
@@ -82,7 +82,6 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
   const missingCount = missingPets.length + missingItems.length;
   const usedSoFar = {};
   const isVerified = build.status === "verified";
-  const netVotes = build.upvotes - build.downvotes;
 
   return (
     <div
@@ -160,7 +159,7 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
               onClick={() => onVote(build.id, "up")}
               aria-label="Upvote this build"
               style={{
-                background: build.userVote === "up" ? "rgba(196,121,31,0.1)" : "none",
+                background: build.userVote === "up" ? "rgba(139,92,246,0.12)" : "none",
                 border: `1px solid ${build.userVote === "up" ? GOLD : LINE}`,
                 color: build.userVote === "up" ? GOLD : MUTED,
                 borderRadius: 7,
@@ -174,27 +173,9 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
             >
               <ThumbsUp size={13} />
             </button>
-            <span style={{ fontSize: 12.5, color: CREAM, minWidth: 24, textAlign: "center" }}>
-              {netVotes >= 0 ? "+" : ""}{netVotes}
+            <span style={{ fontSize: 12.5, color: CREAM, minWidth: 20, textAlign: "center" }}>
+              {build.upvotes}
             </span>
-            <button
-              onClick={() => onVote(build.id, "down")}
-              aria-label="Downvote this build"
-              style={{
-                background: build.userVote === "down" ? "rgba(179,69,59,0.08)" : "none",
-                border: `1px solid ${build.userVote === "down" ? DANGER : LINE}`,
-                color: build.userVote === "down" ? DANGER : MUTED,
-                borderRadius: 7,
-                width: 28,
-                height: 28,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-              }}
-            >
-              <ThumbsDown size={13} />
-            </button>
           </div>
         )}
       </div>
