@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "./hooks/AuthContext";
 import AuthModal from "./components/AuthModal";
@@ -17,13 +17,22 @@ import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import { openBillingPortal } from "./lib/billing";
-import { INK, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER, VIOLET } from "./lib/theme";
+import { INK, PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER, VIOLET } from "./lib/theme";
+
+const NAV_LINKS = [
+  { to: "/search", label: "Find a build" },
+  { to: "/submit", label: "Submit a build" },
+  { to: "/collection", label: "My collection" },
+  { to: "/fulfill", label: "Fulfill requests" },
+  { to: "/my-activity", label: "My activity" },
+];
 
 export default function App() {
   const { isAuthed, profile, signOut, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleManageBilling = async () => {
     setPortalLoading(true);
@@ -50,59 +59,115 @@ export default function App() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "18px 24px",
+          gap: 20,
+          padding: "14px 24px",
           borderBottom: `1px solid ${LINE}`,
+          background: PANEL,
+          flexWrap: "wrap",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
           <div
             style={{
-              width: 26,
-              height: 26,
-              borderRadius: 7,
-              background: `linear-gradient(160deg, ${GOLD}, ${GOLD_DIM})`,
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              background: `radial-gradient(circle at 35% 30%, ${VIOLET}, ${GOLD} 55%, ${GOLD_DIM} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Sparkles size={14} color="#FFFFFF" />
+            <Sparkles size={15} color="#FFFFFF" />
           </div>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: 19, color: CREAM }}>voidpros</span>
+          <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: CREAM }}>
+            voidpros
+          </span>
         </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {isAuthed && (
+          <nav
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              background: INK,
+              border: `1px solid ${LINE}`,
+              borderRadius: 10,
+              padding: 4,
+              flexWrap: "wrap",
+            }}
+          >
+            {NAV_LINKS.map((link) => {
+              const active = location.pathname === link.to;
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: active ? 600 : 500,
+                    color: active ? "#FFFFFF" : MUTED,
+                    background: active ? GOLD : "transparent",
+                    textDecoration: "none",
+                    padding: "7px 12px",
+                    borderRadius: 7,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            {profile?.is_admin && (
+              <Link
+                to="/admin"
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: location.pathname === "/admin" ? "#FFFFFF" : DANGER,
+                  background: location.pathname === "/admin" ? DANGER : "transparent",
+                  textDecoration: "none",
+                  padding: "7px 12px",
+                  borderRadius: 7,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Admin
+              </Link>
+            )}
+          </nav>
+        )}
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
             <>
-              <Link to="/search" style={{ fontSize: 12.5, color: GOLD, textDecoration: "none", fontWeight: 600 }}>
-                Find a build
-              </Link>
-              <Link to="/submit" style={{ fontSize: 12.5, color: MUTED, textDecoration: "none" }}>
-                Submit a build
-              </Link>
-              <Link to="/collection" style={{ fontSize: 12.5, color: MUTED, textDecoration: "none" }}>
-                My collection
-              </Link>
-              <Link to="/fulfill" style={{ fontSize: 12.5, color: VIOLET, textDecoration: "none" }}>
-                Fulfill requests
-              </Link>
-              <Link to="/my-activity" style={{ fontSize: 12.5, color: MUTED, textDecoration: "none" }}>
-                My activity
-              </Link>
-              {profile?.is_admin && (
-                <Link to="/admin" style={{ fontSize: 12.5, color: DANGER, textDecoration: "none", fontWeight: 600 }}>
-                  Admin
-                </Link>
-              )}
-              <span style={{ fontSize: 12.5, color: MUTED }}>
-                {profile?.username || "player"} · {profile?.karma ?? 0} karma ·{" "}
-                {profile?.is_subscribed ? "unlimited lookups" : `${profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left`}
+              <span
+                style={{
+                  fontSize: 12,
+                  color: MUTED,
+                  background: PANEL_2,
+                  border: `1px solid ${LINE}`,
+                  borderRadius: 999,
+                  padding: "6px 12px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ color: CREAM, fontWeight: 600 }}>{profile?.username || "player"}</span>
+                {" · "}
+                {profile?.karma ?? 0} karma
+                {" · "}
+                {profile?.is_subscribed ? (
+                  <span style={{ color: GOLD, fontWeight: 600 }}>unlimited lookups</span>
+                ) : (
+                  `${profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left`
+                )}
               </span>
               {profile?.is_subscribed && (
                 <button
                   onClick={handleManageBilling}
                   disabled={portalLoading}
-                  style={{ background: "none", border: `1px solid ${LINE}`, color: MUTED, fontSize: 12.5, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}
+                  style={{ background: "none", border: `1px solid ${LINE}`, color: MUTED, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
                 >
                   {portalLoading ? "Opening…" : "Manage billing"}
                 </button>
@@ -112,7 +177,7 @@ export default function App() {
                   await signOut();
                   navigate("/");
                 }}
-                style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, fontSize: 12.5, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}
+                style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
               >
                 Sign out
               </button>
@@ -120,7 +185,7 @@ export default function App() {
           ) : (
             <button
               onClick={() => setShowAuth(true)}
-              style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
+              style={{ background: GOLD, border: "none", color: "#FFFFFF", fontWeight: 600, fontSize: 12.5, padding: "9px 16px", borderRadius: 8, cursor: "pointer" }}
             >
               Sign in / create account
             </button>
@@ -146,7 +211,7 @@ export default function App() {
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
-      <footer style={{ borderTop: `1px solid ${LINE}`, padding: "20px 24px", textAlign: "center" }}>
+      <footer style={{ borderTop: `1px solid ${LINE}`, background: PANEL, padding: "20px 24px", textAlign: "center" }}>
         <Link to="/privacy" style={{ fontSize: 12, color: MUTED, textDecoration: "none", marginRight: 16 }}>
           Privacy Policy
         </Link>

@@ -9,7 +9,7 @@ import { supabase } from "../lib/supabaseClient";
 import { startCheckout } from "../lib/billing";
 import { buildFullyMatches } from "../lib/matching";
 import BuildCard from "../components/BuildCard";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET } from "../lib/theme";
+import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
 
 export default function Results({ onRequireAuth }) {
   const { stage } = useParams();
@@ -172,7 +172,7 @@ export default function Results({ onRequireAuth }) {
           >
             {checkoutLoading ? "Redirecting…" : "Subscribe — $4.99/mo"}
           </button>
-          {checkoutError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "12px 0 0" }}>{checkoutError}</p>}
+          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "12px 0 0" }}>{checkoutError}</p>}
         </div>
       </div>
     );
@@ -269,8 +269,8 @@ export default function Results({ onRequireAuth }) {
               </button>
             </div>
           )}
-          {checkoutError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "-14px 0 20px" }}>{checkoutError}</p>}
-          {requestError && <p style={{ fontSize: 12.5, color: "#B3453B", margin: "-14px 0 20px" }}>{requestError}</p>}
+          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "-14px 0 20px" }}>{checkoutError}</p>}
+          {requestError && <p style={{ fontSize: 12.5, color: DANGER, margin: "-14px 0 20px" }}>{requestError}</p>}
 
           {showAlternatives &&
             alternatives.map((b) => (

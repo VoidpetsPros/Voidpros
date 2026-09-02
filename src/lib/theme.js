@@ -1,10 +1,12 @@
-export const INK = "#FAF7F1";
-export const PANEL = "#FFFFFF";
-export const PANEL_2 = "#F3EEE3";
-export const LINE = "#E5DDCB";
-export const CREAM = "#2B2620";
-export const MUTED = "#8A8271";
-export const GOLD = "#C4791F";
-export const GOLD_DIM = "#E8A94C";
-export const VIOLET = "#6C56C9";
-export const DANGER = "#B3453B";
+// Voidpros palette — matches the void-crystal logo. Names kept for backward
+// compatibility with existing components; values are the new dark/violet set.
+export const INK = "#120b1f";       // page background (near-black violet)
+export const PANEL = "#1c1530";     // card / panel surface
+export const PANEL_2 = "#251c3d";   // secondary surface (hover, alt rows)
+export const LINE = "#352a52";      // borders / dividers
+export const CREAM = "#f2eefb";     // primary text (off-white)
+export const MUTED = "#a99cc9";     // secondary / muted text
+export const GOLD = "#8b5cf6";      // primary brand accent (buttons, active nav)
+export const GOLD_DIM = "#7c3aed";  // accent gradient partner / hover state
+export const VIOLET = "#c4b5fd";    // secondary accent (lighter lavender highlight)
+export const DANGER = "#f87171";    // error / admin-only red, tuned for dark bg
