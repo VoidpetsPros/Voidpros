@@ -36,3 +36,10 @@ export function missingForBuild(build, ownedPets, ownedItemCounts) {
     .map(([itemId, needed]) => ({ itemId, needed, have: ownedItemCounts[itemId] || 0 }));
   return { missingPets, missingItems };
 }
+
+// Total count of distinct things (pets + items) standing between this
+// player and a full match — used to sort "closest to working" builds first.
+export function missingCountForBuild(build, ownedPets, ownedItemCounts) {
+  const { missingPets, missingItems } = missingForBuild(build, ownedPets, ownedItemCounts);
+  return missingPets.length + missingItems.length;
+}

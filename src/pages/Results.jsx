@@ -7,7 +7,7 @@ import { useCollection } from "../hooks/useCollection";
 import { useBuilds } from "../hooks/useBuilds";
 import { supabase } from "../lib/supabaseClient";
 import { startCheckout } from "../lib/billing";
-import { buildFullyMatches } from "../lib/matching";
+import { buildFullyMatches, missingCountForBuild } from "../lib/matching";
 import BuildCard from "../components/BuildCard";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
 
@@ -91,7 +91,14 @@ export default function Results({ onRequireAuth }) {
     () => builds.filter((b) => buildFullyMatches(b, ownedPets, ownedItems)),
     [builds, ownedPets, ownedItems]
   );
-  const alternatives = useMemo(() => builds.filter((b) => !matching.includes(b)), [builds, matching]);
+  const alternatives = useMemo(() => {
+    const nonMatching = builds.filter((b) => !matching.includes(b));
+    // Closest-to-working first — a build you're missing one thing from is
+    // far easier to act on (swap a pet/item) than one missing several.
+    return [...nonMatching].sort(
+      (a, b) => missingCountForBuild(a, ownedPets, ownedItems) - missingCountForBuild(b, ownedPets, ownedItems)
+    );
+  }, [builds, matching, ownedPets, ownedItems]);
 
   const outOfLookups = profile && !profile.is_subscribed && profile.trial_lookups_used >= profile.trial_lookups_limit;
   const [alternativesBlocked, setAlternativesBlocked] = useState(false);
