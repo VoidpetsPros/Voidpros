@@ -51,6 +51,28 @@ export function useCollection(userId) {
     }
   };
 
+  // Used by the "Select all <rarity>" buttons in Collection.jsx — sets
+  // ownership for a whole batch of pet ids at once instead of one at a time.
+  const bulkSetPets = async (petIds, own) => {
+    if (!userId || petIds.length === 0) return;
+    // optimistic update
+    setOwnedPets((prev) => {
+      const set = new Set(prev);
+      petIds.forEach((id) => (own ? set.add(id) : set.delete(id)));
+      return Array.from(set);
+    });
+    const { error } = own
+      ? await supabase.from("user_pets").upsert(
+          petIds.map((petId) => ({ user_id: userId, pet_id: petId })),
+          { onConflict: "user_id,pet_id" }
+        )
+      : await supabase.from("user_pets").delete().eq("user_id", userId).in("pet_id", petIds);
+    if (error) {
+      console.error(error.message);
+      load(); // roll back to server truth on failure
+    }
+  };
+
   const setItemCount = async (itemId, count) => {
     if (!userId) return;
     const prev = ownedItems[itemId] || 0;
@@ -75,5 +97,31 @@ export function useCollection(userId) {
     }
   };
 
-  return { ownedPets, ownedItems, loading, togglePet, setItemCount, refresh: load };
+  // Used by the "Select all <rarity>" buttons in Collection.jsx — sets
+  // ownership for a whole batch of item ids at once. Items are capped at 1
+  // per player (see migration 0020), so "own" always means count = 1.
+  const bulkSetItemCounts = async (itemIds, own) => {
+    if (!userId || itemIds.length === 0) return;
+    // optimistic update
+    setOwnedItems((cur) => {
+      const next = { ...cur };
+      itemIds.forEach((id) => {
+        if (own) next[id] = 1;
+        else delete next[id];
+      });
+      return next;
+    });
+    const { error } = own
+      ? await supabase.from("user_items").upsert(
+          itemIds.map((itemId) => ({ user_id: userId, item_id: itemId, count: 1 })),
+          { onConflict: "user_id,item_id" }
+        )
+      : await supabase.from("user_items").delete().eq("user_id", userId).in("item_id", itemIds);
+    if (error) {
+      console.error(error.message);
+      load();
+    }
+  };
+
+  return { ownedPets, ownedItems, loading, togglePet, setItemCount, bulkSetPets, bulkSetItemCounts, refresh: load };
 }
