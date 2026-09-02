@@ -14,6 +14,8 @@ import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import { openBillingPortal } from "./lib/billing";
 import { INK, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER, VIOLET } from "./lib/theme";
 
@@ -138,9 +140,20 @@ export default function App() {
         <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
         <Route path="/billing/success" element={<BillingSuccess />} />
         <Route path="/billing/cancelled" element={<BillingCancelled />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
       </Routes>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+
+      <footer style={{ borderTop: `1px solid ${LINE}`, padding: "20px 24px", textAlign: "center" }}>
+        <Link to="/privacy" style={{ fontSize: 12, color: MUTED, textDecoration: "none", marginRight: 16 }}>
+          Privacy Policy
+        </Link>
+        <Link to="/terms" style={{ fontSize: 12, color: MUTED, textDecoration: "none" }}>
+          Terms of Service
+        </Link>
+      </footer>
     </div>
   );
 }

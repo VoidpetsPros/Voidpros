@@ -178,6 +178,14 @@ export default function AuthModal({ onClose, headline, subhead }) {
             </>
           )}
         </p>
+
+        {mode === "signup" && (
+          <p style={{ fontSize: 11, color: MUTED, textAlign: "center", margin: "10px 0 0", lineHeight: 1.5 }}>
+            By creating an account, you agree to our{" "}
+            <a href="/terms" style={{ color: VIOLET }}>Terms of Service</a> and{" "}
+            <a href="/privacy" style={{ color: VIOLET }}>Privacy Policy</a>.
+          </p>
+        )}
         </>
         )}
       </div>
