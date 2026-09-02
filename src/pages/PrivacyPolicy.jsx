@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Privacy Policy</p>
-      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: [DATE]</p>
+      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/02/2026</p>
 
       <Section title="1. Who we are">
         <p>
@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
       <Section title="5. Data retention & deletion">
         <p>
           We keep your account information for as long as your account exists. If you'd like your
-          account and associated data deleted, contact us at [SUPPORT EMAIL] and we'll process
+          account and associated data deleted, contact us at voidpetsranking@gmail.com and we'll process
           your request within a reasonable time, except where we're required to retain certain
           records (e.g. for tax or fraud-prevention purposes).
         </p>
@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
         <p>
           Depending on where you live, you may have rights to access, correct, or delete your
           personal information, or to object to certain uses of it. Contact us at
-          [SUPPORT EMAIL] to exercise these rights.
+          voidpetsranking@gmail.com to exercise these rights.
         </p>
       </Section>
 
@@ -87,7 +87,7 @@ export default function PrivacyPolicy() {
       </Section>
 
       <Section title="10. Contact us">
-        <p>Questions about this policy? Reach us at [SUPPORT EMAIL].</p>
+        <p>Questions about this policy? Reach us at voidpetsranking@gmail.com.</p>
       </Section>
 
       <p style={{ fontSize: 12.5, color: MUTED, marginTop: 40 }}>

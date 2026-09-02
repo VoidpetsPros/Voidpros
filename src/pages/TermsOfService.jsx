@@ -13,7 +13,7 @@ export default function TermsOfService() {
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Terms of Service</p>
-      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: [09/02/2026]</p>
+      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/02/2026</p>
 
       <Section title="1. Acceptance of these terms">
         <p>
@@ -108,7 +108,7 @@ export default function TermsOfService() {
       </Section>
 
       <Section title="11. Governing law">
-        <p>These terms are governed by the laws of [Florida/United States Of America], without regard to conflict-of-law principles.</p>
+        <p>These terms are governed by the laws of Florida/United States Of America, without regard to conflict-of-law principles.</p>
       </Section>
 
       <Section title="12. Changes to these terms">
@@ -116,7 +116,7 @@ export default function TermsOfService() {
       </Section>
 
       <Section title="13. Contact">
-        <p>Questions about these terms? Reach us at [voidpetsranking@gmail.com].</p>
+        <p>Questions about these terms? Reach us at voidpetsranking@gmail.com.</p>
       </Section>
 
       <p style={{ fontSize: 12.5, color: MUTED, marginTop: 40 }}>
