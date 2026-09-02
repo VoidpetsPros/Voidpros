@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import logoMark from "./assets/logo.svg";
 import { useAuth } from "./hooks/AuthContext";
 import AuthModal from "./components/AuthModal";
 import Home from "./pages/Home";
@@ -17,7 +17,7 @@ import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import { openBillingPortal } from "./lib/billing";
-import { INK, PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER, VIOLET } from "./lib/theme";
+import { INK, PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "./lib/theme";
 
 const NAV_LINKS = [
   { to: "/search", label: "Find a build" },
@@ -82,19 +82,7 @@ export default function App() {
         }}
       >
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: `radial-gradient(circle at 35% 30%, ${VIOLET}, ${GOLD} 55%, ${GOLD_DIM} 100%)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Sparkles size={15} color="#FFFFFF" />
-          </div>
+          <img src={logoMark} alt="Voidpros" style={{ width: 32, height: 32, borderRadius: 8, display: "block" }} />
           <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: CREAM }}>
             voidpros
           </span>
