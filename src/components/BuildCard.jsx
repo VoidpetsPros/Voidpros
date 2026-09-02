@@ -75,7 +75,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
   );
 }
 
-export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote, onConfirm }) {
+export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
   const { user } = useAuth();
   const isOwnBuild = user && build.author_id === user.id;
   const { missingPets, missingItems } = missingForBuild(build, ownedPets, ownedItemCounts);
@@ -99,10 +99,10 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {isVerified ? (
             <Pill tone="gold">
-              <ShieldCheck size={12} /> Verified · {build.confirmations} confirmed
+              <ShieldCheck size={12} /> Verified
             </Pill>
           ) : (
-            <Pill>Unverified · {build.confirmations} confirmation{build.confirmations !== 1 ? "s" : ""}</Pill>
+            <Pill>Unverified</Pill>
           )}
           {fullMatch ? (
             <Pill tone="violet">
@@ -134,29 +134,12 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
       {build.note && <p style={{ fontSize: 13.5, color: CREAM, lineHeight: 1.6, margin: "0 0 12px" }}>{build.note}</p>}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        {onConfirm && !isOwnBuild && (
-          <button
-            onClick={() => onConfirm(build.id)}
-            disabled={build.userConfirmed}
-            style={{
-              background: "none",
-              border: `1px solid ${LINE}`,
-              color: build.userConfirmed ? GOLD : MUTED,
-              fontSize: 12.5,
-              padding: "6px 12px",
-              borderRadius: 7,
-              cursor: build.userConfirmed ? "default" : "pointer",
-            }}
-          >
-            {build.userConfirmed ? "✓ Confirmed by you" : "This worked for me too"}
-          </button>
-        )}
-        {isOwnBuild && <span style={{ fontSize: 12, color: MUTED }}>Your submission</span>}
+        {isOwnBuild ? <span style={{ fontSize: 12, color: MUTED }}>Your submission</span> : <span />}
 
         {isVerified && onVote && !isOwnBuild && (
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <button
-              onClick={() => onVote(build.id, "up")}
+              onClick={() => onVote(build.id)}
               aria-label="Upvote this build"
               style={{
                 background: build.userVote === "up" ? "rgba(139,92,246,0.12)" : "none",
@@ -180,7 +163,7 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         )}
       </div>
 
-      <CommentsSection buildId={build.id} verified={isVerified} />
+      <CommentsSection buildId={build.id} verified={isVerified} initialCount={build.comment_count || 0} />
     </div>
   );
 }

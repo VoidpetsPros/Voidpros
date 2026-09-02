@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 
 const BUILD_SELECT = `
-  id, stage, note, status, confirmations, upvotes, downvotes, show_author, author_id, created_at,
+  id, stage, note, status, upvotes, comment_count, show_author, author_id, created_at,
   author:profiles!author_id(username),
   team:build_team_slots(*),
   images:build_images(kind, storage_path)

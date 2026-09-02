@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { containsProfanity } from "../lib/profanity";
 import { PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
-export default function CommentsSection({ buildId, verified = true }) {
+export default function CommentsSection({ buildId, verified = true, initialCount = 0 }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
@@ -63,7 +63,7 @@ export default function CommentsSection({ buildId, verified = true }) {
         onClick={toggle}
         style={{ background: "none", border: "none", color: MUTED, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, padding: 0 }}
       >
-        <MessageCircle size={13} /> {loaded ? `${comments.length} comment${comments.length !== 1 ? "s" : ""}` : "Comments"}
+        <MessageCircle size={13} /> {loaded ? comments.length : initialCount} comment{(loaded ? comments.length : initialCount) !== 1 ? "s" : ""}
       </button>
       {open && (
         <div style={{ marginTop: 10 }}>

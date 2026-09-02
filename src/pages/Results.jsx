@@ -17,7 +17,7 @@ export default function Results({ onRequireAuth }) {
   const { isAuthed, user, profile, consumeTrialLookup } = useAuth();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
-  const { builds: rawBuilds, loading: buildsLoading, error: buildsError, refresh } = useBuilds(stage, user?.id);
+  const { builds: rawBuilds, loading: buildsLoading, error: buildsError, applyVoteLocally } = useBuilds(stage, user?.id);
   // Builds without team data yet are awaiting admin review — not usable in
   // search until that's added, so they're excluded here entirely rather
   // than showing up as a phantom "match" or empty alternative.
@@ -60,31 +60,19 @@ export default function Results({ onRequireAuth }) {
     setRequestSent(true);
   };
 
-  const handleConfirm = async (buildId) => {
-    const { error } = await supabase.from("build_confirmations").insert({ build_id: buildId, user_id: user.id });
-    if (error) {
-      console.error(error.message);
-      return;
-    }
-    refresh();
-  };
-
-  const handleVote = async (buildId, direction) => {
+  const handleVote = async (buildId) => {
     const build = builds.find((b) => b.id === buildId);
     if (!build) return;
-    let error;
-    if (build.userVote === direction) {
-      ({ error } = await supabase.from("build_votes").delete().eq("build_id", buildId).eq("user_id", user.id));
-    } else if (build.userVote) {
-      ({ error } = await supabase.from("build_votes").update({ direction }).eq("build_id", buildId).eq("user_id", user.id));
-    } else {
-      ({ error } = await supabase.from("build_votes").insert({ build_id: buildId, user_id: user.id, direction }));
-    }
+    const currentlyUpvoted = build.userVote === "up";
+    // Optimistic, instant — no refetch, so the list doesn't flash or lose scroll position.
+    applyVoteLocally(buildId, !currentlyUpvoted);
+    const { error } = currentlyUpvoted
+      ? await supabase.from("build_votes").delete().eq("build_id", buildId).eq("user_id", user.id)
+      : await supabase.from("build_votes").insert({ build_id: buildId, user_id: user.id, direction: "up" });
     if (error) {
       console.error(error.message);
-      return;
+      applyVoteLocally(buildId, currentlyUpvoted); // roll back on failure
     }
-    refresh();
   };
 
   const matching = useMemo(
@@ -241,13 +229,13 @@ export default function Results({ onRequireAuth }) {
           {showAlternatives &&
             alternatives.map((b) => (
               <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
-                <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} onConfirm={handleConfirm} />
+                <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} />
               </div>
             ))}
         </div>
       ) : (
         matching.map((b) => (
-          <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} onConfirm={handleConfirm} />
+          <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} />
         ))
       )}
 

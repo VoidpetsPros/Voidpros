@@ -3,8 +3,8 @@ import { supabase } from "../lib/supabaseClient";
 
 // Fetches every non-rejected build submitted for a given floor, along with
 // its 4 team slots and proof images. Also fetches which of these builds the
-// current viewer has already voted on or confirmed, so the UI can reflect
-// that without a second round trip per build.
+// current viewer has already voted on, so the UI can reflect that without a
+// second round trip per build.
 export function useBuilds(stage, userId) {
   const [builds, setBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export function useBuilds(stage, userId) {
       .from("builds")
       .select(
         `
-        id, stage, note, status, confirmations, upvotes, downvotes, show_author, author_id, created_at,
+        id, stage, note, status, upvotes, comment_count, show_author, author_id, created_at,
         author:profiles!author_id(username),
         team:build_team_slots(*),
         images:build_images(kind, storage_path)
@@ -51,17 +51,16 @@ export function useBuilds(stage, userId) {
 
     if (userId && withViewerState.length > 0) {
       const buildIds = withViewerState.map((b) => b.id);
-      const [votesRes, confirmsRes] = await Promise.all([
-        supabase.from("build_votes").select("build_id, direction").eq("user_id", userId).in("build_id", buildIds),
-        supabase.from("build_confirmations").select("build_id").eq("user_id", userId).in("build_id", buildIds),
-      ]);
+      const { data: votesData } = await supabase
+        .from("build_votes")
+        .select("build_id, direction")
+        .eq("user_id", userId)
+        .in("build_id", buildIds);
       const voteMap = {};
-      (votesRes.data || []).forEach((v) => (voteMap[v.build_id] = v.direction));
-      const confirmedSet = new Set((confirmsRes.data || []).map((c) => c.build_id));
+      (votesData || []).forEach((v) => (voteMap[v.build_id] = v.direction));
       withViewerState = withViewerState.map((b) => ({
         ...b,
         userVote: voteMap[b.id] || null,
-        userConfirmed: confirmedSet.has(b.id),
       }));
     }
 
@@ -73,7 +72,17 @@ export function useBuilds(stage, userId) {
     load();
   }, [load]);
 
-  return { builds, loading, error, refresh: load };
+  // Updates a single build's vote state in place — no refetch, so the list
+  // doesn't flash/reload or lose scroll position on every click.
+  const applyVoteLocally = useCallback((buildId, nowUpvoted) => {
+    setBuilds((prev) =>
+      prev.map((b) =>
+        b.id === buildId ? { ...b, userVote: nowUpvoted ? "up" : null, upvotes: b.upvotes + (nowUpvoted ? 1 : -1) } : b
+      )
+    );
+  }, []);
+
+  return { builds, loading, error, refresh: load, applyVoteLocally };
 }
 
 export function imageUrl(storagePath) {
