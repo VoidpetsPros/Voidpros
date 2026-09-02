@@ -27,6 +27,21 @@ const NAV_LINKS = [
   { to: "/my-activity", label: "My activity" },
 ];
 
+// A subtle grid + glow backdrop, matching the void aesthetic without being
+// loud enough to interfere with text readability anywhere on the site.
+const VOID_BACKGROUND = {
+  backgroundColor: INK,
+  backgroundImage: [
+    "radial-gradient(circle at 15% 10%, rgba(139,92,246,0.10), transparent 42%)",
+    "radial-gradient(circle at 85% 0%, rgba(124,58,237,0.10), transparent 40%)",
+    "radial-gradient(circle at 50% 100%, rgba(139,92,246,0.06), transparent 45%)",
+    "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)",
+    "linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
+  ].join(", "),
+  backgroundSize: "auto, auto, auto, 42px 42px, 42px 42px",
+  backgroundAttachment: "fixed",
+};
+
 export default function App() {
   const { isAuthed, profile, signOut, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
@@ -46,14 +61,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={{ background: INK, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       </div>
     );
   }
 
   return (
-    <div style={{ background: INK, minHeight: "100vh", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <header
         style={{
           display: "flex",
