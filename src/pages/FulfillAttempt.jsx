@@ -6,7 +6,6 @@ import { useCatalog } from "../hooks/useCatalog";
 import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
 import { containsProfanity } from "../lib/profanity";
-import PetSlotEditor, { emptySlot } from "../components/PetSlotEditor";
 import ImageUploadSlot from "../components/ImageUploadSlot";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
@@ -22,7 +21,6 @@ export default function FulfillAttempt({ onRequireAuth }) {
   const [loadingRequest, setLoadingRequest] = useState(true);
   const [loadError, setLoadError] = useState(null);
 
-  const [team, setTeam] = useState([emptySlot(), emptySlot(), emptySlot(), emptySlot()]);
   const [showFulfiller, setShowFulfiller] = useState(true);
   const [note, setNote] = useState("");
   const [completionFiles, setCompletionFiles] = useState([]);
@@ -94,14 +92,6 @@ export default function FulfillAttempt({ onRequireAuth }) {
     );
   }
 
-  const allowedPets = pets.filter((p) => request.pets.includes(p.id));
-  const allowedItemIds = Object.keys(request.items);
-  const allowedHats = items.filter((i) => i.type === "hat" && allowedItemIds.includes(i.id));
-  const allowedScarves = items.filter((i) => i.type === "scarf" && allowedItemIds.includes(i.id));
-  const allowedAccessories = items.filter((i) => i.type === "accessory" && allowedItemIds.includes(i.id));
-
-  const updateSlot = (i, newSlot) => setTeam((prev) => prev.map((s, idx) => (idx === i ? newSlot : s)));
-
   const addFiles = (currentFiles, setter, max) => (fileList) => {
     const room = max - currentFiles.length;
     const picked = Array.from(fileList).slice(0, room);
@@ -114,23 +104,6 @@ export default function FulfillAttempt({ onRequireAuth }) {
   const handleSubmit = async () => {
     setError("");
     const missing = [];
-
-    // A pet is only "used" if the fulfiller actually picked one for that
-    // slot — this is what makes partial teams possible when the requester
-    // doesn't own enough for a full 4-pet setup.
-    const usedSlots = team.filter((s) => s.petId);
-    if (usedSlots.length === 0) missing.push("at least one pet");
-
-    const inconsistentSlot = usedSlots.some((s) => {
-      if (!s.petLevel) return true;
-      const pairs = [s.hat, s.scarf, s.accessories[0], s.accessories[1]];
-      return pairs.some((p) => !!p.id !== !!p.level); // an id needs a level and vice versa; both blank is fine
-    });
-    if (inconsistentSlot) missing.push("a level for every pet you've picked, and a level for any item you've picked");
-
-    const petIds = usedSlots.map((s) => s.petId);
-    if (new Set(petIds).size !== petIds.length) missing.push("distinct pets — you've repeated one");
-
     if (completionFiles.length === 0) missing.push("a screenshot showing the floor cleared");
     if (petFiles.length === 0) missing.push("a screenshot of the pets you used");
     if (itemFiles.length === 0) missing.push("at least one screenshot of the items you used");
@@ -151,25 +124,10 @@ export default function FulfillAttempt({ onRequireAuth }) {
       for (const f of petFiles) uploaded.push({ kind: "pets", storage_path: await uploadSubmissionImage(f.file, user.id) });
       for (const f of itemFiles) uploaded.push({ kind: "items", storage_path: await uploadSubmissionImage(f.file, user.id) });
 
-      const teamPayload = usedSlots.map((s, i) => ({
-        slot_index: i,
-        pet_id: s.petId,
-        pet_level: s.petLevel,
-        hat_id: s.hat.id || "",
-        hat_level: s.hat.level || "",
-        scarf_id: s.scarf.id || "",
-        scarf_level: s.scarf.level || "",
-        accessory1_id: s.accessories[0].id || "",
-        accessory1_level: s.accessories[0].level || "",
-        accessory2_id: s.accessories[1].id || "",
-        accessory2_level: s.accessories[1].level || "",
-      }));
-
       const { error: rpcError } = await supabase.rpc("submit_fulfillment", {
         p_request_id: requestId,
         p_note: note,
         p_show_fulfiller: showFulfiller,
-        p_team: teamPayload,
         p_images: uploaded,
       });
 
@@ -188,7 +146,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
   if (success) {
     return (
       <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: "1px solid rgba(196,121,31,0.35)", borderRadius: 12, padding: "32px 24px" }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: "32px 24px" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Attempt submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
             It's in review — if it gets verified, you'll earn 10 karma and the requester's floor gets marked solved.
@@ -215,9 +173,9 @@ export default function FulfillAttempt({ onRequireAuth }) {
 
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Attempt floor {request.stage}</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
-        Use only pets and items from the requester's pool below. If they don't own enough
-        for a full 4-pet team, use however many pets and however much gear they actually
-        have — leave the rest blank. Get it verified and you'll earn 10 karma.
+        Use only pets and items from the requester's pool below. Just the screenshots —
+        no need to type out your team. We'll review them and enter what you used, and
+        you'll earn 10 karma once it's verified.
       </p>
 
       <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: 14, marginBottom: 22 }}>
@@ -229,7 +187,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
             const p = pets.find((x) => x.id === pid);
             if (!p) return null;
             return (
-              <span key={pid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(108,86,201,0.1)", color: VIOLET, border: "1px solid rgba(108,86,201,0.3)" }}>
+              <span key={pid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(139,92,246,0.1)", color: VIOLET, border: "1px solid rgba(139,92,246,0.3)" }}>
                 <PetAvatar pet={p} size={18} /> {p.name}
               </span>
             );
@@ -238,29 +196,13 @@ export default function FulfillAttempt({ onRequireAuth }) {
             const it = items.find((x) => x.id === iid);
             if (!it) return null;
             return (
-              <span key={iid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(196,121,31,0.08)", color: GOLD, border: "1px solid rgba(196,121,31,0.3)" }}>
+              <span key={iid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(139,92,246,0.08)", color: GOLD, border: "1px solid rgba(139,92,246,0.25)" }}>
                 <ItemAvatar item={it} size={18} /> {it.name} {count > 1 ? `×${count}` : ""}
               </span>
             );
           })}
         </div>
       </div>
-
-      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
-        Your team <span style={{ color: DANGER }}>*</span>
-      </p>
-      {team.map((slot, i) => (
-        <PetSlotEditor
-          key={i}
-          index={i}
-          slot={slot}
-          onChange={(s) => updateSlot(i, s)}
-          petOptions={allowedPets}
-          hatOptions={allowedHats}
-          scarfOptions={allowedScarves}
-          accessoryOptions={allowedAccessories}
-        />
-      ))}
 
       <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 22px", cursor: "pointer" }}>
         <input type="checkbox" checked={showFulfiller} onChange={(e) => setShowFulfiller(e.target.checked)} style={{ width: 15, height: 15 }} />
@@ -282,7 +224,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Pets used"
-          hint="Screenshot of your team going into the fight."
+          hint="Screenshot of your team going into the fight — make sure names/icons are visible."
           files={petFiles}
           onAdd={addFiles(petFiles, setPetFiles, 2)}
           onRemove={removeFile(setPetFiles)}
