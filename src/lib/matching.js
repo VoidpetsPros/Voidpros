@@ -9,10 +9,13 @@ export function buildPetIds(build) {
 export function buildItemCounts(build) {
   const counts = {};
   build.team.forEach((slot) => {
-    counts[slot.hat_id] = (counts[slot.hat_id] || 0) + 1;
-    counts[slot.scarf_id] = (counts[slot.scarf_id] || 0) + 1;
-    counts[slot.accessory1_id] = (counts[slot.accessory1_id] || 0) + 1;
-    counts[slot.accessory2_id] = (counts[slot.accessory2_id] || 0) + 1;
+    // Only count item slots that are actually filled — a pet with no
+    // scarf/accessory equipped has a null id there, and counting that
+    // creates a phantom "null" item requirement nobody can ever own.
+    [slot.hat_id, slot.scarf_id, slot.accessory1_id, slot.accessory2_id].forEach((itemId) => {
+      if (!itemId) return;
+      counts[itemId] = (counts[itemId] || 0) + 1;
+    });
   });
   return counts;
 }
