@@ -207,35 +207,50 @@ export default function Results({ onRequireAuth }) {
           </Link>
         </div>
       ) : matching.length === 0 ? (
-        <>
-          <div style={{ background: PANEL, border: `1px dashed ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
-            <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
-              No build matches what you have
+        <div style={{ background: PANEL, border: `1px dashed ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
+          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+            No build matches what you have
+          </p>
+          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
+            Other builds exist for floor {stage}, but none of them only use pets and
+            items from your <Link to="/collection" style={{ color: VIOLET }}>collection</Link>.
+          </p>
+          <button
+            onClick={handleToggleAlternatives}
+            style={{ background: "none", border: "none", color: VIOLET, fontSize: 13, cursor: "pointer", textDecoration: "underline", padding: 0 }}
+          >
+            {showAlternatives ? "Hide alternative builds" : `See ${alternatives.length} alternative build${alternatives.length > 1 ? "s" : ""}`}
+          </button>
+          {alternativesBlocked && (
+            <p style={{ fontSize: 12.5, color: MUTED, margin: "10px 0 0", lineHeight: 1.5 }}>
+              You're out of free lookups. Viewing alternative builds also uses a lookup,
+              same as a full match.{" "}
+              <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: VIOLET, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
+                Subscribe for unlimited
+              </button>
+              .
             </p>
-            <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
-              Other builds exist for floor {stage}, but none of them only use pets and
-              items from your <Link to="/collection" style={{ color: VIOLET }}>collection</Link>.
-            </p>
-            <button
-              onClick={handleToggleAlternatives}
-              style={{ background: "none", border: "none", color: VIOLET, fontSize: 13, cursor: "pointer", textDecoration: "underline", padding: 0 }}
-            >
-              {showAlternatives ? "Hide alternative builds" : `See ${alternatives.length} alternative build${alternatives.length > 1 ? "s" : ""}`}
-            </button>
-            {alternativesBlocked && (
-              <p style={{ fontSize: 12.5, color: MUTED, margin: "10px 0 0", lineHeight: 1.5 }}>
-                You're out of free lookups. Viewing alternative builds also uses a lookup,
-                same as a full match.{" "}
-                <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: VIOLET, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
-                  Subscribe for unlimited
-                </button>
-                .
-              </p>
-            )}
-          </div>
+          )}
+          {showAlternatives &&
+            alternatives.map((b) => (
+              <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
+                <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} onConfirm={handleConfirm} />
+              </div>
+            ))}
+        </div>
+      ) : (
+        matching.map((b) => (
+          <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} onConfirm={handleConfirm} />
+        ))
+      )}
 
+      {/* Posting a request makes sense any time there's no exact match yet —
+          whether nobody's submitted anything for this floor, or builds exist
+          but none fit this player's exact collection. */}
+      {matching.length === 0 && (
+        <>
           {requestSent ? (
-            <div style={{ background: PANEL, border: "1px solid rgba(196,121,31,0.35)", borderRadius: 12, padding: 20, marginBottom: 20, textAlign: "center" }}>
+            <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: 20, marginTop: 20, textAlign: "center" }}>
               <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 6px" }}>Request posted</p>
               <p style={{ fontSize: 13, color: MUTED, margin: 0, lineHeight: 1.6 }}>
                 Other players can now attempt floor {stage} using only the pets and items
@@ -244,7 +259,7 @@ export default function Results({ onRequireAuth }) {
               </p>
             </div>
           ) : profile?.is_subscribed ? (
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 13, color: MUTED }}>Want another player to build one for you instead?</span>
               <button
                 onClick={handleSubmitRequest}
@@ -255,7 +270,7 @@ export default function Results({ onRequireAuth }) {
               </button>
             </div>
           ) : (
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 12.5, color: MUTED }}>
                 Subscribers can post a request so other players attempt this floor using
                 only your pets and items.
@@ -269,18 +284,9 @@ export default function Results({ onRequireAuth }) {
               </button>
             </div>
           )}
-          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "-14px 0 20px" }}>{checkoutError}</p>}
-          {requestError && <p style={{ fontSize: 12.5, color: DANGER, margin: "-14px 0 20px" }}>{requestError}</p>}
-
-          {showAlternatives &&
-            alternatives.map((b) => (
-              <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} onConfirm={handleConfirm} />
-            ))}
+          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "10px 0 0" }}>{checkoutError}</p>}
+          {requestError && <p style={{ fontSize: 12.5, color: DANGER, margin: "10px 0 0" }}>{requestError}</p>}
         </>
-      ) : (
-        matching.map((b) => (
-          <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} onConfirm={handleConfirm} />
-        ))
       )}
 
       {builds.length > 0 && (
