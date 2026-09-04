@@ -49,6 +49,7 @@ export default function ProfileSidebar({ onClose }) {
           boxShadow: "-8px 0 30px -10px rgba(0,0,0,0.3)",
           display: "flex",
           flexDirection: "column",
+          overflowY: "auto",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
