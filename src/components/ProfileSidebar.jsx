@@ -56,94 +56,104 @@ export default function ProfileSidebar({ onClose }) {
           height: "100vh",
           background: PANEL,
           borderLeft: `1px solid ${LINE}`,
-          padding: 22,
           boxShadow: "-8px 0 30px -10px rgba(0,0,0,0.3)",
-          overflowY: "auto",
-          WebkitOverflowScrolling: "touch",
+          display: "flex",
+          flexDirection: "column",
           boxSizing: "border-box",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", color: MUTED, margin: 0 }}>Profile</p>
-          <button onClick={onClose} aria-label="Close" style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", padding: 4 }}>
-            <X size={18} />
+        {/* Scrollable content — everything except Sign out, which stays
+            pinned below regardless of how tall this section gets. minHeight:0
+            is required here or this flex child won't scroll at all. */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: 22 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", color: MUTED, margin: 0 }}>Profile</p>
+            <button onClick={onClose} aria-label="Close" style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", padding: 4 }}>
+              <X size={18} />
+            </button>
+          </div>
+
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
+            {profile?.username || "player"}
+          </p>
+          <span
+            style={{
+              display: "inline-block",
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: profile?.is_subscribed ? GOLD : MUTED,
+              background: profile?.is_subscribed ? "rgba(124,58,237,0.1)" : PANEL_2,
+              border: `1px solid ${profile?.is_subscribed ? "rgba(124,58,237,0.3)" : LINE}`,
+              borderRadius: 999,
+              padding: "4px 10px",
+              marginBottom: 24,
+            }}
+          >
+            {profile?.is_subscribed ? "Unlimited" : "Free"}
+          </span>
+
+          <button
+            onClick={goToCommunity}
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              background: PANEL_2,
+              border: `1px solid ${LINE}`,
+              borderRadius: 10,
+              padding: "12px 14px",
+              fontSize: 13.5,
+              fontWeight: 600,
+              color: CREAM,
+              cursor: "pointer",
+              marginBottom: 10,
+              textAlign: "left",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <Users size={16} color={GOLD} />
+            Community
+            {hasNewActivity && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 10,
+                  width: 9,
+                  height: 9,
+                  borderRadius: "50%",
+                  background: "#dc2626",
+                  border: `2px solid ${PANEL_2}`,
+                }}
+              />
+            )}
           </button>
+
+          {profile?.is_subscribed && (
+            <button
+              onClick={handleManageBilling}
+              disabled={portalLoading}
+              style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box" }}
+            >
+              <CreditCard size={16} color={MUTED} />
+              {portalLoading ? "Opening…" : "Manage billing"}
+            </button>
+          )}
         </div>
 
-        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
-          {profile?.username || "player"}
-        </p>
-        <span
-          style={{
-            display: "inline-block",
-            fontSize: 11.5,
-            fontWeight: 600,
-            color: profile?.is_subscribed ? GOLD : MUTED,
-            background: profile?.is_subscribed ? "rgba(124,58,237,0.1)" : PANEL_2,
-            border: `1px solid ${profile?.is_subscribed ? "rgba(124,58,237,0.3)" : LINE}`,
-            borderRadius: 999,
-            padding: "4px 10px",
-            marginBottom: 24,
-          }}
-        >
-          {profile?.is_subscribed ? "Unlimited" : "Free"}
-        </span>
-
-        <button
-          onClick={goToCommunity}
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            background: PANEL_2,
-            border: `1px solid ${LINE}`,
-            borderRadius: 10,
-            padding: "12px 14px",
-            fontSize: 13.5,
-            fontWeight: 600,
-            color: CREAM,
-            cursor: "pointer",
-            marginBottom: 10,
-            textAlign: "left",
-          }}
-        >
-          <Users size={16} color={GOLD} />
-          Community
-          {hasNewActivity && (
-            <span
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 10,
-                width: 9,
-                height: 9,
-                borderRadius: "50%",
-                background: "#dc2626",
-                border: `2px solid ${PANEL_2}`,
-              }}
-            />
-          )}
-        </button>
-
-        {profile?.is_subscribed && (
+        {/* Fixed footer — always visible at the bottom of the panel,
+            never part of the scrolling area above. */}
+        <div style={{ borderTop: `1px solid ${LINE}`, padding: 22 }}>
           <button
-            onClick={handleManageBilling}
-            disabled={portalLoading}
-            style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", marginBottom: 10, textAlign: "left" }}
+            onClick={handleSignOut}
+            style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", width: "100%", boxSizing: "border-box", textAlign: "left" }}
           >
-            <CreditCard size={16} color={MUTED} />
-            {portalLoading ? "Opening…" : "Manage billing"}
+            <LogOut size={16} color={MUTED} />
+            Sign out
           </button>
-        )}
-
-        <button
-          onClick={handleSignOut}
-          style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", marginTop: 24, width: "100%", boxSizing: "border-box", textAlign: "left" }}
-        >
-          <LogOut size={16} color={MUTED} />
-          Sign out
-        </button>
+        </div>
       </div>
     </div>
   );
