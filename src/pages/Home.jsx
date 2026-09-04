@@ -62,32 +62,38 @@ export default function Home({ onRequireAuth }) {
           </p>
         )}
 
-        <button
-          onClick={handleStart}
-          style={{
-            background: GOLD,
-            color: "#FFFFFF",
-            border: "none",
-            borderRadius: 10,
-            padding: "13px 28px",
-            fontSize: 14.5,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Search for a build
-        </button>
-
-        {isAuthed && (
-          <p style={{ marginTop: 16 }}>
-            <button
-              onClick={() => navigate("/collection")}
-              style={{ background: "none", border: "none", color: MUTED, fontSize: 12.5, cursor: "pointer", textDecoration: "underline", padding: 0 }}
-            >
-              Or set up your collection first
-            </button>
-          </p>
-        )}
+        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+          <button
+            onClick={() => (isAuthed ? navigate("/collection") : onRequireAuth())}
+            style={{
+              background: PANEL,
+              color: CREAM,
+              border: `1px solid ${LINE}`,
+              borderRadius: 10,
+              padding: "13px 26px",
+              fontSize: 14.5,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Collection
+          </button>
+          <button
+            onClick={handleStart}
+            style={{
+              background: GOLD,
+              color: "#FFFFFF",
+              border: "none",
+              borderRadius: 10,
+              padding: "13px 26px",
+              fontSize: 14.5,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Builds
+          </button>
+        </div>
       </div>
 
       {/* How it works */}

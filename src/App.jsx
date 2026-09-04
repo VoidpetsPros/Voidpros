@@ -22,7 +22,6 @@ import { INK, PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "./lib/the
 const NAV_LINKS = [
   { to: "/search", label: "Find a build" },
   { to: "/submit", label: "Submit a build" },
-  { to: "/collection", label: "My collection" },
   { to: "/fulfill", label: "Fulfill requests" },
   { to: "/my-activity", label: "My activity" },
 ];
