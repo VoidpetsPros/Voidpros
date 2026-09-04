@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Sparkles, Users, Search, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+
+const SEARCH_STEP_INDEX = 2;
 
 const STEPS = [
   {
@@ -22,7 +24,7 @@ const STEPS = [
   {
     icon: Search,
     title: "Search a floor",
-    body: "Once your collection is set, open Floor Search and enter the floor giving you trouble. Try floor 2000 as an example if you just want to see how it works.",
+    body: "Once your collection is set, open Floor Search and enter the floor giving you trouble. You've got a free search just for reaching this step — try floor 2000 if you just want to see how it works.",
     cta: "Go to Floor Search",
     to: "/search",
   },
@@ -37,12 +39,21 @@ const STEPS = [
 
 export default function OnboardingTutorial() {
   const navigate = useNavigate();
-  const { markTutorialSeen } = useAuth();
+  const { markTutorialSeen, grantTutorialSearchBonus } = useAuth();
   const [step, setStep] = useState(0);
 
   const current = STEPS[step];
   const Icon = current.icon;
   const isLast = step === STEPS.length - 1;
+
+  // Grants the one-time tutorial search bonus on reaching this step. Safe
+  // to fire every time this step becomes active (Back/forward, remounts,
+  // whatever) — the actual one-time check lives server-side, not here.
+  useEffect(() => {
+    if (step === SEARCH_STEP_INDEX) {
+      grantTutorialSearchBonus();
+    }
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClose = () => {
     markTutorialSeen();

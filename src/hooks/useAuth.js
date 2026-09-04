@@ -97,6 +97,19 @@ export function useAuthState() {
     if (error) console.error(error.message);
   };
 
+  // One-time +1 free lookup for reaching the tutorial's search step. The
+  // grant is idempotent server-side (checked against a flag on the profile
+  // row), so calling this more than once — e.g. the person goes Back and
+  // forward through the tutorial repeatedly — never grants more than once.
+  const grantTutorialSearchBonus = async () => {
+    const { error } = await supabase.rpc("grant_tutorial_search_bonus");
+    if (error) {
+      console.error(error.message);
+      return;
+    }
+    refreshProfile();
+  };
+
   // Only call this once a search has actually returned a full match — per
   // the product rule, searches with no result don't cost a free lookup.
   // Runs through a database function (see migrations/0004) rather than a
@@ -128,5 +141,6 @@ export function useAuthState() {
     consumeTrialLookup,
     markActivitySeen,
     markTutorialSeen,
+    grantTutorialSearchBonus,
   };
 }
