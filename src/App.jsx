@@ -121,38 +121,60 @@ export default function App() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
-            <button
-              onClick={() => setShowProfile(true)}
-              aria-label="Profile"
-              style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(255,255,255,0.14)",
-                border: "1px solid rgba(255,255,255,0.22)",
-                borderRadius: 999,
-                width: 36,
-                height: 36,
-                cursor: "pointer",
-              }}
-            >
-              <User size={16} color="#FFFFFF" />
-              {hasNewActivity && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: -2,
-                    right: -2,
-                    width: 11,
-                    height: 11,
-                    borderRadius: "50%",
-                    background: "#dc2626",
-                    border: `2px solid ${GOLD_DIM}`,
-                  }}
-                />
-              )}
-            </button>
+            <>
+              <div style={{ width: 130 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                  <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>
+                    Karma
+                  </span>
+                  <span style={{ fontSize: 9.5, color: "#FFFFFF", fontWeight: 600 }}>{profile?.karma ?? 0} / 100</span>
+                </div>
+                <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.25)", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${Math.min(100, Math.max(0, profile?.karma ?? 0))}%`,
+                      background: "#FFFFFF",
+                      borderRadius: 999,
+                      transition: "width 0.3s ease",
+                    }}
+                  />
+                </div>
+              </div>
+              <button
+                onClick={() => setShowProfile(true)}
+                aria-label="Profile"
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  borderRadius: 999,
+                  width: 36,
+                  height: 36,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+              >
+                <User size={16} color="#FFFFFF" />
+                {hasNewActivity && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      right: -2,
+                      width: 11,
+                      height: 11,
+                      borderRadius: "50%",
+                      background: "#dc2626",
+                      border: `2px solid ${GOLD_DIM}`,
+                    }}
+                  />
+                )}
+              </button>
+            </>
           ) : (
             <button
               onClick={() => setShowAuth(true)}
