@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { User } from "lucide-react";
 import logoMark from "./assets/logo.svg";
 import { useAuth } from "./hooks/AuthContext";
 import AuthModal from "./components/AuthModal";
+import ProfileSidebar from "./components/ProfileSidebar";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import Search from "./pages/Search";
@@ -16,14 +18,11 @@ import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import { openBillingPortal } from "./lib/billing";
 import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER } from "./lib/theme";
 
 const NAV_LINKS = [
-  { to: "/search", label: "Find a build" },
   { to: "/submit", label: "Submit a build" },
   { to: "/fulfill", label: "Fulfill requests" },
-  { to: "/my-activity", label: "My activity" },
 ];
 
 // Plain, calm background — no glow orbs, no grid overlay. A dark theme
@@ -33,21 +32,10 @@ const VOID_BACKGROUND = {
 };
 
 export default function App() {
-  const { isAuthed, profile, signOut, loading } = useAuth();
+  const { isAuthed, profile, hasNewActivity, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
-  const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false);
   const location = useLocation();
-
-  const handleManageBilling = async () => {
-    setPortalLoading(true);
-    try {
-      await openBillingPortal();
-    } catch (err) {
-      alert(err.message || "Couldn't open billing portal");
-      setPortalLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -133,47 +121,38 @@ export default function App() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
-            <>
-              <span
-                style={{
-                  fontSize: 12,
-                  color: "rgba(255,255,255,0.85)",
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.22)",
-                  borderRadius: 999,
-                  padding: "6px 12px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span style={{ color: "#FFFFFF", fontWeight: 600 }}>{profile?.username || "player"}</span>
-                {" · "}
-                {profile?.karma ?? 0} karma
-                {" · "}
-                {profile?.is_subscribed ? (
-                  <span style={{ color: "#FFFFFF", fontWeight: 600 }}>unlimited lookups</span>
-                ) : (
-                  `${profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left`
-                )}
-              </span>
-              {profile?.is_subscribed && (
-                <button
-                  onClick={handleManageBilling}
-                  disabled={portalLoading}
-                  style={{ background: "none", border: "1px solid rgba(255,255,255,0.35)", color: "#FFFFFF", fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
-                >
-                  {portalLoading ? "Opening…" : "Manage billing"}
-                </button>
+            <button
+              onClick={() => setShowProfile(true)}
+              aria-label="Profile"
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                borderRadius: 999,
+                width: 36,
+                height: 36,
+                cursor: "pointer",
+              }}
+            >
+              <User size={16} color="#FFFFFF" />
+              {hasNewActivity && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    width: 11,
+                    height: 11,
+                    borderRadius: "50%",
+                    background: "#dc2626",
+                    border: `2px solid ${GOLD_DIM}`,
+                  }}
+                />
               )}
-              <button
-                onClick={async () => {
-                  await signOut();
-                  navigate("/");
-                }}
-                style={{ background: "none", border: "1px solid rgba(255,255,255,0.35)", color: "#FFFFFF", fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
-              >
-                Sign out
-              </button>
-            </>
+            </button>
           ) : (
             <button
               onClick={() => setShowAuth(true)}
@@ -184,6 +163,8 @@ export default function App() {
           )}
         </div>
       </header>
+
+      {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
 
       <div style={{ flex: 1 }}>
         <Routes>

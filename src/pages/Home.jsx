@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Users, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout } from "../lib/billing";
-import { GOLD, MUTED, CREAM, PANEL, LINE } from "../lib/theme";
+import { GOLD, MUTED, CREAM, PANEL, PANEL_2, LINE } from "../lib/theme";
 
 const STEPS = [
   { icon: Users, title: "Add what you own", body: "Mark the pets and items in your collection — a couple taps, no typing." },
@@ -94,6 +94,26 @@ export default function Home({ onRequireAuth }) {
             Builds
           </button>
         </div>
+
+        {isAuthed && (
+          <div style={{ maxWidth: 280, margin: "24px auto 0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: 11.5, color: MUTED, fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>Karma</span>
+              <span style={{ fontSize: 11.5, color: CREAM, fontWeight: 600 }}>{profile?.karma ?? 0} / 100</span>
+            </div>
+            <div style={{ height: 8, borderRadius: 999, background: PANEL_2, border: `1px solid ${LINE}`, overflow: "hidden" }}>
+              <div
+                style={{
+                  height: "100%",
+                  width: `${Math.min(100, Math.max(0, profile?.karma ?? 0))}%`,
+                  background: GOLD,
+                  borderRadius: 999,
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* How it works */}

@@ -9,10 +9,12 @@ export function useAuthState() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasNewActivity, setHasNewActivity] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
       setProfile(null);
+      setHasNewActivity(false);
       return;
     }
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
@@ -21,6 +23,17 @@ export function useAuthState() {
       return;
     }
     setProfile(data);
+    checkActivity(userId);
+  }, []);
+
+  const checkActivity = useCallback(async (userId) => {
+    if (!userId) return;
+    const { data, error } = await supabase.rpc("has_new_activity", { p_user_id: userId });
+    if (error) {
+      console.error("has_new_activity check failed:", error.message);
+      return;
+    }
+    setHasNewActivity(!!data);
   }, []);
 
   useEffect(() => {
@@ -67,6 +80,15 @@ export function useAuthState() {
 
   const refreshProfile = () => fetchProfile(session?.user?.id);
 
+  // Clears the notification badge — call this when the person opens the
+  // Community tab. Optimistic: hides the badge immediately rather than
+  // waiting on the round trip.
+  const markActivitySeen = async () => {
+    setHasNewActivity(false);
+    const { error } = await supabase.rpc("mark_activity_seen");
+    if (error) console.error(error.message);
+  };
+
   // Only call this once a search has actually returned a full match — per
   // the product rule, searches with no result don't cost a free lookup.
   // Runs through a database function (see migrations/0004) rather than a
@@ -89,11 +111,13 @@ export function useAuthState() {
     profile,
     loading,
     isAuthed: !!session,
+    hasNewActivity,
     signUp,
     signIn,
     signInWithGoogle,
     signOut,
     refreshProfile,
     consumeTrialLookup,
+    markActivitySeen,
   };
 }

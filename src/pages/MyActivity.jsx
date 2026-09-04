@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Award } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
@@ -9,10 +9,14 @@ import BuildCard from "../components/BuildCard";
 import { PANEL, LINE, CREAM, MUTED, GOLD, VIOLET } from "../lib/theme";
 
 export default function MyActivity({ onRequireAuth }) {
-  const { isAuthed, user, profile, loading: authLoading } = useAuth();
+  const { isAuthed, user, profile, loading: authLoading, markActivitySeen } = useAuth();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
   const { builds, loading: activityLoading, error } = useMyActivity(user?.id);
+
+  useEffect(() => {
+    if (isAuthed) markActivitySeen();
+  }, [isAuthed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!isAuthed) {
     onRequireAuth();
@@ -38,7 +42,7 @@ export default function MyActivity({ onRequireAuth }) {
           <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
           <p style={{ fontFamily: "Georgia, serif", fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
-            My Activity — everything you've submitted or commented on, plus what people
+            Community — everything you've submitted or commented on, plus what people
             have said about it — is part of the paid tier.
           </p>
           <Link
@@ -54,7 +58,7 @@ export default function MyActivity({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My activity</p>
+      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Community</p>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 24px" }}>
         Builds you've submitted or left a comment on, most recent first.
       </p>
