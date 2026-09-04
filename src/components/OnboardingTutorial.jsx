@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, Search, Trophy } from "lucide-react";
+import { X, Sparkles, Users, Search, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
 
 const STEPS = [
   {
+    icon: Sparkles,
+    title: "Welcome to Voidpros!",
+    body: "Quick tutorial, less than a minute — we'll get your collection set up and show you how to search for a build.",
+    cta: "Let's go",
+    to: null,
+  },
+  {
     icon: Users,
     title: "Add what you own",
-    body: "Head to Collection and mark the pets and items you actually have — no typing, just tapping. Take your time, this card will stay put.",
+    body: "Head to Collection and mark the pets and items you actually have — no typing, just tapping. This card will stay right here while you work.",
     cta: "Go to Collection",
     to: "/collection",
   },
@@ -41,8 +48,15 @@ export default function OnboardingTutorial() {
     markTutorialSeen();
   };
 
+  // Steps with a page to visit (Collection, Floor Search) only navigate —
+  // they do NOT advance the step. The card stays showing that step's guidance
+  // while the person actually works on that page; they move on themselves
+  // with "Next step" whenever they're ready.
   const handlePrimary = () => {
-    if (current.to) navigate(current.to);
+    if (current.to) {
+      navigate(current.to);
+      return;
+    }
     if (isLast) {
       markTutorialSeen();
     } else {
@@ -84,7 +98,16 @@ export default function OnboardingTutorial() {
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 15.5, color: CREAM, margin: 0 }}>{current.title}</p>
       </div>
 
-      <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.55, margin: "0 0 16px" }}>{current.body}</p>
+      <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.55, margin: "0 0 12px" }}>{current.body}</p>
+
+      {current.to && !isLast && (
+        <button
+          onClick={() => setStep((s) => s + 1)}
+          style={{ background: "none", border: "none", color: GOLD, fontSize: 12, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 14, textDecoration: "underline" }}
+        >
+          I'm done here — next step
+        </button>
+      )}
 
       <div style={{ display: "flex", gap: 8 }}>
         {step > 0 && (
@@ -105,3 +128,4 @@ export default function OnboardingTutorial() {
     </div>
   );
 }
+

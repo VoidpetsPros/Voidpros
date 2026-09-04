@@ -1,20 +1,25 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { X, Award } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useMyRequests, dismissRequest } from "../hooks/useMyRequests";
+import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
-import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
 export default function MyRequests({ onRequireAuth }) {
   const { isAuthed, user, profile, loading: authLoading } = useAuth();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems } = useCollection(user?.id);
   const { requests: myRequests, loading: myLoading, refresh: refreshMine } = useMyRequests(user?.id);
-  const navigate = useNavigate();
   const [dismissingId, setDismissingId] = useState(null);
+
+  const [stageInput, setStageInput] = useState("");
+  const [showRequester, setShowRequester] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const handleDismiss = async (requestId) => {
     setDismissingId(requestId);
@@ -24,6 +29,24 @@ export default function MyRequests({ onRequireAuth }) {
       alert(dismissError.message);
       return;
     }
+    refreshMine();
+  };
+
+  const handleCreateRequest = async () => {
+    setFormError("");
+    const stage = parseInt(stageInput, 10);
+    if (!stage || stage < 1) {
+      setFormError("Enter a valid floor number.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.rpc("create_request", { p_stage: stage, p_show_requester: showRequester });
+    setSubmitting(false);
+    if (error) {
+      setFormError(error.message);
+      return;
+    }
+    setStageInput("");
     refreshMine();
   };
 
@@ -67,22 +90,42 @@ export default function MyRequests({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, gap: 12, flexWrap: "wrap" }}>
-        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: 0 }}>My requests</p>
-        <button
-          onClick={() => navigate("/search")}
-          style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-        >
-          Search a floor
-        </button>
-      </div>
-      <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Requests get created from a floor search — if nothing matches your collection,
-        you'll get the option to submit a request right there. "Search a floor" above
-        takes you to that search. Once a request's fulfilled, the build it produced
-        still shows up in floor search either way — dismissing it here just clears it
-        from this list.
+      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My requests</p>
+      <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 20px" }}>
+        Post the floor you're stuck on — other players attempt it using only your pets
+        and items. Once fulfilled, the build still shows up in floor search either
+        way; dismissing it here just clears it from this list.
       </p>
+
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 28 }}>
+        <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>New request</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+          <input
+            type="number"
+            min="1"
+            value={stageInput}
+            onChange={(e) => {
+              setStageInput(e.target.value);
+              if (formError) setFormError("");
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleCreateRequest()}
+            placeholder="Floor number"
+            style={{ flex: "1 1 160px", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "10px 12px", color: CREAM, fontSize: 14, outline: "none" }}
+          />
+          <button
+            onClick={handleCreateRequest}
+            disabled={submitting}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, cursor: submitting ? "default" : "pointer" }}
+          >
+            {submitting ? "Posting…" : "Request"}
+          </button>
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+          <input type="checkbox" checked={showRequester} onChange={(e) => setShowRequester(e.target.checked)} style={{ width: 14, height: 14 }} />
+          <span style={{ fontSize: 12, color: MUTED }}>Show my username {showRequester ? "" : "(posting anonymously)"}</span>
+        </label>
+        {formError && <p style={{ fontSize: 12.5, color: DANGER, margin: "10px 0 0" }}>{formError}</p>}
+      </div>
 
       {myLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
