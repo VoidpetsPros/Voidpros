@@ -8,21 +8,21 @@ const STEPS = [
   {
     icon: Users,
     title: "Add what you own",
-    body: "Head to Collection and mark the pets and items you actually have. This is what everything else is built on — no typing, just tapping.",
+    body: "Head to Collection and mark the pets and items you actually have — no typing, just tapping. Take your time, this card will stay put.",
     cta: "Go to Collection",
     to: "/collection",
   },
   {
     icon: Search,
     title: "Search a floor",
-    body: "Once your collection is set, hit Builds and enter the floor giving you trouble. You'll only see builds you can actually make.",
-    cta: "Go to Builds",
+    body: "Once your collection is set, open Floor Search and enter the floor giving you trouble. Try floor 2000 as an example if you just want to see how it works.",
+    cta: "Go to Floor Search",
     to: "/search",
   },
   {
     icon: Trophy,
     title: "Earn karma",
-    body: "Submit a Completion (the team that beat a floor) for 5 karma, or take on a Challenge for 10. Hit 100 karma and you'll unlock 5 bonus free searches.",
+    body: "You can also submit builds you've used to beat floors to get karma. Karma unlocks free bonus searches.",
     cta: "Got it",
     to: null,
   },
@@ -51,42 +51,56 @@ export default function OnboardingTutorial() {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 65, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 28, maxWidth: 380, width: "100%", boxShadow: "0 20px 50px -12px rgba(0,0,0,0.4)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
-          <div style={{ display: "flex", gap: 5 }}>
-            {STEPS.map((_, i) => (
-              <div key={i} style={{ width: 22, height: 4, borderRadius: 999, background: i === step ? GOLD : LINE }} />
-            ))}
-          </div>
-          <button onClick={handleClose} aria-label="Skip tutorial" style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", padding: 0 }}>
-            <X size={18} />
-          </button>
+    <div
+      style={{
+        position: "fixed",
+        bottom: 20,
+        right: 20,
+        zIndex: 55,
+        background: PANEL,
+        border: `1px solid ${LINE}`,
+        borderRadius: 14,
+        padding: 20,
+        width: 300,
+        maxWidth: "calc(100vw - 40px)",
+        boxShadow: "0 16px 40px -10px rgba(0,0,0,0.35)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+        <div style={{ display: "flex", gap: 5 }}>
+          {STEPS.map((_, i) => (
+            <div key={i} style={{ width: 20, height: 4, borderRadius: 999, background: i === step ? GOLD : LINE }} />
+          ))}
         </div>
+        <button onClick={handleClose} aria-label="Dismiss tutorial" style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", padding: 0 }}>
+          <X size={16} />
+        </button>
+      </div>
 
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-          <Icon size={20} color={GOLD} />
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 9, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={16} color={GOLD} />
         </div>
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 15.5, color: CREAM, margin: 0 }}>{current.title}</p>
+      </div>
 
-        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: CREAM, margin: "0 0 8px" }}>{current.title}</p>
-        <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>{current.body}</p>
+      <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.55, margin: "0 0 16px" }}>{current.body}</p>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          {step > 0 && (
-            <button
-              onClick={() => setStep((s) => s - 1)}
-              style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 9, padding: "10px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-            >
-              Back
-            </button>
-          )}
+      <div style={{ display: "flex", gap: 8 }}>
+        {step > 0 && (
           <button
-            onClick={handlePrimary}
-            style={{ flex: 1, background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "10px 16px", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}
+            onClick={() => setStep((s) => s - 1)}
+            style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "9px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
           >
-            {current.cta}
+            Back
           </button>
-        </div>
+        )}
+        <button
+          onClick={handlePrimary}
+          style={{ flex: 1, background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
+        >
+          {current.cta}
+        </button>
       </div>
     </div>
   );

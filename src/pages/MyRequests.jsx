@@ -73,13 +73,15 @@ export default function MyRequests({ onRequireAuth }) {
           onClick={() => navigate("/search")}
           style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
         >
-          Submit a request
+          Search a floor
         </button>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Requests you've posted for other players to attempt. Once one's fulfilled,
-        the build it produced still shows up in floor search either way — dismissing
-        it here just clears it from this list.
+        Requests get created from a floor search — if nothing matches your collection,
+        you'll get the option to submit a request right there. "Search a floor" above
+        takes you to that search. Once a request's fulfilled, the build it produced
+        still shows up in floor search either way — dismissing it here just clears it
+        from this list.
       </p>
 
       {myLoading ? (

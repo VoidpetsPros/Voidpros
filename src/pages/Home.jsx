@@ -103,7 +103,7 @@ export default function Home({ onRequireAuth }) {
             onClick={goSearch}
             style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
           >
-            Go to Builds
+            Go to Floor Search
           </button>
         </div>
       </div>
