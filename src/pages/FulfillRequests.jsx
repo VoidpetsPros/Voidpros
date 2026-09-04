@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useRequests } from "../hooks/useRequests";
@@ -26,10 +27,13 @@ export default function FulfillRequests() {
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Challenges</p>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
+        <Swords size={12} color={GOLD} />
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Challenge · +10 karma when verified</span>
+      </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
         Other players are stuck with a specific set of pets and items — sometimes not
-        even enough for a full team. Use only what they have, and if your attempt gets
-        verified you'll earn 10 karma.
+        even enough for a full team. Use only what they have to earn the reward.
       </p>
 
       {error && (

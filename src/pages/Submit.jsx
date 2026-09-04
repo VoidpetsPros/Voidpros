@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, Send } from "lucide-react";
+import { ArrowLeft, Search, Send, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
@@ -114,6 +114,10 @@ export default function Submit({ onRequireAuth }) {
       </button>
 
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
+        <Trophy size={12} color={GOLD} />
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · +5 karma when verified</span>
+      </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
         Just the screenshots — no need to type out your team. We'll review them and add
         it to search once approved, and you'll earn a free lookup.

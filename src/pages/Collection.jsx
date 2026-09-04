@@ -43,15 +43,21 @@ export default function Collection({ onRequireAuth }) {
     );
   }
 
+  const ownedCountFor = (id, isPetsTab) => (isPetsTab ? ownedPets.includes(id) : (ownedItems[id] || 0) > 0);
+
   const TABS = [
-    { id: "pets", label: "Pets" },
-    { id: "hat", label: "Hats" },
-    { id: "scarf", label: "Scarves" },
-    { id: "accessory", label: "Accessories" },
+    { id: "pets", label: "Pets", list: pets },
+    { id: "hat", label: "Hats", list: itemsByType.hat },
+    { id: "scarf", label: "Scarves", list: itemsByType.scarf },
+    { id: "accessory", label: "Accessories", list: itemsByType.accessory },
   ];
 
   const currentOptions = tab === "pets" ? pets : itemsByType[tab];
   const filtered = currentOptions.filter((o) => o.name.toLowerCase().includes(query.toLowerCase()));
+  const ownedCount = currentOptions.filter((o) => ownedCountFor(o.id, tab === "pets")).length;
+
+  const totalOwned = pets.filter((p) => ownedPets.includes(p.id)).length + Object.values(itemsByType).flat().filter((i) => (ownedItems[i.id] || 0) > 0).length;
+  const totalAll = pets.length + Object.values(itemsByType).flat().length;
 
   // Only show a "select all X" button for rarities that actually exist in
   // this tab's data — pets currently have no Common tier, for example, so
@@ -78,16 +84,22 @@ export default function Collection({ onRequireAuth }) {
   };
 
   return (
-    <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 4px" }}>
-        My collection
-      </p>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px", lineHeight: 1.6 }}>
+    <div style={{ padding: "24px 24px 80px", maxWidth: 680, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 4, flexWrap: "wrap" }}>
+        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: 0 }}>My collection</p>
+        <div style={{ textAlign: "right" }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: GOLD, margin: 0 }}>
+            {totalOwned}
+            <span style={{ fontSize: 13, fontWeight: 500, color: MUTED }}> / {totalAll} owned</span>
+          </p>
+        </div>
+      </div>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
         Changes save immediately — this is a real database now, not a browser tab.
         Refresh the page and your picks will still be here.
       </p>
 
-      <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 8, padding: 3, marginBottom: 16, width: "fit-content" }}>
+      <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 18, flexWrap: "wrap" }}>
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -100,78 +112,105 @@ export default function Collection({ onRequireAuth }) {
               background: tab === t.id ? PANEL : "transparent",
               color: tab === t.id ? CREAM : MUTED,
               fontSize: 12.5,
-              padding: "6px 12px",
-              borderRadius: 6,
+              fontWeight: tab === t.id ? 600 : 500,
+              padding: "8px 13px",
+              borderRadius: 8,
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
             }}
           >
             {t.label}
+            <span
+              style={{
+                fontSize: 10.5,
+                fontWeight: 600,
+                color: tab === t.id ? GOLD : MUTED,
+                background: tab === t.id ? "rgba(124,58,237,0.1)" : "transparent",
+                borderRadius: 999,
+                padding: tab === t.id ? "1px 6px" : 0,
+              }}
+            >
+              {t.list.filter((o) => ownedCountFor(o.id, t.id === "pets")).length}/{t.list.length}
+            </span>
           </button>
         ))}
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-        {rarityOptions.map((rarity) => {
-          const fullyOwned = isRarityFullyOwned(rarity);
-          return (
-            <button
-              key={rarity}
-              onClick={() => handleRarityToggle(rarity)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 12,
-                padding: "6px 12px",
-                borderRadius: 999,
-                border: `1px solid ${fullyOwned ? RARITY_COLORS[rarity] : LINE}`,
-                background: fullyOwned ? `${RARITY_COLORS[rarity]}22` : PANEL,
-                color: fullyOwned ? RARITY_COLORS[rarity] : MUTED,
-                cursor: "pointer",
-              }}
-            >
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: RARITY_COLORS[rarity], flexShrink: 0 }} />
-              {fullyOwned ? <Check size={12} /> : null}
-              {fullyOwned ? `All ${rarity}` : `Select all ${rarity}`}
-            </button>
-          );
-        })}
-      </div>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+          <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>
+            <span style={{ color: CREAM, fontWeight: 600 }}>{ownedCount}</span> of {currentOptions.length} owned
+          </p>
+          <div style={{ height: 5, width: 100, borderRadius: 999, background: PANEL_2, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${currentOptions.length ? (ownedCount / currentOptions.length) * 100 : 0}%`, background: GOLD, borderRadius: 999 }} />
+          </div>
+        </div>
 
-      <div style={{ position: "relative", marginBottom: 16 }}>
-        <Search size={15} color={MUTED} style={{ position: "absolute", left: 12, top: 11 }} />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search..."
-          style={{
-            width: "100%",
-            boxSizing: "border-box",
-            background: PANEL_2,
-            border: `1px solid ${LINE}`,
-            borderRadius: 9,
-            padding: "10px 12px 10px 34px",
-            color: CREAM,
-            fontSize: 14,
-            outline: "none",
-          }}
-        />
-      </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+          {rarityOptions.map((rarity) => {
+            const fullyOwned = isRarityFullyOwned(rarity);
+            return (
+              <button
+                key={rarity}
+                onClick={() => handleRarityToggle(rarity)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 12,
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  border: `1px solid ${fullyOwned ? RARITY_COLORS[rarity] : LINE}`,
+                  background: fullyOwned ? `${RARITY_COLORS[rarity]}22` : PANEL_2,
+                  color: fullyOwned ? RARITY_COLORS[rarity] : MUTED,
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: RARITY_COLORS[rarity], flexShrink: 0 }} />
+                {fullyOwned ? <Check size={12} /> : null}
+                {fullyOwned ? `All ${rarity}` : `Select all ${rarity}`}
+              </button>
+            );
+          })}
+        </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 10 }}>
-        {tab === "pets"
-          ? filtered.map((pet) => (
-              <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => togglePet(pet.id)} />
-            ))
-          : filtered.map((item) => (
-              <ItemTile
-                key={item.id}
-                item={item}
-                owned={(ownedItems[item.id] || 0) > 0}
-                onToggle={() => setItemCount(item.id, ownedItems[item.id] > 0 ? 0 : 1)}
-              />
-            ))}
-        {filtered.length === 0 && <p style={{ color: MUTED, fontSize: 13 }}>No matches.</p>}
+        <div style={{ position: "relative", marginBottom: 16 }}>
+          <Search size={15} color={MUTED} style={{ position: "absolute", left: 12, top: 11 }} />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search..."
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              background: PANEL_2,
+              border: `1px solid ${LINE}`,
+              borderRadius: 9,
+              padding: "10px 12px 10px 34px",
+              color: CREAM,
+              fontSize: 14,
+              outline: "none",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 10 }}>
+          {tab === "pets"
+            ? filtered.map((pet) => (
+                <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => togglePet(pet.id)} />
+              ))
+            : filtered.map((item) => (
+                <ItemTile
+                  key={item.id}
+                  item={item}
+                  owned={(ownedItems[item.id] || 0) > 0}
+                  onToggle={() => setItemCount(item.id, ownedItems[item.id] > 0 ? 0 : 1)}
+                />
+              ))}
+          {filtered.length === 0 && <p style={{ color: MUTED, fontSize: 13 }}>No matches.</p>}
+        </div>
       </div>
     </div>
   );
@@ -188,10 +227,11 @@ function PetTile({ pet, owned, onToggle }) {
         gap: 6,
         padding: "10px 6px",
         borderRadius: 12,
-        border: `1px solid ${owned ? GOLD : LINE}`,
+        border: `1.5px solid ${owned ? GOLD : LINE}`,
         background: owned ? "rgba(139,92,246,0.08)" : PANEL,
         cursor: "pointer",
         position: "relative",
+        transition: "border-color 0.15s ease",
       }}
     >
       {owned && (
@@ -200,7 +240,7 @@ function PetTile({ pet, owned, onToggle }) {
         </div>
       )}
       <PetAvatar pet={pet} size={48} />
-      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center" }}>{pet.name}</span>
+      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
     </button>
   );
 }
@@ -216,10 +256,11 @@ function ItemTile({ item, owned, onToggle }) {
         gap: 6,
         padding: "10px 6px",
         borderRadius: 12,
-        border: `1px solid ${owned ? GOLD : LINE}`,
+        border: `1.5px solid ${owned ? GOLD : LINE}`,
         background: owned ? "rgba(139,92,246,0.08)" : PANEL,
         cursor: "pointer",
         position: "relative",
+        transition: "border-color 0.15s ease",
       }}
     >
       {owned && (
@@ -228,7 +269,7 @@ function ItemTile({ item, owned, onToggle }) {
         </div>
       )}
       <ItemAvatar item={item} size={44} />
-      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center" }}>{item.name}</span>
+      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
     </button>
   );
 }

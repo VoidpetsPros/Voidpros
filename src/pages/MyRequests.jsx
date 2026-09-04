@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { X, Award } from "lucide-react";
+import { X, Award, Send, Clock } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
@@ -97,8 +97,11 @@ export default function MyRequests({ onRequireAuth }) {
         way; dismissing it here just clears it from this list.
       </p>
 
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 28 }}>
-        <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>New request</p>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 18, marginBottom: 30 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+          <Send size={13} color={GOLD} />
+          <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: 0 }}>New request</p>
+        </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
           <input
             type="number"
@@ -155,7 +158,9 @@ export default function MyRequests({ onRequireAuth }) {
             <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
                 <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 4px" }}>Floor {r.stage}</p>
-                <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Waiting for someone to attempt this</p>
+                <p style={{ fontSize: 12.5, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
+                  <Clock size={12} /> Waiting for someone to attempt this
+                </p>
               </div>
             </div>
           )
