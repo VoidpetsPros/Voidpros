@@ -46,7 +46,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <header
         style={{
           display: "flex",
@@ -166,23 +166,21 @@ export default function App() {
 
       {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
 
-      <div style={{ flex: 1 }}>
-        <Routes>
-          <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/submit" element={<Submit onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/fulfill" element={<FulfillRequests />} />
-          <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/billing/success" element={<BillingSuccess />} />
-          <Route path="/billing/cancelled" element={<BillingCancelled />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/submit" element={<Submit onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/fulfill" element={<FulfillRequests />} />
+        <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
+        <Route path="/billing/success" element={<BillingSuccess />} />
+        <Route path="/billing/cancelled" element={<BillingCancelled />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+      </Routes>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
