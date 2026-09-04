@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Users, CreditCard, LogOut } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
@@ -9,6 +9,17 @@ export default function ProfileSidebar({ onClose }) {
   const { profile, signOut, hasNewActivity, markActivitySeen } = useAuth();
   const navigate = useNavigate();
   const [portalLoading, setPortalLoading] = React.useState(false);
+
+  // Lock the page underneath while this panel is open — otherwise the
+  // background page is still scrollable behind the fixed overlay, so
+  // scroll/click input can land on the wrong layer.
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
   const handleManageBilling = async () => {
     setPortalLoading(true);
@@ -42,14 +53,14 @@ export default function ProfileSidebar({ onClose }) {
         style={{
           width: 300,
           maxWidth: "85vw",
-          height: "100%",
+          height: "100vh",
           background: PANEL,
           borderLeft: `1px solid ${LINE}`,
           padding: 22,
           boxShadow: "-8px 0 30px -10px rgba(0,0,0,0.3)",
-          display: "flex",
-          flexDirection: "column",
           overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+          boxSizing: "border-box",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
@@ -128,7 +139,7 @@ export default function ProfileSidebar({ onClose }) {
 
         <button
           onClick={handleSignOut}
-          style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", marginTop: "auto", textAlign: "left" }}
+          style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", marginTop: 24, width: "100%", boxSizing: "border-box", textAlign: "left" }}
         >
           <LogOut size={16} color={MUTED} />
           Sign out
