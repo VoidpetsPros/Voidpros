@@ -17,7 +17,7 @@ import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import { openBillingPortal } from "./lib/billing";
-import { INK, PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "./lib/theme";
+import { INK, PANEL, LINE, CREAM, MUTED, GOLD, DANGER } from "./lib/theme";
 
 const NAV_LINKS = [
   { to: "/search", label: "Find a build" },
@@ -66,14 +66,14 @@ export default function App() {
           justifyContent: "space-between",
           gap: 20,
           padding: "14px 24px",
-          borderBottom: `1px solid ${LINE}`,
-          background: PANEL,
+          background: GOLD,
+          boxShadow: "0 1px 0 rgba(0,0,0,0.08)",
           flexWrap: "wrap",
         }}
       >
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
           <img src={logoMark} alt="Voidpros" style={{ width: 32, height: 32, borderRadius: 8, display: "block" }} />
-          <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: CREAM }}>
+          <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#FFFFFF" }}>
             voidpros
           </span>
         </Link>
@@ -84,8 +84,8 @@ export default function App() {
               display: "flex",
               alignItems: "center",
               gap: 4,
-              background: INK,
-              border: `1px solid ${LINE}`,
+              background: "rgba(255,255,255,0.14)",
+              border: "1px solid rgba(255,255,255,0.22)",
               borderRadius: 10,
               padding: 4,
               flexWrap: "wrap",
@@ -100,8 +100,8 @@ export default function App() {
                   style={{
                     fontSize: 12.5,
                     fontWeight: active ? 600 : 500,
-                    color: active ? "#FFFFFF" : MUTED,
-                    background: active ? GOLD : "transparent",
+                    color: active ? GOLD : "rgba(255,255,255,0.85)",
+                    background: active ? "#FFFFFF" : "transparent",
                     textDecoration: "none",
                     padding: "7px 12px",
                     borderRadius: 7,
@@ -118,8 +118,8 @@ export default function App() {
                 style={{
                   fontSize: 12.5,
                   fontWeight: 600,
-                  color: location.pathname === "/admin" ? "#FFFFFF" : DANGER,
-                  background: location.pathname === "/admin" ? DANGER : "transparent",
+                  color: location.pathname === "/admin" ? DANGER : "rgba(255,255,255,0.85)",
+                  background: location.pathname === "/admin" ? "#FFFFFF" : "transparent",
                   textDecoration: "none",
                   padding: "7px 12px",
                   borderRadius: 7,
@@ -138,20 +138,20 @@ export default function App() {
               <span
                 style={{
                   fontSize: 12,
-                  color: MUTED,
-                  background: PANEL_2,
-                  border: `1px solid ${LINE}`,
+                  color: "rgba(255,255,255,0.85)",
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.22)",
                   borderRadius: 999,
                   padding: "6px 12px",
                   whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ color: CREAM, fontWeight: 600 }}>{profile?.username || "player"}</span>
+                <span style={{ color: "#FFFFFF", fontWeight: 600 }}>{profile?.username || "player"}</span>
                 {" · "}
                 {profile?.karma ?? 0} karma
                 {" · "}
                 {profile?.is_subscribed ? (
-                  <span style={{ color: GOLD, fontWeight: 600 }}>unlimited lookups</span>
+                  <span style={{ color: "#FFFFFF", fontWeight: 600 }}>unlimited lookups</span>
                 ) : (
                   `${profile ? profile.trial_lookups_limit - profile.trial_lookups_used : 0} lookups left`
                 )}
@@ -160,7 +160,7 @@ export default function App() {
                 <button
                   onClick={handleManageBilling}
                   disabled={portalLoading}
-                  style={{ background: "none", border: `1px solid ${LINE}`, color: MUTED, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
+                  style={{ background: "none", border: "1px solid rgba(255,255,255,0.35)", color: "#FFFFFF", fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
                 >
                   {portalLoading ? "Opening…" : "Manage billing"}
                 </button>
@@ -170,7 +170,7 @@ export default function App() {
                   await signOut();
                   navigate("/");
                 }}
-                style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
+                style={{ background: "none", border: "1px solid rgba(255,255,255,0.35)", color: "#FFFFFF", fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}
               >
                 Sign out
               </button>
@@ -178,7 +178,7 @@ export default function App() {
           ) : (
             <button
               onClick={() => setShowAuth(true)}
-              style={{ background: GOLD, border: "none", color: "#FFFFFF", fontWeight: 600, fontSize: 12.5, padding: "9px 16px", borderRadius: 8, cursor: "pointer" }}
+              style={{ background: "#FFFFFF", border: "none", color: GOLD, fontWeight: 600, fontSize: 12.5, padding: "9px 16px", borderRadius: 8, cursor: "pointer" }}
             >
               Sign in / create account
             </button>
