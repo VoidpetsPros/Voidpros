@@ -27,19 +27,10 @@ const NAV_LINKS = [
   { to: "/my-activity", label: "My activity" },
 ];
 
-// A subtle grid + glow backdrop, matching the void aesthetic without being
-// loud enough to interfere with text readability anywhere on the site.
+// Plain, calm background — no glow orbs, no grid overlay. A dark theme
+// should read as a clean tool, not a Web3 landing page.
 const VOID_BACKGROUND = {
   backgroundColor: INK,
-  backgroundImage: [
-    "radial-gradient(circle at 15% 10%, rgba(139,92,246,0.10), transparent 42%)",
-    "radial-gradient(circle at 85% 0%, rgba(124,58,237,0.10), transparent 40%)",
-    "radial-gradient(circle at 50% 100%, rgba(139,92,246,0.06), transparent 45%)",
-    "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)",
-    "linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
-  ].join(", "),
-  backgroundSize: "auto, auto, auto, 42px 42px, 42px 42px",
-  backgroundAttachment: "fixed",
 };
 
 export default function App() {

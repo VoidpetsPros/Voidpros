@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { X, Mail, Lock, User, Sparkles } from "lucide-react";
+import { X, Mail, Lock, User } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, GOLD_DIM, VIOLET, DANGER } from "../lib/theme";
+import logoMark from "../assets/logo.svg";
+import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
 
 export default function AuthModal({ onClose, headline, subhead }) {
   const { signUp, signIn, signInWithGoogle } = useAuth();
@@ -53,7 +54,7 @@ export default function AuthModal({ onClose, headline, subhead }) {
     <div
       style={{
         minHeight: 400,
-        background: "rgba(43,38,32,0.45)",
+        background: "rgba(0,0,0,0.6)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -71,23 +72,11 @@ export default function AuthModal({ onClose, headline, subhead }) {
           padding: 28,
           maxWidth: 380,
           width: "100%",
-          boxShadow: "0 20px 50px -12px rgba(43,38,32,0.25)",
+          boxShadow: "0 20px 50px -12px rgba(0,0,0,0.5)",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-          <div
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 9,
-              background: `linear-gradient(160deg, ${GOLD}, ${GOLD_DIM})`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Sparkles size={16} color="#FFFFFF" />
-          </div>
+          <img src={logoMark} alt="" style={{ width: 34, height: 34, borderRadius: 9, display: "block" }} />
           {onClose && (
             <button onClick={onClose} style={{ background: "none", border: "none", color: MUTED, cursor: "pointer" }} aria-label="Close">
               <X size={18} />

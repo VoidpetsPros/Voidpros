@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Sparkles, Award, Search, Users, CheckCircle2 } from "lucide-react";
+import { Search, Users, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout } from "../lib/billing";
-import { GOLD, GOLD_DIM, MUTED, CREAM, VIOLET, PANEL, PANEL_2, LINE } from "../lib/theme";
+import { GOLD, MUTED, CREAM, PANEL, PANEL_2, LINE } from "../lib/theme";
 
 const STEPS = [
-  { icon: Users, title: "Add what you own", body: "Mark the pets and items in your collection — just a couple taps, no typing." },
+  { icon: Users, title: "Add what you own", body: "Mark the pets and items in your collection — a couple taps, no typing." },
   { icon: Search, title: "Search a floor", body: "Tell us which floor is giving you trouble." },
   { icon: CheckCircle2, title: "Get a real answer", body: "See builds the community has verified, filtered to what you can actually make." },
 ];
@@ -14,7 +14,7 @@ const STEPS = [
 const UNLIMITED_PERKS = [
   "Unlimited floor searches — no daily cap",
   "Post a custom build request for other players to solve using your exact pool",
-  "Full My Activity history — everything you've submitted, plus votes and comments on it",
+  "Full activity history — everything you've submitted, plus votes and comments on it",
 ];
 
 export default function Home({ onRequireAuth }) {
@@ -43,71 +43,40 @@ export default function Home({ onRequireAuth }) {
   return (
     <div>
       {/* Hero */}
-      <div style={{ padding: "56px 28px 44px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <p style={{ color: GOLD, fontSize: 13, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 600, marginBottom: 14 }}>
-          stuck in the void?
-        </p>
-        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 36, lineHeight: 1.2, letterSpacing: -0.5, color: CREAM, margin: "0 0 16px" }}>
-          Tell us your team. We'll find what beats the floor.
+      <div style={{ padding: "56px 28px 48px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 32, lineHeight: 1.25, letterSpacing: -0.4, color: CREAM, margin: "0 0 14px" }}>
+          Find a build for your floor
         </h1>
-        <p style={{ color: MUTED, fontSize: 15.5, lineHeight: 1.6, margin: "0 0 28px" }}>
+        <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 28px" }}>
           Search a floor and see which builds only use pets and items you actually own.
         </p>
 
         {!isAuthed && (
-          <p style={{ color: MUTED, fontSize: 13, marginBottom: 20 }}>
-            Sign in to start building your collection — pets and items you own,
-            saved for real this time.
+          <p style={{ color: MUTED, fontSize: 13, margin: "0 0 22px" }}>
+            Sign in to start — pets and items you own, saved for real this time.
           </p>
         )}
         {isAuthed && (
-          <p style={{ color: MUTED, fontSize: 13, marginBottom: 20 }}>
-            Signed in as {profile?.username || "player"}. Try adding a few pets and items to your collection.
+          <p style={{ color: MUTED, fontSize: 13, margin: "0 0 22px" }}>
+            Signed in as {profile?.username || "player"}.
           </p>
         )}
 
-        {isAuthed && !profile?.is_subscribed && (
-          <button
-            onClick={handleSubscribe}
-            disabled={checkoutLoading}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(139,92,246,0.12)",
-              border: `1px solid ${GOLD}`,
-              borderRadius: 999,
-              padding: "8px 16px",
-              fontSize: 13,
-              color: VIOLET,
-              cursor: "pointer",
-              marginBottom: 20,
-            }}
-          >
-            <Award size={13} /> {checkoutLoading ? "Redirecting…" : "Get unlimited — $4.99/month"}
-          </button>
-        )}
-
-        <div>
-          <button
-            onClick={handleStart}
-            style={{
-              background: `linear-gradient(135deg, ${GOLD}, ${GOLD_DIM})`,
-              color: "#FFFFFF",
-              border: "none",
-              borderRadius: 10,
-              padding: "14px 28px",
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <Sparkles size={15} /> Find my solution <ChevronRight size={16} />
-          </button>
-        </div>
+        <button
+          onClick={handleStart}
+          style={{
+            background: GOLD,
+            color: "#FFFFFF",
+            border: "none",
+            borderRadius: 10,
+            padding: "13px 28px",
+            fontSize: 14.5,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Search for a build
+        </button>
 
         {isAuthed && (
           <p style={{ marginTop: 16 }}>
@@ -115,15 +84,15 @@ export default function Home({ onRequireAuth }) {
               onClick={() => navigate("/collection")}
               style={{ background: "none", border: "none", color: MUTED, fontSize: 12.5, cursor: "pointer", textDecoration: "underline", padding: 0 }}
             >
-              Or manage your collection first
+              Or set up your collection first
             </button>
           </p>
         )}
       </div>
 
       {/* How it works */}
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "8px 28px 56px" }}>
-        <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: "uppercase", color: MUTED, textAlign: "center", margin: "0 0 24px" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 28px 56px" }}>
+        <h2 style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, textAlign: "center", margin: "0 0 22px" }}>
           How it works
         </h2>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
@@ -137,29 +106,16 @@ export default function Home({ onRequireAuth }) {
                   maxWidth: 260,
                   background: PANEL,
                   border: `1px solid ${LINE}`,
-                  borderRadius: 12,
-                  padding: 20,
+                  borderRadius: 10,
+                  padding: 18,
                 }}
               >
-                <div
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 9,
-                    background: PANEL_2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 12,
-                  }}
-                >
-                  <Icon size={16} color={GOLD} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <Icon size={15} color={MUTED} />
+                  <span style={{ fontSize: 11, color: MUTED, fontWeight: 600, letterSpacing: 0.4 }}>STEP {i + 1}</span>
                 </div>
-                <p style={{ fontSize: 11, color: MUTED, fontWeight: 700, letterSpacing: 0.5, margin: "0 0 4px" }}>
-                  STEP {i + 1}
-                </p>
-                <p style={{ fontSize: 14.5, fontWeight: 600, color: CREAM, margin: "0 0 6px" }}>{step.title}</p>
-                <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: 0 }}>{step.body}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: CREAM, margin: "0 0 6px" }}>{step.title}</p>
+                <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.55, margin: 0 }}>{step.body}</p>
               </div>
             );
           })}
@@ -168,27 +124,21 @@ export default function Home({ onRequireAuth }) {
 
       {/* What's included with Unlimited */}
       {!profile?.is_subscribed && (
-        <div style={{ maxWidth: 560, margin: "0 auto", padding: "0 28px 64px" }}>
-          <div
-            style={{
-              background: PANEL,
-              border: `1px solid ${GOLD}`,
-              borderRadius: 16,
-              padding: "28px 26px",
-              textAlign: "center",
-            }}
-          >
-            <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
-            <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 20, color: CREAM, margin: "0 0 4px" }}>
-              Voidpros Unlimited
+        <div style={{ maxWidth: 520, margin: "0 auto", padding: "0 28px 64px" }}>
+          <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "26px 24px" }}>
+            <p style={{ fontSize: 11, color: GOLD, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", margin: "0 0 8px" }}>
+              Unlimited
+            </p>
+            <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: CREAM, margin: "0 0 4px" }}>
+              $4.99 / month
             </h2>
-            <p style={{ fontSize: 13, color: MUTED, margin: "0 0 20px" }}>$4.99 / month · cancel anytime</p>
+            <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 18px" }}>Cancel anytime.</p>
 
-            <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
               {UNLIMITED_PERKS.map((perk) => (
-                <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <CheckCircle2 size={16} color={GOLD} style={{ flexShrink: 0, marginTop: 1 }} />
-                  <span style={{ fontSize: 13.5, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
+                <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
+                  <CheckCircle2 size={15} color={GOLD} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
                 </div>
               ))}
             </div>
@@ -197,19 +147,9 @@ export default function Home({ onRequireAuth }) {
               <button
                 onClick={handleSubscribe}
                 disabled={checkoutLoading}
-                style={{
-                  background: `linear-gradient(135deg, ${GOLD}, ${GOLD_DIM})`,
-                  color: "#FFFFFF",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 24px",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  width: "100%",
-                }}
+                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%" }}
               >
-                {checkoutLoading ? "Redirecting…" : "Get Unlimited"}
+                {checkoutLoading ? "Redirecting…" : "Subscribe"}
               </button>
             ) : (
               <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Sign in to subscribe.</p>

@@ -189,7 +189,7 @@ function PetTile({ pet, owned, onToggle }) {
         padding: "10px 6px",
         borderRadius: 12,
         border: `1px solid ${owned ? GOLD : LINE}`,
-        background: owned ? "rgba(196,121,31,0.08)" : PANEL,
+        background: owned ? "rgba(139,92,246,0.08)" : PANEL,
         cursor: "pointer",
         position: "relative",
       }}
@@ -217,7 +217,7 @@ function ItemTile({ item, owned, onToggle }) {
         padding: "10px 6px",
         borderRadius: 12,
         border: `1px solid ${owned ? GOLD : LINE}`,
-        background: owned ? "rgba(196,121,31,0.08)" : PANEL,
+        background: owned ? "rgba(139,92,246,0.08)" : PANEL,
         cursor: "pointer",
         position: "relative",
       }}

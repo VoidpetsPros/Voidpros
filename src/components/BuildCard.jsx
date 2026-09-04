@@ -10,8 +10,8 @@ import { missingForBuild } from "../lib/matching";
 function Pill({ children, tone = "default" }) {
   const tones = {
     default: { bg: PANEL_2, fg: MUTED, bd: LINE },
-    gold: { bg: "rgba(196,121,31,0.1)", fg: GOLD, bd: "rgba(196,121,31,0.3)" },
-    violet: { bg: "rgba(108,86,201,0.1)", fg: VIOLET, bd: "rgba(108,86,201,0.3)" },
+    gold: { bg: "rgba(139,92,246,0.12)", fg: GOLD, bd: "rgba(139,92,246,0.35)" },
+    violet: { bg: "rgba(196,181,253,0.1)", fg: VIOLET, bd: "rgba(196,181,253,0.3)" },
   };
   const t = tones[tone];
   return (
@@ -45,9 +45,9 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
           fontSize: 11.5,
           padding: "2px 8px 2px 2px",
           borderRadius: 16,
-          background: have ? "rgba(196,121,31,0.08)" : PANEL_2,
+          background: have ? "rgba(139,92,246,0.08)" : PANEL_2,
           color: have ? GOLD : MUTED,
-          border: `1px solid ${have ? "rgba(196,121,31,0.3)" : LINE}`,
+          border: `1px solid ${have ? "rgba(139,92,246,0.3)" : LINE}`,
         }}
       >
         <ItemAvatar item={item} size={18} />
@@ -59,7 +59,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
   if (!pet) return null;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 10, background: hasPet ? "transparent" : "rgba(179,69,59,0.05)", marginBottom: 6 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 10, background: hasPet ? "transparent" : "rgba(248,113,113,0.05)", marginBottom: 6 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 108 }}>
         <PetAvatar pet={pet} size={28} />
         <span style={{ fontSize: 12.5, color: hasPet ? CREAM : DANGER, fontWeight: 500 }}>
@@ -87,11 +87,10 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
     <div
       style={{
         background: PANEL,
-        border: `1px solid ${isVerified ? "rgba(196,121,31,0.4)" : LINE}`,
+        border: `1px solid ${LINE}`,
         borderRadius: 12,
         padding: 18,
         marginBottom: 14,
-        boxShadow: isVerified ? "0 0 24px -10px rgba(196,121,31,0.35)" : "none",
         opacity: fullMatch ? 1 : 0.9,
       }}
     >

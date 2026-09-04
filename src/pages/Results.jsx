@@ -139,7 +139,7 @@ export default function Results({ onRequireAuth }) {
     return (
       <div style={{ padding: "24px", maxWidth: 640, margin: "0 auto" }}>
         <BackButton />
-        <div style={{ background: PANEL, border: `1px solid rgba(179,69,59,0.4)`, borderRadius: 12, padding: "24px", textAlign: "center" }}>
+        <div style={{ background: PANEL, border: `1px solid rgba(248,113,113,0.4)`, borderRadius: 12, padding: "24px", textAlign: "center" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: 17, color: CREAM, margin: "0 0 8px" }}>Something went wrong loading builds</p>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0, wordBreak: "break-word" }}>{buildsError}</p>
         </div>

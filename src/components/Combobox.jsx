@@ -61,7 +61,7 @@ export default function Combobox({ value, onSelect, options, placeholder, kind }
             background: PANEL,
             border: `1px solid ${LINE}`,
             borderRadius: 9,
-            boxShadow: "0 12px 28px -10px rgba(43,38,32,0.3)",
+            boxShadow: "0 12px 28px -10px rgba(0,0,0,0.5)",
           }}
         >
           <div style={{ position: "sticky", top: 0, background: PANEL, padding: 6, borderBottom: `1px solid ${LINE}` }}>

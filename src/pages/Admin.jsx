@@ -298,7 +298,7 @@ export default function Admin() {
       {buildsLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : buildsError ? (
-        <div style={{ background: PANEL, border: `1px solid rgba(179,69,59,0.4)`, borderRadius: 12, padding: "20px", marginBottom: 20 }}>
+        <div style={{ background: PANEL, border: `1px solid rgba(248,113,113,0.4)`, borderRadius: 12, padding: "20px", marginBottom: 20 }}>
           <p style={{ fontSize: 13, color: CREAM, margin: "0 0 6px", fontWeight: 600 }}>Failed to load pending builds</p>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0, wordBreak: "break-word" }}>{buildsError}</p>
         </div>
@@ -322,7 +322,7 @@ export default function Admin() {
       {fulfillmentsLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : fulfillmentsError ? (
-        <div style={{ background: PANEL, border: `1px solid rgba(179,69,59,0.4)`, borderRadius: 12, padding: "20px" }}>
+        <div style={{ background: PANEL, border: `1px solid rgba(248,113,113,0.4)`, borderRadius: 12, padding: "20px" }}>
           <p style={{ fontSize: 13, color: CREAM, margin: "0 0 6px", fontWeight: 600 }}>Failed to load pending fulfillments</p>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0, wordBreak: "break-word" }}>{fulfillmentsError}</p>
         </div>

@@ -60,7 +60,7 @@ export default function MyActivity({ onRequireAuth }) {
       </p>
 
       {error && (
-        <div style={{ background: PANEL, border: "1px solid rgba(179,69,59,0.4)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(248,113,113,0.4)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0 }}>{error}</p>
         </div>
       )}

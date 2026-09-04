@@ -87,7 +87,7 @@ export default function Submit({ onRequireAuth }) {
   if (success) {
     return (
       <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: "1px solid rgba(196,121,31,0.35)", borderRadius: 12, padding: "32px 24px" }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: "32px 24px" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
             It's in review — once approved, it'll show up as verified in search and you'll
