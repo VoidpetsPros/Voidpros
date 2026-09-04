@@ -88,8 +88,8 @@ export default function FulfillRequests() {
           {loading ? (
             <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
           ) : openForOthers.length === 0 ? (
-            <div style={{ background: GOLD, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-              <p style={{ fontSize: 13.5, color: "#FFFFFF", margin: 0 }}>No open requests right now — check back soon.</p>
+            <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+              <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>No open requests right now — check back soon.</p>
             </div>
           ) : (
             openForOthers.map((r) => (
@@ -153,8 +153,8 @@ export default function FulfillRequests() {
           {myLoading ? (
             <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
           ) : myRequests.length === 0 ? (
-            <div style={{ background: GOLD, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-              <p style={{ fontSize: 13.5, color: "#FFFFFF", margin: 0 }}>You haven't submitted any requests yet.</p>
+            <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+              <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>You haven't submitted any requests yet.</p>
             </div>
           ) : (
             myRequests.map((r) =>
@@ -175,10 +175,10 @@ export default function FulfillRequests() {
                   <BuildCard build={r.resultingBuild} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} />
                 </div>
               ) : (
-                <div key={r.id} style={{ background: GOLD, borderRadius: 12, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "#FFFFFF", margin: "0 0 4px" }}>Floor {r.stage}</p>
-                    <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.85)", margin: 0 }}>Waiting for someone to attempt this</p>
+                    <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 4px" }}>Floor {r.stage}</p>
+                    <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Waiting for someone to attempt this</p>
                   </div>
                 </div>
               )

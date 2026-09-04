@@ -68,8 +68,8 @@ export default function MyActivity({ onRequireAuth }) {
       {activityLoading || collectionLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : builds.length === 0 ? (
-        <div style={{ background: GOLD, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-          <p style={{ fontSize: 13.5, color: "#FFFFFF", margin: 0 }}>
+        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+          <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>
             Nothing yet — submit a build or leave a comment and it'll show up here.
           </p>
         </div>
