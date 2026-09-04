@@ -70,9 +70,9 @@ export default function MyRequests({ onRequireAuth }) {
   if (!profile?.is_subscribed) {
     return (
       <div style={{ padding: "40px 24px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px" }}>
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: "32px 24px" }}>
           <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
             Posting a request for other players to solve — and tracking it here — is part
             of the paid tier.
@@ -90,7 +90,7 @@ export default function MyRequests({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My requests</p>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My requests</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 20px" }}>
         Post the floor you're stuck on — other players attempt it using only your pets
         and items. Once fulfilled, the build still shows up in floor search either
@@ -133,7 +133,7 @@ export default function MyRequests({ onRequireAuth }) {
       {myLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : myRequests.length === 0 ? (
-        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "32px 24px", textAlign: "center" }}>
           <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>You haven't submitted any requests yet.</p>
         </div>
       ) : (
@@ -155,9 +155,9 @@ export default function MyRequests({ onRequireAuth }) {
               <BuildCard build={r.resultingBuild} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} />
             </div>
           ) : (
-            <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
-                <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 4px" }}>Floor {r.stage}</p>
+                <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 16, color: CREAM, margin: "0 0 4px" }}>Floor {r.stage}</p>
                 <p style={{ fontSize: 12.5, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
                   <Clock size={12} /> Waiting for someone to attempt this
                 </p>

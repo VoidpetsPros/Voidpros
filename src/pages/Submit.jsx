@@ -87,8 +87,8 @@ export default function Submit({ onRequireAuth }) {
   if (success) {
     return (
       <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: "32px 24px" }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
+        <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 16, padding: "32px 24px" }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
             It's in review — once approved, it'll show up as verified in search and you'll
             earn a free lookup.
@@ -113,7 +113,7 @@ export default function Submit({ onRequireAuth }) {
         <ArrowLeft size={14} /> Back
       </button>
 
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
         <Trophy size={12} color={GOLD} />
         <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · +5 karma when verified</span>
@@ -148,7 +148,7 @@ export default function Submit({ onRequireAuth }) {
         </span>
       </label>
 
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 20 }}>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 20 }}>
         <ImageUploadSlot
           label="Proof of completion"
           hint="Victory screen or the moment the floor cleared."

@@ -86,7 +86,7 @@ export default function Collection({ onRequireAuth }) {
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 680, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 4, flexWrap: "wrap" }}>
-        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: 0 }}>My collection</p>
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>My collection</p>
         <div style={{ textAlign: "right" }}>
           <p style={{ fontSize: 18, fontWeight: 700, color: GOLD, margin: 0 }}>
             {totalOwned}
@@ -138,7 +138,7 @@ export default function Collection({ onRequireAuth }) {
         ))}
       </div>
 
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 18 }}>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 18 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
           <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>
             <span style={{ color: CREAM, fontWeight: 600 }}>{ownedCount}</span> of {currentOptions.length} owned

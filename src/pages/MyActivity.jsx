@@ -38,9 +38,9 @@ export default function MyActivity({ onRequireAuth }) {
   if (!profile?.is_subscribed) {
     return (
       <div style={{ padding: "40px 24px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px" }}>
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: "32px 24px" }}>
           <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
             Community — everything you've submitted or commented on, plus what people
             have said about it — is part of the paid tier.
@@ -63,7 +63,7 @@ export default function MyActivity({ onRequireAuth }) {
           <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Users size={17} color={GOLD} />
           </div>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: 0 }}>Community</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>Community</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 999, padding: "6px 12px" }}>
           <Trophy size={13} color={GOLD} />
@@ -75,7 +75,7 @@ export default function MyActivity({ onRequireAuth }) {
       </p>
 
       {error && (
-        <div style={{ background: PANEL, border: "1px solid rgba(248,113,113,0.4)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(248,113,113,0.4)", borderRadius: 16, padding: 20, marginBottom: 20 }}>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0 }}>{error}</p>
         </div>
       )}
@@ -83,7 +83,7 @@ export default function MyActivity({ onRequireAuth }) {
       {activityLoading || collectionLoading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : builds.length === 0 ? (
-        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "32px 24px", textAlign: "center" }}>
           <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>
             Nothing yet — submit a build or leave a comment and it'll show up here.
           </p>

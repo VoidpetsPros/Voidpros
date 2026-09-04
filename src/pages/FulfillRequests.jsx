@@ -26,7 +26,7 @@ export default function FulfillRequests() {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Challenges</p>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Challenges</p>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
         <Swords size={12} color={GOLD} />
         <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Challenge · +10 karma when verified</span>
@@ -37,7 +37,7 @@ export default function FulfillRequests() {
       </p>
 
       {error && (
-        <div style={{ background: PANEL, border: "1px solid rgba(248,113,113,0.4)", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: PANEL, border: "1px solid rgba(248,113,113,0.4)", borderRadius: 16, padding: 20, marginBottom: 20 }}>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0 }}>{error}</p>
         </div>
       )}
@@ -45,14 +45,14 @@ export default function FulfillRequests() {
       {loading ? (
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
       ) : openForOthers.length === 0 ? (
-        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "32px 24px", textAlign: "center" }}>
           <p style={{ fontSize: 13.5, color: MUTED, margin: 0 }}>No open challenges right now — check back soon.</p>
         </div>
       ) : (
         openForOthers.map((r) => (
-          <div key={r.id} style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 14 }}>
+          <div key={r.id} style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 18, marginBottom: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-              <p style={{ fontFamily: "Georgia, serif", fontSize: 17, color: CREAM, margin: 0 }}>Floor {r.stage}</p>
+              <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 17, color: CREAM, margin: 0 }}>Floor {r.stage}</p>
               <span style={{ fontSize: 12, color: MUTED }}>
                 requested by {r.show_requester ? r.requester?.username || "a player" : "Anonymous"}
               </span>

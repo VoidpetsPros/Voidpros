@@ -27,7 +27,7 @@ export default function Search() {
         <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Compass size={17} color={GOLD} />
         </div>
-        <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: 0 }}>
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>
           Which floor are you stuck on?
         </p>
       </div>
@@ -87,9 +87,9 @@ export default function Search() {
           disabled={!floor}
           style={{
             width: "100%",
-            background: floor ? GOLD : PANEL_2,
-            color: floor ? "#FFFFFF" : MUTED,
-            border: floor ? "none" : `1px solid ${LINE}`,
+            background: GOLD,
+            color: "#FFFFFF",
+            border: "none",
             borderRadius: 11,
             padding: "14px 0",
             fontSize: 15,
