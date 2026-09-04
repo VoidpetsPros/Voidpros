@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { User } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import logoMark from "./assets/logo.svg";
 import { useAuth } from "./hooks/AuthContext";
 import AuthModal from "./components/AuthModal";
 import ProfileSidebar from "./components/ProfileSidebar";
+import OnboardingTutorial from "./components/OnboardingTutorial";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import Search from "./pages/Search";
@@ -14,15 +15,16 @@ import Admin from "./pages/Admin";
 import FulfillRequests from "./pages/FulfillRequests";
 import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
+import MyRequests from "./pages/MyRequests";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER } from "./lib/theme";
 
-const NAV_LINKS = [
-  { to: "/submit", label: "Submit a build" },
-  { to: "/fulfill", label: "Fulfill requests" },
+const SUBMISSION_OPTIONS = [
+  { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor and earn 5 karma." },
+  { to: "/fulfill", label: "Challenges", subtext: "Beat a floor with a limited pet & item pool for 10 karma." },
 ];
 
 // Plain, calm background — no glow orbs, no grid overlay. A dark theme
@@ -35,6 +37,7 @@ export default function App() {
   const { isAuthed, profile, hasNewActivity, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showSubmissions, setShowSubmissions] = useState(false);
   const location = useLocation();
 
   if (loading) {
@@ -46,7 +49,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <header
         style={{
           display: "flex",
@@ -76,29 +79,88 @@ export default function App() {
               borderRadius: 10,
               padding: 4,
               flexWrap: "wrap",
+              position: "relative",
             }}
           >
-            {NAV_LINKS.map((link) => {
-              const active = location.pathname === link.to;
+            {(() => {
+              const submissionsActive = location.pathname === "/submit" || location.pathname.startsWith("/fulfill");
               return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  style={{
-                    fontSize: 12.5,
-                    fontWeight: active ? 600 : 500,
-                    color: active ? GOLD_DIM : "rgba(255,255,255,0.85)",
-                    background: active ? "#FFFFFF" : "transparent",
-                    textDecoration: "none",
-                    padding: "7px 12px",
-                    borderRadius: 7,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {link.label}
-                </Link>
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={() => setShowSubmissions((v) => !v)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: 12.5,
+                      fontWeight: submissionsActive ? 600 : 500,
+                      color: submissionsActive ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                      background: submissionsActive ? "#FFFFFF" : "transparent",
+                      padding: "7px 12px",
+                      borderRadius: 7,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Submissions <ChevronDown size={13} />
+                  </button>
+                  {showSubmissions && (
+                    <>
+                      <div onClick={() => setShowSubmissions(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "calc(100% + 8px)",
+                          left: 0,
+                          width: 270,
+                          background: PANEL,
+                          border: `1px solid ${LINE}`,
+                          borderRadius: 12,
+                          boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
+                          zIndex: 70,
+                          overflow: "hidden",
+                        }}
+                      >
+                        {SUBMISSION_OPTIONS.map((opt, i) => (
+                          <Link
+                            key={opt.to}
+                            to={opt.to}
+                            onClick={() => setShowSubmissions(false)}
+                            style={{
+                              display: "block",
+                              padding: "13px 15px",
+                              textDecoration: "none",
+                              borderBottom: i < SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
+                            }}
+                          >
+                            <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
+                            <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
+                          </Link>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               );
-            })}
+            })()}
+
+            <Link
+              to="/my-requests"
+              style={{
+                fontSize: 12.5,
+                fontWeight: location.pathname === "/my-requests" ? 600 : 500,
+                color: location.pathname === "/my-requests" ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                background: location.pathname === "/my-requests" ? "#FFFFFF" : "transparent",
+                textDecoration: "none",
+                padding: "7px 12px",
+                borderRadius: 7,
+                whiteSpace: "nowrap",
+              }}
+            >
+              My Requests
+            </Link>
+
             {profile?.is_admin && (
               <Link
                 to="/admin"
@@ -187,22 +249,26 @@ export default function App() {
       </header>
 
       {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
+      {isAuthed && profile && !profile.tutorial_completed && <OnboardingTutorial />}
 
-      <Routes>
-        <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/submit" element={<Submit onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/fulfill" element={<FulfillRequests />} />
-        <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
-        <Route path="/billing/success" element={<BillingSuccess />} />
-        <Route path="/billing/cancelled" element={<BillingCancelled />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
-      </Routes>
+      <div style={{ flex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/submit" element={<Submit onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/fulfill" element={<FulfillRequests />} />
+          <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/my-requests" element={<MyRequests onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/billing/success" element={<BillingSuccess />} />
+          <Route path="/billing/cancelled" element={<BillingCancelled />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+        </Routes>
+      </div>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 

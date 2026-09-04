@@ -89,6 +89,14 @@ export function useAuthState() {
     if (error) console.error(error.message);
   };
 
+  // Dismisses the first-time onboarding tutorial for good — called whether
+  // the person finishes it or clicks the X to skip.
+  const markTutorialSeen = async () => {
+    setProfile((p) => (p ? { ...p, tutorial_completed: true } : p));
+    const { error } = await supabase.rpc("complete_tutorial");
+    if (error) console.error(error.message);
+  };
+
   // Only call this once a search has actually returned a full match — per
   // the product rule, searches with no result don't cost a free lookup.
   // Runs through a database function (see migrations/0004) rather than a
@@ -119,5 +127,6 @@ export function useAuthState() {
     refreshProfile,
     consumeTrialLookup,
     markActivitySeen,
+    markTutorialSeen,
   };
 }
