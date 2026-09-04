@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Users, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout } from "../lib/billing";
-import { GOLD, MUTED, CREAM, PANEL, PANEL_2, LINE } from "../lib/theme";
+import { GOLD, MUTED, CREAM } from "../lib/theme";
 
 const STEPS = [
   { icon: Users, title: "Add what you own", body: "Mark the pets and items in your collection — a couple taps, no typing." },
@@ -66,9 +66,9 @@ export default function Home({ onRequireAuth }) {
           <button
             onClick={() => (isAuthed ? navigate("/collection") : onRequireAuth())}
             style={{
-              background: PANEL,
-              color: CREAM,
-              border: `1px solid ${LINE}`,
+              background: GOLD,
+              color: "#FFFFFF",
+              border: "none",
               borderRadius: 10,
               padding: "13px 26px",
               fontSize: 14.5,
@@ -110,18 +110,17 @@ export default function Home({ onRequireAuth }) {
                 style={{
                   flex: "1 1 220px",
                   maxWidth: 260,
-                  background: PANEL,
-                  border: `1px solid ${LINE}`,
+                  background: GOLD,
                   borderRadius: 10,
                   padding: 18,
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <Icon size={15} color={MUTED} />
-                  <span style={{ fontSize: 11, color: MUTED, fontWeight: 600, letterSpacing: 0.4 }}>STEP {i + 1}</span>
+                  <Icon size={15} color="rgba(255,255,255,0.85)" />
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: 0.4 }}>STEP {i + 1}</span>
                 </div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: CREAM, margin: "0 0 6px" }}>{step.title}</p>
-                <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.55, margin: 0 }}>{step.body}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF", margin: "0 0 6px" }}>{step.title}</p>
+                <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.85)", lineHeight: 1.55, margin: 0 }}>{step.body}</p>
               </div>
             );
           })}
@@ -131,20 +130,20 @@ export default function Home({ onRequireAuth }) {
       {/* What's included with Unlimited */}
       {!profile?.is_subscribed && (
         <div style={{ maxWidth: 520, margin: "0 auto", padding: "0 28px 64px" }}>
-          <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "26px 24px" }}>
-            <p style={{ fontSize: 11, color: GOLD, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", margin: "0 0 8px" }}>
+          <div style={{ background: GOLD, borderRadius: 12, padding: "26px 24px" }}>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", margin: "0 0 8px" }}>
               Unlimited
             </p>
-            <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: CREAM, margin: "0 0 4px" }}>
+            <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: "#FFFFFF", margin: "0 0 4px" }}>
               $4.99 / month
             </h2>
-            <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 18px" }}>Cancel anytime.</p>
+            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.85)", margin: "0 0 18px" }}>Cancel anytime.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
               {UNLIMITED_PERKS.map((perk) => (
                 <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
-                  <CheckCircle2 size={15} color={GOLD} style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
+                  <CheckCircle2 size={15} color="#FFFFFF" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 13, color: "#FFFFFF", lineHeight: 1.5 }}>{perk}</span>
                 </div>
               ))}
             </div>
@@ -153,12 +152,12 @@ export default function Home({ onRequireAuth }) {
               <button
                 onClick={handleSubscribe}
                 disabled={checkoutLoading}
-                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%" }}
+                style={{ background: "#FFFFFF", color: GOLD, border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%" }}
               >
                 {checkoutLoading ? "Redirecting…" : "Subscribe"}
               </button>
             ) : (
-              <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Sign in to subscribe.</p>
+              <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.85)", margin: 0 }}>Sign in to subscribe.</p>
             )}
           </div>
         </div>

@@ -187,40 +187,40 @@ export default function Results({ onRequireAuth }) {
       </p>
 
       {builds.length === 0 ? (
-        <div style={{ background: PANEL, border: `1px dashed ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+        <div style={{ background: GOLD, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
+          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: "#FFFFFF", margin: "0 0 8px" }}>
             Nobody's cracked floor {stage} yet
           </p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.85)", margin: "0 0 16px", lineHeight: 1.6 }}>
             This lookup didn't cost you a free search. Be the first to submit a build.
           </p>
           <Link
             to="/submit"
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, textDecoration: "none" }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FFFFFF", color: GOLD, border: "none", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, textDecoration: "none" }}
           >
             <Plus size={13} /> Submit a build
           </Link>
         </div>
       ) : matching.length === 0 ? (
-        <div style={{ background: PANEL, border: `1px dashed ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+        <div style={{ background: GOLD, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
+          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: "#FFFFFF", margin: "0 0 8px" }}>
             No build matches what you have
           </p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.85)", margin: "0 0 16px", lineHeight: 1.6 }}>
             Other builds exist for floor {stage}, but none of them only use pets and
-            items from your <Link to="/collection" style={{ color: VIOLET }}>collection</Link>.
+            items from your <Link to="/collection" style={{ color: "#FFFFFF", textDecoration: "underline" }}>collection</Link>.
           </p>
           <button
             onClick={handleToggleAlternatives}
-            style={{ background: "none", border: "none", color: VIOLET, fontSize: 13, cursor: "pointer", textDecoration: "underline", padding: 0 }}
+            style={{ background: "none", border: "none", color: "#FFFFFF", fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline", padding: 0 }}
           >
             {showAlternatives ? "Hide alternative builds" : `See ${alternatives.length} alternative build${alternatives.length > 1 ? "s" : ""}`}
           </button>
           {alternativesBlocked && (
-            <p style={{ fontSize: 12.5, color: MUTED, margin: "10px 0 0", lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.85)", margin: "10px 0 0", lineHeight: 1.5 }}>
               You're out of free lookups. Viewing alternative builds also uses a lookup,
               same as a full match.{" "}
-              <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: VIOLET, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
+              <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: "#FFFFFF", fontWeight: 600, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
                 Subscribe for unlimited
               </button>
               .
@@ -245,35 +245,35 @@ export default function Results({ onRequireAuth }) {
       {matching.length === 0 && (
         <>
           {requestSent ? (
-            <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: 20, marginTop: 20, textAlign: "center" }}>
-              <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 6px" }}>Request posted</p>
-              <p style={{ fontSize: 13, color: MUTED, margin: 0, lineHeight: 1.6 }}>
+            <div style={{ background: GOLD, borderRadius: 12, padding: 20, marginTop: 20, textAlign: "center" }}>
+              <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: "#FFFFFF", margin: "0 0 6px" }}>Request posted</p>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", margin: 0, lineHeight: 1.6 }}>
                 Other players can now attempt floor {stage} using only the pets and items
                 you have. Check the{" "}
-                <Link to="/fulfill" style={{ color: VIOLET }}>Fulfill requests</Link> tab for progress.
+                <Link to="/fulfill" style={{ color: "#FFFFFF", textDecoration: "underline" }}>Fulfill requests</Link> tab for progress.
               </p>
             </div>
           ) : profile?.is_subscribed ? (
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 13, color: MUTED }}>Want another player to build one for you instead?</span>
+            <div style={{ background: GOLD, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: "#FFFFFF" }}>Want another player to build one for you instead?</span>
               <button
                 onClick={handleSubmitRequest}
                 disabled={requestSubmitting}
-                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
+                style={{ background: "#FFFFFF", color: GOLD, border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
               >
                 {requestSubmitting ? "Posting…" : "Submit a request"}
               </button>
             </div>
           ) : (
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 12.5, color: MUTED }}>
+            <div style={{ background: GOLD, borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 12.5, color: "#FFFFFF" }}>
                 Subscribers can post a request so other players attempt this floor using
                 only your pets and items.
               </span>
               <button
                 onClick={handleSubscribe}
                 disabled={checkoutLoading}
-                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", flexShrink: 0, marginLeft: 12 }}
+                style={{ background: "#FFFFFF", color: GOLD, border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", flexShrink: 0, marginLeft: 12 }}
               >
                 {checkoutLoading ? "Redirecting…" : "Subscribe"}
               </button>
@@ -285,11 +285,11 @@ export default function Results({ onRequireAuth }) {
       )}
 
       {builds.length > 0 && (
-        <div style={{ marginTop: 24, display: "flex", alignItems: "center", justifyContent: "space-between", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 16px" }}>
-          <span style={{ fontSize: 13, color: MUTED }}>Beat this floor with something else?</span>
+        <div style={{ marginTop: 24, display: "flex", alignItems: "center", justifyContent: "space-between", background: GOLD, borderRadius: 10, padding: "12px 16px" }}>
+          <span style={{ fontSize: 13, color: "#FFFFFF" }}>Beat this floor with something else?</span>
           <Link
             to="/submit"
-            style={{ background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, fontSize: 12.5, padding: "7px 12px", borderRadius: 7, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
+            style={{ background: "#FFFFFF", border: "none", color: GOLD, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 7, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
           >
             <Plus size={13} /> Submit your build
           </Link>
