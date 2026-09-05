@@ -8,6 +8,7 @@ import ProfileSidebar from "./components/ProfileSidebar";
 import OnboardingTutorial from "./components/OnboardingTutorial";
 import Home from "./pages/Home";
 import Subscription from "./pages/Subscription";
+import Settings from "./pages/Settings";
 import Collection from "./pages/Collection";
 import Search from "./pages/Search";
 import Results from "./pages/Results";
@@ -21,22 +22,20 @@ import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } from "./lib/theme";
 import { getDisplayLookupUsage } from "./lib/lookups";
+import { useTheme } from "./hooks/ThemeContext";
 
 const SUBMISSION_OPTIONS = [
   { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor and earn 5 karma." },
   { to: "/fulfill", label: "Challenges", subtext: "Beat a floor with a limited pet & item pool for 10 karma." },
 ];
 
-// Plain, calm background — no glow orbs, no grid overlay. A dark theme
-// should read as a clean tool, not a Web3 landing page.
-const VOID_BACKGROUND = {
-  backgroundColor: INK,
-};
-
 export default function App() {
   const { isAuthed, profile, hasNewActivity, hasNewChallenges, loading } = useAuth();
+  const { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } = useTheme();
+  // Plain, calm background — no glow orbs, no grid overlay. A dark theme
+  // should read as a clean tool, not a Web3 landing page.
+  const VOID_BACKGROUND = { backgroundColor: INK };
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
@@ -342,6 +341,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/settings" element={<Settings onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/search" element={<Search />} />
           <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />

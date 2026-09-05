@@ -9,12 +9,13 @@ import { containsProfanity } from "../lib/profanity";
 import ImageUploadSlot from "../components/ImageUploadSlot";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function FulfillAttempt({ onRequireAuth }) {
   const { requestId } = useParams();
   const navigate = useNavigate();
   const { isAuthed, user } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
 
   const [request, setRequest] = useState(null);

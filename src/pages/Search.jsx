@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon, ArrowLeft, Compass } from "lucide-react";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 const POPULAR_FLOORS = [12, 24, 33, 47, 58, 61, 75];
 
 export default function Search() {
   const [floor, setFloor] = useState("");
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const navigate = useNavigate();
 
   const goToResults = (f) => {

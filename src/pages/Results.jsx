@@ -11,12 +11,13 @@ import { buildFullyMatches, missingCountForBuild } from "../lib/matching";
 import { getDisplayLookupUsage } from "../lib/lookups";
 import BuildCard from "../components/BuildCard";
 import TrialCTA from "../components/TrialCTA";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function Results({ onRequireAuth }) {
   const { stage } = useParams();
   const navigate = useNavigate();
   const { isAuthed, user, profile, consumeTrialLookup } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
   const { builds: rawBuilds, loading: buildsLoading, error: buildsError, applyVoteLocally } = useBuilds(stage, user?.id);
@@ -318,6 +319,7 @@ export default function Results({ onRequireAuth }) {
 
 function BackButton() {
   const navigate = useNavigate();
+  const { MUTED } = useTheme();
   return (
     <button
       onClick={() => navigate("/search")}

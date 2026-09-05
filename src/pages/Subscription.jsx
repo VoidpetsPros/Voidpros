@@ -4,7 +4,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout, startTrialCheckout } from "../lib/billing";
 import { getDisplayLookupUsage } from "../lib/lookups";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges for karma"];
 const UNLIMITED_PERKS = [
@@ -16,6 +16,7 @@ const UNLIMITED_PERKS = [
 
 export default function Subscription({ onRequireAuth }) {
   const { isAuthed, profile } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

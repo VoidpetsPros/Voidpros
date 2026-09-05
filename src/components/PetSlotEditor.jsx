@@ -1,8 +1,9 @@
 import React from "react";
 import Combobox from "./Combobox";
-import { LINE, CREAM, MUTED, PANEL, PANEL_2 } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 function LevelInput({ value, onChange }) {
+  const { LINE, CREAM, PANEL } = useTheme();
   return (
     <input
       type="number"
@@ -16,6 +17,7 @@ function LevelInput({ value, onChange }) {
 }
 
 function FieldRow({ label, children }) {
+  const { MUTED } = useTheme();
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
       <span style={{ fontSize: 11.5, color: MUTED, width: 76, flexShrink: 0 }}>{label}</span>
@@ -44,6 +46,7 @@ export function slotIsComplete(slot) {
 }
 
 export default function PetSlotEditor({ index, slot, onChange, petOptions, hatOptions, scarfOptions, accessoryOptions }) {
+  const { LINE, MUTED, PANEL_2 } = useTheme();
   const update = (patch) => onChange({ ...slot, ...patch });
   const updateNested = (key, patch) => onChange({ ...slot, [key]: { ...slot[key], ...patch } });
   const updateAccessory = (i, patch) => {

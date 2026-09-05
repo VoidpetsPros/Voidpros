@@ -6,10 +6,11 @@ import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
 import { containsProfanity } from "../lib/profanity";
 import ImageUploadSlot from "../components/ImageUploadSlot";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function Submit({ onRequireAuth }) {
   const { isAuthed, user } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const navigate = useNavigate();
 
   const [floor, setFloor] = useState("");

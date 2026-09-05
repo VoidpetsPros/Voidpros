@@ -3,10 +3,11 @@ import { MessageCircle } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import { containsProfanity } from "../lib/profanity";
-import { PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function CommentsSection({ buildId, verified = true, initialCount = 0 }) {
   const { user } = useAuth();
+  const { PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [loaded, setLoaded] = useState(false);

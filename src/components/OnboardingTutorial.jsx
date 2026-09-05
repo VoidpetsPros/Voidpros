@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Sparkles, Users, Search, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 const SEARCH_STEP_INDEX = 2;
 
@@ -40,6 +40,7 @@ const STEPS = [
 export default function OnboardingTutorial() {
   const navigate = useNavigate();
   const { markTutorialSeen, grantTutorialSearchBonus } = useAuth();
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   const [step, setStep] = useState(0);
 
   const current = STEPS[step];

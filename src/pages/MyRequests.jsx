@@ -7,10 +7,11 @@ import { useMyRequests, dismissRequest, cancelRequest } from "../hooks/useMyRequ
 import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
 import TrialCTA from "../components/TrialCTA";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function MyRequests({ onRequireAuth }) {
   const { isAuthed, user, profile, loading: authLoading } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems } = useCollection(user?.id);
   const { requests: myRequests, loading: myLoading, refresh: refreshMine } = useMyRequests(user?.id);

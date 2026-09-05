@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { X, ImagePlus } from "lucide-react";
-import { LINE, MUTED, PANEL_2, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function ImageUploadSlot({ label, hint, files, onAdd, onRemove, max, required, error }) {
+  const { LINE, MUTED, PANEL_2, DANGER } = useTheme();
   const inputRef = useRef(null);
 
   return (

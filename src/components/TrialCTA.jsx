@@ -1,13 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthContext";
-import { GOLD, MUTED } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 // This button never talks to Stripe directly — it just sends the person to
 // the Subscription page, which is the one place that actually starts
 // checkout. Keeps every upgrade prompt in the app pointed at one funnel.
 export default function TrialCTA({ style, fullWidth = false }) {
   const { profile } = useAuth();
+  const { GOLD, MUTED } = useTheme();
   const navigate = useNavigate();
   const eligible = !profile?.trial_used;
 

@@ -6,10 +6,11 @@ import { useCollection } from "../hooks/useCollection";
 import { useMyActivity } from "../hooks/useMyActivity";
 import BuildCard from "../components/BuildCard";
 import TrialCTA from "../components/TrialCTA";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function MyActivity({ onRequireAuth }) {
   const { isAuthed, user, profile, loading: authLoading, markActivitySeen } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
   const { builds, loading: activityLoading, error } = useMyActivity(user?.id);

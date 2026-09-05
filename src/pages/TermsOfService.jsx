@@ -1,15 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
-const Section = ({ title, children }) => (
-  <div style={{ marginBottom: 28 }}>
-    <p style={{ fontFamily: "Georgia, serif", fontSize: 17, color: CREAM, margin: "0 0 10px" }}>{title}</p>
-    <div style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.7 }}>{children}</div>
-  </div>
-);
+const Section = ({ title, children }) => {
+  const { CREAM, MUTED } = useTheme();
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <p style={{ fontFamily: "Georgia, serif", fontSize: 17, color: CREAM, margin: "0 0 10px" }}>{title}</p>
+      <div style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.7 }}>{children}</div>
+    </div>
+  );
+};
 
 export default function TermsOfService() {
+  const { CREAM, GOLD } = useTheme();
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Terms of Service</p>

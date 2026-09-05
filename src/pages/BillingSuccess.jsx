@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function BillingSuccess() {
   const { profile, refreshProfile } = useAuth();
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {

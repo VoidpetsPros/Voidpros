@@ -6,10 +6,11 @@ import { useCatalog } from "../hooks/useCatalog";
 import { useRequests } from "../hooks/useRequests";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
-import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function FulfillRequests() {
   const { user, markChallengesSeen } = useAuth();
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { requests, loading, error } = useRequests();
   const navigate = useNavigate();

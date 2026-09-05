@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { GOLD, MUTED, CREAM, PANEL, LINE } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 const KARMA_WAYS = [
   {
@@ -23,6 +23,7 @@ const KARMA_WAYS = [
 
 export default function Home({ onRequireAuth }) {
   const { isAuthed } = useAuth();
+  const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
 
   const goCollection = () => (isAuthed ? navigate("/collection") : onRequireAuth());

@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function BillingCancelled() {
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   return (
     <div style={{ padding: "60px 24px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
       <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px" }}>

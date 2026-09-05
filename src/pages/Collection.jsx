@@ -5,7 +5,7 @@ import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
 const RARITY_COLORS = {
@@ -18,6 +18,7 @@ const RARITY_COLORS = {
 
 export default function Collection({ onRequireAuth }) {
   const { isAuthed, user } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const { pets, itemsByType, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading, togglePet, setItemCount, bulkSetPets, bulkSetItemCounts } = useCollection(user?.id);
   const [tab, setTab] = useState("pets");
@@ -217,6 +218,7 @@ export default function Collection({ onRequireAuth }) {
 }
 
 function PetTile({ pet, owned, onToggle }) {
+  const { PANEL, LINE, GOLD, CREAM } = useTheme();
   return (
     <button
       onClick={onToggle}
@@ -246,6 +248,7 @@ function PetTile({ pet, owned, onToggle }) {
 }
 
 function ItemTile({ item, owned, onToggle }) {
+  const { PANEL, LINE, GOLD, CREAM } = useTheme();
   return (
     <button
       onClick={onToggle}

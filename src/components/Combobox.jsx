@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function Combobox({ value, onSelect, options, placeholder, kind }) {
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED } = useTheme();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const selected = options.find((o) => o.id === value);

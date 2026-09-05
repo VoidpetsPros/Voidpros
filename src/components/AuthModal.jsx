@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { X, Mail, Lock, User } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import logoMark from "../assets/logo.svg";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 
 export default function AuthModal({ onClose, headline, subhead }) {
   const { signUp, signIn, signInWithGoogle } = useAuth();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

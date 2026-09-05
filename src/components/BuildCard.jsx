@@ -4,10 +4,11 @@ import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import CommentsSection from "./CommentsSection";
 import { useAuth } from "../hooks/AuthContext";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 import { missingForBuild } from "../lib/matching";
 
 function Pill({ children, tone = "default" }) {
+  const { PANEL_2, LINE, MUTED, GOLD, VIOLET } = useTheme();
   const tones = {
     default: { bg: PANEL_2, fg: MUTED, bd: LINE },
     gold: { bg: "rgba(139,92,246,0.12)", fg: GOLD, bd: "rgba(139,92,246,0.35)" },
@@ -22,6 +23,7 @@ function Pill({ children, tone = "default" }) {
 }
 
 function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }) {
+  const { CREAM, DANGER, GOLD, LINE, MUTED, PANEL_2 } = useTheme();
   const pet = pets.find((p) => p.id === slot.pet_id);
   const hat = items.find((i) => i.id === slot.hat_id);
   const scarf = items.find((i) => i.id === slot.scarf_id);
@@ -77,6 +79,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
 
 export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
   const { user } = useAuth();
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
   const { missingPets, missingItems } = missingForBuild(build, ownedPets, ownedItemCounts);
   const missingCount = missingPets.length + missingItems.length;
