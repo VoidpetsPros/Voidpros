@@ -30,6 +30,7 @@ export function useMyRequests(userId) {
       .select("id, stage, fulfilled, created_at")
       .eq("requester_id", userId)
       .eq("dismissed_by_requester", false)
+      .eq("cancelled", false)
       .order("created_at", { ascending: false });
 
     if (reqError) {
@@ -77,4 +78,8 @@ export function useMyRequests(userId) {
 
 export async function dismissRequest(requestId) {
   return supabase.rpc("dismiss_my_request", { p_request_id: requestId });
+}
+
+export async function cancelRequest(requestId) {
+  return supabase.rpc("cancel_request", { p_request_id: requestId });
 }

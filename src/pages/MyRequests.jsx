@@ -4,7 +4,7 @@ import { X, Award, Send, Clock } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
-import { useMyRequests, dismissRequest } from "../hooks/useMyRequests";
+import { useMyRequests, dismissRequest, cancelRequest } from "../hooks/useMyRequests";
 import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
@@ -15,6 +15,7 @@ export default function MyRequests({ onRequireAuth }) {
   const { ownedPets, ownedItems } = useCollection(user?.id);
   const { requests: myRequests, loading: myLoading, refresh: refreshMine } = useMyRequests(user?.id);
   const [dismissingId, setDismissingId] = useState(null);
+  const [cancellingId, setCancellingId] = useState(null);
 
   const [stageInput, setStageInput] = useState("");
   const [showRequester, setShowRequester] = useState(true);
@@ -27,6 +28,18 @@ export default function MyRequests({ onRequireAuth }) {
     setDismissingId(null);
     if (dismissError) {
       alert(dismissError.message);
+      return;
+    }
+    refreshMine();
+  };
+
+  const handleCancel = async (requestId) => {
+    if (!window.confirm("Cancel this request? You'll be able to post a new one right after.")) return;
+    setCancellingId(requestId);
+    const { error: cancelError } = await cancelRequest(requestId);
+    setCancellingId(null);
+    if (cancelError) {
+      alert(cancelError.message);
       return;
     }
     refreshMine();
@@ -93,8 +106,9 @@ export default function MyRequests({ onRequireAuth }) {
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My requests</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 20px" }}>
         Post the floor you're stuck on — other players attempt it using only your pets
-        and items. Once fulfilled, the build still shows up in floor search either
-        way; dismissing it here just clears it from this list.
+        and items. You can only have one active request at a time; cancel it if you
+        want to post a different one. Once fulfilled, the build still shows up in
+        floor search either way; dismissing it here just clears it from this list.
       </p>
 
       <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 18, marginBottom: 30 }}>
@@ -156,13 +170,20 @@ export default function MyRequests({ onRequireAuth }) {
               <BuildCard build={r.resultingBuild} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} />
             </div>
           ) : (
-            <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div key={r.id} style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 16, padding: "18px 20px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <div>
                 <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 16, color: CREAM, margin: "0 0 4px" }}>Floor {r.stage}</p>
                 <p style={{ fontSize: 12.5, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 5 }}>
                   <Clock size={12} /> Waiting for someone to attempt this
                 </p>
               </div>
+              <button
+                onClick={() => handleCancel(r.id)}
+                disabled={cancellingId === r.id}
+                style={{ background: "none", border: `1px solid ${DANGER}`, color: DANGER, borderRadius: 8, padding: "7px 13px", fontSize: 12, fontWeight: 600, cursor: cancellingId === r.id ? "default" : "pointer", flexShrink: 0 }}
+              >
+                {cancellingId === r.id ? "Cancelling…" : "Cancel"}
+              </button>
             </div>
           )
         )

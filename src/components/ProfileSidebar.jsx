@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, CreditCard, LogOut } from "lucide-react";
+import { X, Users, CreditCard, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { openBillingPortal } from "../lib/billing";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
+import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
 export default function ProfileSidebar({ onClose }) {
   const { profile, signOut, hasNewActivity, markActivitySeen } = useAuth();
@@ -34,6 +34,11 @@ export default function ProfileSidebar({ onClose }) {
   const goToCommunity = () => {
     markActivitySeen();
     navigate("/my-activity");
+    onClose();
+  };
+
+  const goToAdmin = () => {
+    navigate("/admin");
     onClose();
   };
 
@@ -135,10 +140,20 @@ export default function ProfileSidebar({ onClose }) {
             <button
               onClick={handleManageBilling}
               disabled={portalLoading}
-              style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box" }}
+              style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: CREAM, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box", marginBottom: profile?.is_admin ? 10 : 0 }}
             >
               <CreditCard size={16} color={MUTED} />
               {portalLoading ? "Opening…" : "Manage billing"}
+            </button>
+          )}
+
+          {profile?.is_admin && (
+            <button
+              onClick={goToAdmin}
+              style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${DANGER}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: DANGER, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box" }}
+            >
+              <ShieldCheck size={16} color={DANGER} />
+              Admin tools
             </button>
           )}
         </div>

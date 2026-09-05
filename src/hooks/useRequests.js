@@ -20,6 +20,7 @@ export function useRequests() {
       `
       )
       .eq("fulfilled", false)
+      .eq("cancelled", false)
       .order("created_at", { ascending: true });
 
     if (fetchError) {

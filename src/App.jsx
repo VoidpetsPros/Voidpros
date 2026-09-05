@@ -20,7 +20,7 @@ import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM, DANGER } from "./lib/theme";
+import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } from "./lib/theme";
 
 const SUBMISSION_OPTIONS = [
   { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor and earn 5 karma." },
@@ -190,24 +190,6 @@ export default function App() {
             >
               My Requests
             </Link>
-
-            {profile?.is_admin && (
-              <Link
-                to="/admin"
-                style={{
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: location.pathname === "/admin" ? DANGER : "rgba(255,255,255,0.85)",
-                  background: location.pathname === "/admin" ? "#FFFFFF" : "transparent",
-                  textDecoration: "none",
-                  padding: "7px 12px",
-                  borderRadius: 7,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Admin
-              </Link>
-            )}
           </nav>
         )}
 
