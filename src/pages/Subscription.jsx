@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, X as XIcon } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout, startTrialCheckout } from "../lib/billing";
 import { getDisplayLookupUsage } from "../lib/lookups";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
-const FREE_PERKS = ["3 free floor searches", "Browse every verified build", "Submit Completions & Challenges for karma"];
+const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges for karma"];
 const UNLIMITED_PERKS = [
   "Unlimited floor searches — no daily cap",
   "Post a custom build request for other players to solve using your exact pool",
@@ -77,12 +77,6 @@ export default function Subscription({ onRequireAuth }) {
                 <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
               </div>
             ))}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
-              <XIcon size={15} color={MUTED} style={{ flexShrink: 0, marginTop: 2, opacity: 0.5 }} />
-              <span style={{ fontSize: 13, color: MUTED, lineHeight: 1.5, textDecoration: "line-through" }}>
-                Unlimited searches & custom requests
-              </span>
-            </div>
           </div>
         </div>
 

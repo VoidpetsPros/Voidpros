@@ -1,15 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
+import { Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import TrialCTA from "../components/TrialCTA";
 import { GOLD, MUTED, CREAM, PANEL, LINE } from "../lib/theme";
-
-const UNLIMITED_PERKS = [
-  "Unlimited floor searches — no daily cap",
-  "Post a custom build request for other players to solve using your exact pool",
-  "Full activity history — everything you've submitted, plus votes and comments on it",
-];
 
 const KARMA_WAYS = [
   {
@@ -29,7 +22,7 @@ const KARMA_WAYS = [
 ];
 
 export default function Home({ onRequireAuth }) {
-  const { isAuthed, profile } = useAuth();
+  const { isAuthed } = useAuth();
   const navigate = useNavigate();
 
   const goCollection = () => (isAuthed ? navigate("/collection") : onRequireAuth());
@@ -140,38 +133,7 @@ export default function Home({ onRequireAuth }) {
         </div>
       )}
 
-      {/* What's included with Unlimited */}
-      {!profile?.is_subscribed && (
-        <div style={{ maxWidth: 520, margin: "36px auto 0", padding: "0 24px 64px" }}>
-          <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "26px 24px" }}>
-            <p style={{ fontSize: 11, color: GOLD, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", margin: "0 0 8px" }}>
-              Unlimited
-            </p>
-            <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: CREAM, margin: "0 0 4px" }}>
-              {!profile?.trial_used ? "7 Day Free Trial" : "$4.99 / month"}
-            </h2>
-            <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 18px" }}>
-              {!profile?.trial_used ? "7 days free, then $4.99/month. Cancel anytime." : "Cancel anytime."}
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-              {UNLIMITED_PERKS.map((perk) => (
-                <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
-                  <CheckCircle2 size={15} color={GOLD} style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
-                </div>
-              ))}
-            </div>
-
-            {isAuthed ? (
-              <TrialCTA fullWidth />
-            ) : (
-              <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Sign in to subscribe.</p>
-            )}
-          </div>
-        </div>
-      )}
-      {profile?.is_subscribed && <div style={{ paddingBottom: 48 }} />}
+      <div style={{ paddingBottom: 48 }} />
     </div>
   );
 }
