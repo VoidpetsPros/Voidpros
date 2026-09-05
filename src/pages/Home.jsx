@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CheckCircle2, Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
-import { startCheckout, startTrialCheckout } from "../lib/billing";
+import TrialCTA from "../components/TrialCTA";
 import { GOLD, MUTED, CREAM, PANEL, LINE } from "../lib/theme";
 
 const UNLIMITED_PERKS = [
@@ -31,33 +31,9 @@ const KARMA_WAYS = [
 export default function Home({ onRequireAuth }) {
   const { isAuthed, profile } = useAuth();
   const navigate = useNavigate();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [trialLoading, setTrialLoading] = useState(false);
-  const [trialError, setTrialError] = useState("");
 
   const goCollection = () => (isAuthed ? navigate("/collection") : onRequireAuth());
   const goSearch = () => (isAuthed ? navigate("/search") : onRequireAuth());
-
-  const handleSubscribe = async () => {
-    setCheckoutLoading(true);
-    try {
-      await startCheckout();
-    } catch (err) {
-      alert(err.message || "Something went wrong starting checkout.");
-      setCheckoutLoading(false);
-    }
-  };
-
-  const handleStartTrial = async () => {
-    setTrialError("");
-    setTrialLoading(true);
-    try {
-      await startTrialCheckout();
-    } catch (err) {
-      setTrialError(err.message || "Something went wrong starting your trial.");
-      setTrialLoading(false);
-    }
-  };
 
   return (
     <div>
@@ -188,29 +164,7 @@ export default function Home({ onRequireAuth }) {
             </div>
 
             {isAuthed ? (
-              !profile?.trial_used ? (
-                <>
-                  <button
-                    onClick={handleStartTrial}
-                    disabled={trialLoading}
-                    style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%", marginBottom: 8 }}
-                  >
-                    {trialLoading ? "Redirecting…" : "Start"}
-                  </button>
-                  <p style={{ fontSize: 11.5, color: MUTED, margin: 0, textAlign: "center" }}>
-                    Card required. Cancel before day 7 and you won't be charged.
-                  </p>
-                  {trialError && <p style={{ fontSize: 12, color: "#dc2626", margin: "8px 0 0", textAlign: "center" }}>{trialError}</p>}
-                </>
-              ) : (
-                <button
-                  onClick={handleSubscribe}
-                  disabled={checkoutLoading}
-                  style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%" }}
-                >
-                  {checkoutLoading ? "Redirecting…" : "Subscribe"}
-                </button>
-              )
+              <TrialCTA fullWidth />
             ) : (
               <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Sign in to subscribe.</p>
             )}

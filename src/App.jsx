@@ -7,6 +7,7 @@ import AuthModal from "./components/AuthModal";
 import ProfileSidebar from "./components/ProfileSidebar";
 import OnboardingTutorial from "./components/OnboardingTutorial";
 import Home from "./pages/Home";
+import Subscription from "./pages/Subscription";
 import Collection from "./pages/Collection";
 import Search from "./pages/Search";
 import Results from "./pages/Results";
@@ -340,6 +341,7 @@ export default function App() {
       <div style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/search" element={<Search />} />
           <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, CreditCard, LogOut, ShieldCheck } from "lucide-react";
+import { X, Users, CreditCard, LogOut, ShieldCheck, Search } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { openBillingPortal } from "../lib/billing";
+import { getDisplayLookupUsage } from "../lib/lookups";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
 export default function ProfileSidebar({ onClose }) {
@@ -42,6 +43,11 @@ export default function ProfileSidebar({ onClose }) {
     onClose();
   };
 
+  const goToSubscribe = () => {
+    navigate("/subscribe");
+    onClose();
+  };
+
   const handleSignOut = async () => {
     await signOut();
     onClose();
@@ -78,24 +84,46 @@ export default function ProfileSidebar({ onClose }) {
             </button>
           </div>
 
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
-            {profile?.username || "player"}
-          </p>
-          <span
-            style={{
-              display: "inline-block",
-              fontSize: 11.5,
-              fontWeight: 600,
-              color: profile?.is_subscribed ? GOLD : MUTED,
-              background: profile?.is_subscribed ? "rgba(124,58,237,0.1)" : PANEL_2,
-              border: `1px solid ${profile?.is_subscribed ? "rgba(124,58,237,0.3)" : LINE}`,
-              borderRadius: 999,
-              padding: "4px 10px",
-              marginBottom: 24,
-            }}
-          >
-            {profile?.is_subscribed ? "Unlimited" : "Free"}
-          </span>
+          {!profile?.is_subscribed && (
+            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Search size={15} color={MUTED} />
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: CREAM }}>Free Searches</span>
+                </div>
+                <button
+                  onClick={goToSubscribe}
+                  style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 7, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                >
+                  Upgrade
+                </button>
+              </div>
+              {(() => {
+                const { used, limit } = getDisplayLookupUsage(profile);
+                return (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+                      <span style={{ fontSize: 12.5, color: MUTED }}>Total</span>
+                      <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 600 }}>{limit} searches</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+                      <span style={{ fontSize: 12.5, color: MUTED }}>Remaining</span>
+                      <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 600 }}>{limit - used}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: CREAM, margin: "0 0 3px" }}>
+              {profile?.username || "player"}
+            </p>
+            <p style={{ fontSize: 12.5, color: profile?.is_subscribed ? GOLD : MUTED, fontWeight: 600, margin: 0 }}>
+              {profile?.is_subscribed ? "Unlimited plan" : "Free plan"}
+            </p>
+          </div>
 
           <button
             onClick={goToCommunity}
