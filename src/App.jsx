@@ -21,6 +21,7 @@ import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } from "./lib/theme";
+import { getDisplayLookupUsage } from "./lib/lookups";
 
 const SUBMISSION_OPTIONS = [
   { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor and earn 5 karma." },
@@ -243,16 +244,10 @@ export default function App() {
               </div>
               {(() => {
                 // Free lookups can be topped up by bonuses (tutorial, the
-                // 100-karma milestone) that raise trial_lookups_limit past
-                // its base of 3. Those bonus slots are real for gating
-                // purposes, but they'd throw the ring off a clean 33/66/100
-                // scale and could look like a "free" search actually cost
-                // something. So the ring always reads against the original
-                // base of 3, treating any bonus capacity as invisible extra
-                // room rather than part of the displayed percentage.
-                const BASE_FREE_LOOKUPS = 3;
-                const bonusAmount = profile ? Math.max(0, profile.trial_lookups_limit - BASE_FREE_LOOKUPS) : 0;
-                const effectiveUsed = profile ? Math.max(0, Math.min(BASE_FREE_LOOKUPS, profile.trial_lookups_used - bonusAmount)) : 0;
+                // 100-karma milestone) that raise the real limit past 3 —
+                // getDisplayLookupUsage hides that from the ring so it stays
+                // on a clean 33/66/100 scale.
+                const { used: effectiveUsed, limit: BASE_FREE_LOOKUPS } = getDisplayLookupUsage(profile);
                 const usagePct = profile && !profile.is_subscribed
                   ? Math.round((effectiveUsed / BASE_FREE_LOOKUPS) * 100)
                   : null;

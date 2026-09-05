@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Award, Users, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useMyActivity } from "../hooks/useMyActivity";
 import BuildCard from "../components/BuildCard";
+import TrialCTA from "../components/TrialCTA";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET } from "../lib/theme";
 
 export default function MyActivity({ onRequireAuth }) {
@@ -45,12 +45,7 @@ export default function MyActivity({ onRequireAuth }) {
             Community — everything you've submitted or commented on, plus what people
             have said about it — is part of the paid tier.
           </p>
-          <Link
-            to="/search"
-            style={{ display: "inline-block", background: GOLD, color: "#FFFFFF", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, textDecoration: "none" }}
-          >
-            Back to search
-          </Link>
+          <TrialCTA />
         </div>
       </div>
     );

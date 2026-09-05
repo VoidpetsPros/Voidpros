@@ -172,7 +172,7 @@ export default function Home({ onRequireAuth }) {
               Unlimited
             </p>
             <h2 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 19, color: CREAM, margin: "0 0 4px" }}>
-              $4.99 / month
+              {!profile?.trial_used ? "7 Day Free Trial" : "$4.99 / month"}
             </h2>
             <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 18px" }}>
               {!profile?.trial_used ? "7 days free, then $4.99/month. Cancel anytime." : "Cancel anytime."}
@@ -195,7 +195,7 @@ export default function Home({ onRequireAuth }) {
                     disabled={trialLoading}
                     style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: "pointer", width: "100%", marginBottom: 8 }}
                   >
-                    {trialLoading ? "Redirecting…" : "Start 7-day free trial"}
+                    {trialLoading ? "Redirecting…" : "Start"}
                   </button>
                   <p style={{ fontSize: 11.5, color: MUTED, margin: 0, textAlign: "center" }}>
                     Card required. Cancel before day 7 and you won't be charged.

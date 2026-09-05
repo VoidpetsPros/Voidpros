@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { X, Award, Send, Clock } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -7,6 +6,7 @@ import { useCollection } from "../hooks/useCollection";
 import { useMyRequests, dismissRequest, cancelRequest } from "../hooks/useMyRequests";
 import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
+import TrialCTA from "../components/TrialCTA";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 
 export default function MyRequests({ onRequireAuth }) {
@@ -90,12 +90,7 @@ export default function MyRequests({ onRequireAuth }) {
             Posting a request for other players to solve — and tracking it here — is part
             of the paid tier.
           </p>
-          <Link
-            to="/search"
-            style={{ display: "inline-block", background: GOLD, color: "#FFFFFF", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, textDecoration: "none" }}
-          >
-            Back to search
-          </Link>
+          <TrialCTA />
         </div>
       </div>
     );

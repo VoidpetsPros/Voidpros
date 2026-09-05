@@ -8,7 +8,9 @@ import { useBuilds } from "../hooks/useBuilds";
 import { supabase } from "../lib/supabaseClient";
 import { startCheckout } from "../lib/billing";
 import { buildFullyMatches, missingCountForBuild } from "../lib/matching";
+import { getDisplayLookupUsage } from "../lib/lookups";
 import BuildCard from "../components/BuildCard";
+import TrialCTA from "../components/TrialCTA";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } from "../lib/theme";
 
 export default function Results({ onRequireAuth }) {
@@ -183,17 +185,10 @@ export default function Results({ onRequireAuth }) {
             </p>
           )}
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px" }}>
-            You're out of free lookups ({profile.trial_lookups_used}/{profile.trial_lookups_limit} used).
+            You're out of free lookups ({getDisplayLookupUsage(profile).used}/{getDisplayLookupUsage(profile).limit} used).
             Subscribe for unlimited lookups.
           </p>
-          <button
-            onClick={handleSubscribe}
-            disabled={checkoutLoading}
-            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
-          >
-            {checkoutLoading ? "Redirecting…" : "Subscribe — $4.99/mo"}
-          </button>
-          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "12px 0 0" }}>{checkoutError}</p>}
+          <TrialCTA />
         </div>
       </div>
     );
@@ -252,6 +247,7 @@ export default function Results({ onRequireAuth }) {
               .
             </p>
           )}
+          {checkoutError && <p style={{ fontSize: 12, color: DANGER, margin: "8px 0 0" }}>{checkoutError}</p>}
           {showAlternatives &&
             alternatives.map((b) => (
               <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
@@ -291,21 +287,16 @@ export default function Results({ onRequireAuth }) {
               </button>
             </div>
           ) : (
-            <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
               <span style={{ fontSize: 12.5, color: CREAM }}>
                 Subscribers can post a request so other players attempt this floor using
                 only your pets and items.
               </span>
-              <button
-                onClick={handleSubscribe}
-                disabled={checkoutLoading}
-                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", flexShrink: 0, marginLeft: 12 }}
-              >
-                {checkoutLoading ? "Redirecting…" : "Subscribe"}
-              </button>
+              <TrialCTA
+                style={{ padding: "8px 14px", fontSize: 12.5, borderRadius: 8 }}
+              />
             </div>
           )}
-          {checkoutError && <p style={{ fontSize: 12.5, color: DANGER, margin: "10px 0 0" }}>{checkoutError}</p>}
           {requestError && <p style={{ fontSize: 12.5, color: DANGER, margin: "10px 0 0" }}>{requestError}</p>}
         </>
       )}
