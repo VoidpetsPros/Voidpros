@@ -10,11 +10,13 @@ export function useAuthState() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasNewActivity, setHasNewActivity] = useState(false);
+  const [hasNewChallenges, setHasNewChallenges] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
       setProfile(null);
       setHasNewActivity(false);
+      setHasNewChallenges(false);
       return;
     }
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
@@ -24,6 +26,7 @@ export function useAuthState() {
     }
     setProfile(data);
     checkActivity(userId);
+    checkChallenges(userId);
   }, []);
 
   const checkActivity = useCallback(async (userId) => {
@@ -34,6 +37,16 @@ export function useAuthState() {
       return;
     }
     setHasNewActivity(!!data);
+  }, []);
+
+  const checkChallenges = useCallback(async (userId) => {
+    if (!userId) return;
+    const { data, error } = await supabase.rpc("has_new_challenges", { p_user_id: userId });
+    if (error) {
+      console.error("has_new_challenges check failed:", error.message);
+      return;
+    }
+    setHasNewChallenges(!!data);
   }, []);
 
   useEffect(() => {
@@ -110,6 +123,14 @@ export function useAuthState() {
     refreshProfile();
   };
 
+  // Clears the Challenges notification badge — call this when the person
+  // opens the Challenges page.
+  const markChallengesSeen = async () => {
+    setHasNewChallenges(false);
+    const { error } = await supabase.rpc("mark_challenges_seen");
+    if (error) console.error(error.message);
+  };
+
   // Only call this once a search has actually returned a full match — per
   // the product rule, searches with no result don't cost a free lookup.
   // Runs through a database function (see migrations/0004) rather than a
@@ -133,6 +154,7 @@ export function useAuthState() {
     loading,
     isAuthed: !!session,
     hasNewActivity,
+    hasNewChallenges,
     signUp,
     signIn,
     signInWithGoogle,
@@ -142,5 +164,6 @@ export function useAuthState() {
     markActivitySeen,
     markTutorialSeen,
     grantTutorialSearchBonus,
+    markChallengesSeen,
   };
 }

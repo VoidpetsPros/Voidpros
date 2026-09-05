@@ -34,10 +34,11 @@ const VOID_BACKGROUND = {
 };
 
 export default function App() {
-  const { isAuthed, profile, hasNewActivity, loading } = useAuth();
+  const { isAuthed, profile, hasNewActivity, hasNewChallenges, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
+  const [showKarmaTip, setShowKarmaTip] = useState(false);
   const location = useLocation();
 
   if (loading) {
@@ -89,6 +90,7 @@ export default function App() {
                   <button
                     onClick={() => setShowSubmissions((v) => !v)}
                     style={{
+                      position: "relative",
                       display: "flex",
                       alignItems: "center",
                       gap: 4,
@@ -104,6 +106,20 @@ export default function App() {
                     }}
                   >
                     Submissions <ChevronDown size={13} />
+                    {hasNewChallenges && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          right: 2,
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: "#dc2626",
+                          border: `1.5px solid ${submissionsActive ? "#FFFFFF" : GOLD_DIM}`,
+                        }}
+                      />
+                    )}
                   </button>
                   {showSubmissions && (
                     <>
@@ -128,6 +144,7 @@ export default function App() {
                             to={opt.to}
                             onClick={() => setShowSubmissions(false)}
                             style={{
+                              position: "relative",
                               display: "block",
                               padding: "13px 15px",
                               textDecoration: "none",
@@ -136,6 +153,19 @@ export default function App() {
                           >
                             <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
                             <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
+                            {opt.to === "/fulfill" && hasNewChallenges && (
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  top: 14,
+                                  right: 14,
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  background: "#dc2626",
+                                }}
+                              />
+                            )}
                           </Link>
                         ))}
                       </div>
@@ -184,7 +214,11 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
             <>
-              <div style={{ width: 130 }}>
+              <div
+                style={{ width: 130, position: "relative" }}
+                onMouseEnter={() => setShowKarmaTip(true)}
+                onMouseLeave={() => setShowKarmaTip(false)}
+              >
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                   <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>
                     Karma
@@ -202,6 +236,27 @@ export default function App() {
                     }}
                   />
                 </div>
+                {showKarmaTip && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 8px)",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: 190,
+                      background: PANEL,
+                      border: `1px solid ${LINE}`,
+                      borderRadius: 9,
+                      padding: "9px 11px",
+                      boxShadow: "0 10px 24px -8px rgba(0,0,0,0.35)",
+                      zIndex: 80,
+                    }}
+                  >
+                    <p style={{ margin: 0, fontSize: 11.5, color: CREAM, lineHeight: 1.4, fontWeight: 500 }}>
+                      Reach 100 Karma to Get 5 Free Floor Searches.
+                    </p>
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => setShowProfile(true)}

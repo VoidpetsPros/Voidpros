@@ -160,6 +160,15 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
             </span>
           </div>
         )}
+
+        {/* Read-only count wherever voting isn't wired up (Community, My
+            Requests) — no reason to hide it now that upvotes don't affect karma. */}
+        {isVerified && (!onVote || isOwnBuild) && (
+          <div style={{ display: "flex", alignItems: "center", gap: 5, color: MUTED }}>
+            <ThumbsUp size={13} />
+            <span style={{ fontSize: 12.5 }}>{build.upvotes} upvote{build.upvotes !== 1 ? "s" : ""}</span>
+          </div>
+        )}
       </div>
 
       <CommentsSection buildId={build.id} verified={isVerified} initialCount={build.comment_count || 0} />

@@ -134,8 +134,9 @@ export default function Submit({ onRequireAuth }) {
             setFloor(e.target.value);
             if (error) setError("");
           }}
-          type="number"
-          min="1"
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           placeholder="Enter a floor number"
           style={{ width: "100%", boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 10, padding: "12px 12px 12px 36px", color: CREAM, fontSize: 16, outline: "none" }}
         />

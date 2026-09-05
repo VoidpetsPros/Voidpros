@@ -91,11 +91,18 @@ export default function Results({ onRequireAuth }) {
   const outOfLookups = profile && !profile.is_subscribed && profile.trial_lookups_used >= profile.trial_lookups_limit;
   const [alternativesBlocked, setAlternativesBlocked] = useState(false);
   const revealingAlternatives = useRef(false);
+  // Once paid for, reopening alternatives during this same visit is free —
+  // only the very first reveal per floor should ever cost a lookup.
+  const alreadyRevealedAlternatives = useRef(false);
 
   const handleToggleAlternatives = async () => {
     if (showAlternatives) {
       // Hiding them again is always free — only the reveal costs a lookup.
       setShowAlternatives(false);
+      return;
+    }
+    if (alreadyRevealedAlternatives.current) {
+      setShowAlternatives(true);
       return;
     }
     if (outOfLookups) {
@@ -106,6 +113,7 @@ export default function Results({ onRequireAuth }) {
     revealingAlternatives.current = true;
     await consumeTrialLookup();
     revealingAlternatives.current = false;
+    alreadyRevealedAlternatives.current = true;
     setAlternativesBlocked(false);
     setShowAlternatives(true);
   };

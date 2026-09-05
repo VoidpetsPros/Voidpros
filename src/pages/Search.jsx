@@ -43,8 +43,9 @@ export default function Search() {
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && goToResults(floor)}
-            type="number"
-            min="1"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Enter floor number, e.g. 47"
             style={{
               width: "100%",

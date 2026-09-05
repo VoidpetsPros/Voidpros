@@ -104,8 +104,9 @@ export default function MyRequests({ onRequireAuth }) {
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
           <input
-            type="number"
-            min="1"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={stageInput}
             onChange={(e) => {
               setStageInput(e.target.value);

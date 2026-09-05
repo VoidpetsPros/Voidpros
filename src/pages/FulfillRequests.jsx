@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
@@ -9,10 +9,14 @@ import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, LINE, CREAM, MUTED, GOLD } from "../lib/theme";
 
 export default function FulfillRequests() {
-  const { user } = useAuth();
+  const { user, markChallengesSeen } = useAuth();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { requests, loading, error } = useRequests();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    markChallengesSeen();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openForOthers = requests.filter((r) => r.requester_id !== user?.id);
 
