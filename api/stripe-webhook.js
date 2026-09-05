@@ -40,12 +40,14 @@ export default async function handler(req, res) {
       case "checkout.session.completed": {
         const session = event.data.object;
         const userId = session.metadata?.supabase_user_id;
+        const isTrial = session.metadata?.is_trial === "true";
         if (userId) {
           await supabaseAdmin.rpc("admin_set_subscription_status", {
             p_user_id: userId,
             p_customer_id: session.customer,
             p_subscription_id: session.subscription,
             p_is_subscribed: true,
+            p_grant_trial: isTrial,
           });
         }
         break;

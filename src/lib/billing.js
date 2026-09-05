@@ -20,6 +20,11 @@ export async function startCheckout() {
   window.location.href = url;
 }
 
+export async function startTrialCheckout() {
+  const { url } = await callBillingEndpoint("/api/create-trial-checkout-session");
+  window.location.href = url;
+}
+
 export async function openBillingPortal() {
   const { url } = await callBillingEndpoint("/api/create-portal-session");
   window.location.href = url;
