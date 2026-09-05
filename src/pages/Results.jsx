@@ -88,7 +88,16 @@ export default function Results({ onRequireAuth }) {
     );
   }, [builds, matching, ownedPets, ownedItems]);
 
-  const outOfLookups = profile && !profile.is_subscribed && profile.trial_lookups_used >= profile.trial_lookups_limit;
+  // Frozen at whatever it was when this floor's page first loaded — never
+  // recalculated after that. Without this, a search that legitimately uses
+  // your last lookup would immediately re-trigger this same check (now
+  // reading the freshly-bumped count) and hide the very results that search
+  // just earned.
+  const outOfLookupsSnapshot = useRef(null);
+  if (outOfLookupsSnapshot.current === null && profile) {
+    outOfLookupsSnapshot.current = !profile.is_subscribed && profile.trial_lookups_used >= profile.trial_lookups_limit;
+  }
+  const outOfLookups = outOfLookupsSnapshot.current ?? false;
   const [alternativesBlocked, setAlternativesBlocked] = useState(false);
   const revealingAlternatives = useRef(false);
   // Once paid for, reopening alternatives during this same visit is free —

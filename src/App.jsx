@@ -293,7 +293,11 @@ export default function App() {
                         flexShrink: 0,
                       }}
                     >
-                      <User size={16} color="#FFFFFF" />
+                      {showSearchTip && usagePct !== null ? (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF" }}>{usagePct}%</span>
+                      ) : (
+                        <User size={16} color="#FFFFFF" />
+                      )}
                       {hasNewActivity && (
                         <span
                           style={{
@@ -309,26 +313,6 @@ export default function App() {
                         />
                       )}
                     </button>
-                    {showSearchTip && usagePct !== null && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "calc(100% + 8px)",
-                          right: 0,
-                          width: 170,
-                          background: PANEL,
-                          border: `1px solid ${LINE}`,
-                          borderRadius: 9,
-                          padding: "9px 11px",
-                          boxShadow: "0 10px 24px -8px rgba(0,0,0,0.35)",
-                          zIndex: 80,
-                        }}
-                      >
-                        <p style={{ margin: 0, fontSize: 11.5, color: CREAM, lineHeight: 1.4, fontWeight: 500 }}>
-                          {usagePct}% of free searches used ({profile.trial_lookups_used}/{profile.trial_lookups_limit})
-                        </p>
-                      </div>
-                    )}
                   </div>
                 );
               })()}
