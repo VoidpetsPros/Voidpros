@@ -155,15 +155,24 @@ export default function Results({ onRequireAuth }) {
     );
   }
 
-  // Gate the reveal behind the subscription once free lookups are used up.
-  if (matching.length > 0 && outOfLookups) {
+  // Gate behind the subscription once free lookups are used up — this
+  // applies regardless of whether a match exists, so the person always sees
+  // one consistent "you're out" screen instead of sometimes landing on the
+  // normal results page with a blocked alternatives link.
+  if (outOfLookups) {
     return (
       <div style={{ padding: "24px", maxWidth: 640, margin: "0 auto" }}>
         <BackButton />
         <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
-            {matching.length} build{matching.length > 1 ? "s" : ""} found for floor {stage}
-          </p>
+          {matching.length > 0 ? (
+            <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
+              {matching.length} build{matching.length > 1 ? "s" : ""} found for floor {stage}
+            </p>
+          ) : (
+            <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
+              You're out of free lookups
+            </p>
+          )}
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px" }}>
             You're out of free lookups ({profile.trial_lookups_used}/{profile.trial_lookups_limit} used).
             Subscribe for unlimited lookups.

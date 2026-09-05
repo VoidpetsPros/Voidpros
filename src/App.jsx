@@ -39,6 +39,7 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
   const [showKarmaTip, setShowKarmaTip] = useState(false);
+  const [showSearchTip, setShowSearchTip] = useState(false);
   const location = useLocation();
 
   if (loading) {
@@ -240,39 +241,97 @@ export default function App() {
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => setShowProfile(true)}
-                aria-label="Profile"
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(255,255,255,0.14)",
-                  border: "1px solid rgba(255,255,255,0.22)",
-                  borderRadius: 999,
-                  width: 36,
-                  height: 36,
-                  cursor: "pointer",
-                  flexShrink: 0,
-                }}
-              >
-                <User size={16} color="#FFFFFF" />
-                {hasNewActivity && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: -2,
-                      right: -2,
-                      width: 11,
-                      height: 11,
-                      borderRadius: "50%",
-                      background: "#dc2626",
-                      border: `2px solid ${GOLD_DIM}`,
-                    }}
-                  />
-                )}
-              </button>
+              {(() => {
+                const usagePct = profile && !profile.is_subscribed && profile.trial_lookups_limit > 0
+                  ? Math.min(100, Math.round((profile.trial_lookups_used / profile.trial_lookups_limit) * 100))
+                  : null;
+                const ringSize = 42;
+                const strokeWidth = 3;
+                const radius = (ringSize - strokeWidth) / 2;
+                const circumference = 2 * Math.PI * radius;
+                const dashOffset = usagePct === null ? circumference : circumference - (usagePct / 100) * circumference;
+
+                return (
+                  <div
+                    style={{ position: "relative", width: ringSize, height: ringSize }}
+                    onMouseEnter={() => setShowSearchTip(true)}
+                    onMouseLeave={() => setShowSearchTip(false)}
+                  >
+                    {usagePct !== null && (
+                      <svg width={ringSize} height={ringSize} style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)", pointerEvents: "none" }}>
+                        <circle cx={ringSize / 2} cy={ringSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={strokeWidth} />
+                        <circle
+                          cx={ringSize / 2}
+                          cy={ringSize / 2}
+                          r={radius}
+                          fill="none"
+                          stroke="#FFFFFF"
+                          strokeWidth={strokeWidth}
+                          strokeDasharray={circumference}
+                          strokeDashoffset={dashOffset}
+                          strokeLinecap="round"
+                          style={{ transition: "stroke-dashoffset 0.3s ease" }}
+                        />
+                      </svg>
+                    )}
+                    <button
+                      onClick={() => setShowProfile(true)}
+                      aria-label="Profile"
+                      style={{
+                        position: "absolute",
+                        top: (ringSize - 36) / 2,
+                        left: (ringSize - 36) / 2,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(255,255,255,0.14)",
+                        border: "1px solid rgba(255,255,255,0.22)",
+                        borderRadius: 999,
+                        width: 36,
+                        height: 36,
+                        cursor: "pointer",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <User size={16} color="#FFFFFF" />
+                      {hasNewActivity && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: -2,
+                            right: -2,
+                            width: 11,
+                            height: 11,
+                            borderRadius: "50%",
+                            background: "#dc2626",
+                            border: `2px solid ${GOLD_DIM}`,
+                          }}
+                        />
+                      )}
+                    </button>
+                    {showSearchTip && usagePct !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "calc(100% + 8px)",
+                          right: 0,
+                          width: 170,
+                          background: PANEL,
+                          border: `1px solid ${LINE}`,
+                          borderRadius: 9,
+                          padding: "9px 11px",
+                          boxShadow: "0 10px 24px -8px rgba(0,0,0,0.35)",
+                          zIndex: 80,
+                        }}
+                      >
+                        <p style={{ margin: 0, fontSize: 11.5, color: CREAM, lineHeight: 1.4, fontWeight: 500 }}>
+                          {usagePct}% of free searches used ({profile.trial_lookups_used}/{profile.trial_lookups_limit})
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </>
           ) : (
             <button
