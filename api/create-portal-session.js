@@ -31,10 +31,20 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No billing account found for this user" });
     }
 
-    const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: `${process.env.SITE_URL}/`,
-    });
+    let session;
+    try {
+      session = await stripe.billingPortal.sessions.create({
+        customer: profile.stripe_customer_id,
+        return_url: `${process.env.SITE_URL}/`,
+      });
+    } catch (err) {
+      if (err.code === "resource_missing") {
+        return res.status(400).json({
+          error: "Your billing record is out of date and needs to be reset — contact support.",
+        });
+      }
+      throw err;
+    }
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
