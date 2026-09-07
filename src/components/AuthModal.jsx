@@ -16,6 +16,45 @@ export default function AuthModal({ onClose, headline, subhead }) {
 
   const [confirmSent, setConfirmSent] = useState(false);
 
+  // These need to live inside the component (not at module scope) since
+  // they depend on useTheme(), which only works inside a component.
+  const inputStyle = {
+    width: "100%",
+    boxSizing: "border-box",
+    background: PANEL_2,
+    border: `1px solid ${LINE}`,
+    borderRadius: 9,
+    padding: "10px 12px 10px 34px",
+    color: CREAM,
+    fontSize: 14,
+    outline: "none",
+  };
+
+  const primaryButtonStyle = {
+    width: "100%",
+    background: GOLD,
+    color: "#FFFFFF",
+    border: "none",
+    borderRadius: 9,
+    padding: "11px 0",
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: "pointer",
+    marginBottom: 10,
+  };
+
+  const secondaryButtonStyle = {
+    width: "100%",
+    background: PANEL,
+    color: CREAM,
+    border: `1px solid ${LINE}`,
+    borderRadius: 9,
+    padding: "10px 0",
+    fontSize: 13.5,
+    cursor: "pointer",
+    marginBottom: 16,
+  };
+
   const handleSubmit = async () => {
     setError("");
     if (!email.trim() || !password.trim()) {
@@ -182,40 +221,3 @@ export default function AuthModal({ onClose, headline, subhead }) {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  boxSizing: "border-box",
-  background: PANEL_2,
-  border: `1px solid ${LINE}`,
-  borderRadius: 9,
-  padding: "10px 12px 10px 34px",
-  color: CREAM,
-  fontSize: 14,
-  outline: "none",
-};
-
-const primaryButtonStyle = {
-  width: "100%",
-  background: GOLD,
-  color: "#FFFFFF",
-  border: "none",
-  borderRadius: 9,
-  padding: "11px 0",
-  fontSize: 14,
-  fontWeight: 600,
-  cursor: "pointer",
-  marginBottom: 10,
-};
-
-const secondaryButtonStyle = {
-  width: "100%",
-  background: PANEL,
-  color: CREAM,
-  border: `1px solid ${LINE}`,
-  borderRadius: 9,
-  padding: "10px 0",
-  fontSize: 13.5,
-  cursor: "pointer",
-  marginBottom: 16,
-};
