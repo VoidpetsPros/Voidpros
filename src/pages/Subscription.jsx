@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout, startTrialCheckout } from "../lib/billing";
 import { getDisplayLookupUsage } from "../lib/lookups";
 import { useTheme } from "../hooks/ThemeContext";
+import BackButton from "../components/BackButton";
 
 const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges for karma"];
 const UNLIMITED_PERKS = [
@@ -41,12 +42,7 @@ export default function Subscription({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 720, margin: "0 auto" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+      <BackButton />
 
       <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 26, color: CREAM, textAlign: "center", margin: "0 0 8px" }}>
         Choose your plan

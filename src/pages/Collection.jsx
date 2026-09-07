@@ -6,6 +6,7 @@ import { useCollection } from "../hooks/useCollection";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
+import BackButton from "../components/BackButton";
 
 const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
 const RARITY_COLORS = {
@@ -86,6 +87,7 @@ export default function Collection({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 680, margin: "0 auto" }}>
+      <BackButton />
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 4, flexWrap: "wrap" }}>
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>My collection</p>
         <div style={{ textAlign: "right" }}>

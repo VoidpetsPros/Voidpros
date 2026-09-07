@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
@@ -317,15 +318,3 @@ export default function Results({ onRequireAuth }) {
   );
 }
 
-function BackButton() {
-  const navigate = useNavigate();
-  const { MUTED } = useTheme();
-  return (
-    <button
-      onClick={() => navigate("/search")}
-      style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-    >
-      <ArrowLeft size={14} /> Back
-    </button>
-  );
-}

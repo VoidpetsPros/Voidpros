@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, Send, Trophy } from "lucide-react";
+import { Search, Send, Trophy } from "lucide-react";
+import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
@@ -107,12 +108,7 @@ export default function Submit({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+      <BackButton />
 
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>

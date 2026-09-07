@@ -8,6 +8,7 @@ import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
 import TrialCTA from "../components/TrialCTA";
 import { useTheme } from "../hooks/ThemeContext";
+import BackButton from "../components/BackButton";
 
 export default function MyRequests({ onRequireAuth }) {
   const { isAuthed, user, profile, loading: authLoading } = useAuth();
@@ -99,6 +100,7 @@ export default function MyRequests({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
+      <BackButton />
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>My requests</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 20px" }}>
         Post the floor you're stuck on — other players attempt it using only your pets

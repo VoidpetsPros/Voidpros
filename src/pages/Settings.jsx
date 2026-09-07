@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { supabase } from "../lib/supabaseClient";
 import { openBillingPortal } from "../lib/billing";
+import BackButton from "../components/BackButton";
 
 function Row({ label, value, action, children }) {
   const { LINE, CREAM, MUTED } = useTheme();
@@ -79,12 +80,7 @@ export default function Settings({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+      <BackButton />
 
       <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 20px" }}>
         Settings

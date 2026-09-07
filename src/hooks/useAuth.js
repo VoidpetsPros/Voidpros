@@ -82,6 +82,13 @@ export function useAuthState() {
     return { data, error };
   };
 
+  // Re-sends the signup confirmation link — used when someone tries to log
+  // into an account that exists but hasn't clicked the email link yet.
+  const resendConfirmation = async (email) => {
+    const { error } = await supabase.auth.resend({ type: "signup", email });
+    return { error };
+  };
+
   const signInWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google" });
     return { data, error };
@@ -157,6 +164,7 @@ export function useAuthState() {
     hasNewChallenges,
     signUp,
     signIn,
+    resendConfirmation,
     signInWithGoogle,
     signOut,
     refreshProfile,

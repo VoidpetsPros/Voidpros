@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../hooks/ThemeContext";
+import BackButton from "../components/BackButton";
 
 const Section = ({ title, children }) => {
   const { CREAM, MUTED } = useTheme();
@@ -16,6 +17,7 @@ export default function TermsOfService() {
   const { CREAM, GOLD } = useTheme();
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
+      <BackButton />
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Terms of Service</p>
       <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/02/2026</p>
 

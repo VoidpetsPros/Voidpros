@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search as SearchIcon, ArrowLeft, Compass } from "lucide-react";
+import { Search as SearchIcon, Compass } from "lucide-react";
 import { useTheme } from "../hooks/ThemeContext";
+import BackButton from "../components/BackButton";
 
 const POPULAR_FLOORS = [12, 24, 33, 47, 58, 61, 75];
 
@@ -17,12 +18,7 @@ export default function Search() {
 
   return (
     <div style={{ padding: "24px 24px 100px", maxWidth: 580, margin: "0 auto" }}>
-      <button
-        onClick={() => navigate("/")}
-        style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+      <BackButton />
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
         <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>

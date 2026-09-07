@@ -8,6 +8,7 @@ import { supabase } from "../lib/supabaseClient";
 import { imageUrl } from "../hooks/useBuilds";
 import PetSlotEditor, { emptySlot, slotIsComplete } from "../components/PetSlotEditor";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import BackButton from "../components/BackButton";
 
 // Players now only submit screenshots — an admin looks at those screenshots
 // and enters the team shown, right here, before approving. Rejecting still
@@ -555,6 +556,7 @@ export default function Admin() {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 700, margin: "0 auto" }}>
+      <BackButton />
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 22, width: "fit-content", flexWrap: "wrap" }}>
         {TABS.map((t) => (
           <button

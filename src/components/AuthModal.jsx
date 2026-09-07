@@ -5,7 +5,7 @@ import logoMark from "../assets/logo.svg";
 import { useTheme } from "../hooks/ThemeContext";
 
 export default function AuthModal({ onClose, headline, subhead }) {
-  const { signUp, signIn, signInWithGoogle } = useAuth();
+  const { signUp, signIn, resendConfirmation, signInWithGoogle } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
@@ -15,6 +15,11 @@ export default function AuthModal({ onClose, headline, subhead }) {
   const [busy, setBusy] = useState(false);
 
   const [confirmSent, setConfirmSent] = useState(false);
+  // True when a sign-in attempt failed specifically because the account's
+  // email hasn't been confirmed yet — lets us swap the generic error for a
+  // clear message plus a resend option, instead of a raw Supabase string.
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [resendState, setResendState] = useState("idle"); // idle | busy | sent
 
   // These need to live inside the component (not at module scope) since
   // they depend on useTheme(), which only works inside a component.
@@ -57,6 +62,8 @@ export default function AuthModal({ onClose, headline, subhead }) {
 
   const handleSubmit = async () => {
     setError("");
+    setUnconfirmed(false);
+    setResendState("idle");
     if (!email.trim() || !password.trim()) {
       setError("Enter an email and password.");
       return;
@@ -70,7 +77,17 @@ export default function AuthModal({ onClose, headline, subhead }) {
       mode === "signup" ? await signUp(email, password, username.trim() || null) : await signIn(email, password);
     setBusy(false);
     if (authError) {
-      setError(authError.message);
+      // Supabase's unconfirmed-account error — code is the reliable check,
+      // but older supabase-js versions only set the message, so fall back
+      // to matching on that.
+      const isUnconfirmed =
+        authError.code === "email_not_confirmed" ||
+        /email.*not.*confirm/i.test(authError.message || "");
+      if (mode === "signin" && isUnconfirmed) {
+        setUnconfirmed(true);
+      } else {
+        setError(authError.message);
+      }
       return;
     }
     if (mode === "signup" && !data?.session) {
@@ -80,6 +97,17 @@ export default function AuthModal({ onClose, headline, subhead }) {
       return;
     }
     onClose();
+  };
+
+  const handleResend = async () => {
+    setResendState("busy");
+    const { error: resendError } = await resendConfirmation(email);
+    if (resendError) {
+      setResendState("idle");
+      setError(resendError.message);
+    } else {
+      setResendState("sent");
+    }
   };
 
   const handleGoogle = async () => {
@@ -182,6 +210,25 @@ export default function AuthModal({ onClose, headline, subhead }) {
 
         {error && <p style={{ fontSize: 12.5, color: DANGER, margin: "0 0 12px" }}>{error}</p>}
 
+        {unconfirmed && (
+          <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 9, padding: "10px 12px", marginBottom: 12 }}>
+            <p style={{ fontSize: 12.5, color: CREAM, margin: "0 0 6px", lineHeight: 1.5 }}>
+              This account's email hasn't been confirmed yet. Check your inbox for the
+              link, or we can send a new one.
+            </p>
+            {resendState === "sent" ? (
+              <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>Confirmation email sent to {email}.</p>
+            ) : (
+              <span
+                onClick={resendState === "busy" ? undefined : handleResend}
+                style={{ fontSize: 12.5, color: VIOLET, cursor: resendState === "busy" ? "default" : "pointer", fontWeight: 600 }}
+              >
+                {resendState === "busy" ? "Sending…" : "Resend confirmation email"}
+              </span>
+            )}
+          </div>
+        )}
+
         <button onClick={handleSubmit} disabled={busy} style={primaryButtonStyle}>
           {busy ? "Working…" : mode === "signup" ? "Create account" : "Sign in"}
         </button>
@@ -194,14 +241,28 @@ export default function AuthModal({ onClose, headline, subhead }) {
           {mode === "signup" ? (
             <>
               Already have an account?{" "}
-              <span style={{ color: VIOLET, cursor: "pointer" }} onClick={() => setMode("signin")}>
+              <span
+                style={{ color: VIOLET, cursor: "pointer" }}
+                onClick={() => {
+                  setMode("signin");
+                  setError("");
+                  setUnconfirmed(false);
+                }}
+              >
                 Sign in
               </span>
             </>
           ) : (
             <>
               New here?{" "}
-              <span style={{ color: VIOLET, cursor: "pointer" }} onClick={() => setMode("signup")}>
+              <span
+                style={{ color: VIOLET, cursor: "pointer" }}
+                onClick={() => {
+                  setMode("signup");
+                  setError("");
+                  setUnconfirmed(false);
+                }}
+              >
                 Create an account
               </span>
             </>

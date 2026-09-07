@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { supabase } from "../lib/supabaseClient";
@@ -8,6 +8,7 @@ import { uploadSubmissionImage } from "../lib/uploadImage";
 import { containsProfanity } from "../lib/profanity";
 import ImageUploadSlot from "../components/ImageUploadSlot";
 import PetAvatar from "../components/PetAvatar";
+import BackButton from "../components/BackButton";
 import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -165,12 +166,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto" }}>
-      <button
-        onClick={() => navigate("/fulfill")}
-        style={{ background: "none", border: "none", color: MUTED, fontSize: 13, display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: 0, marginBottom: 20 }}
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+      <BackButton />
 
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Attempt floor {request.stage}</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
