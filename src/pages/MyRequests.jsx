@@ -18,6 +18,7 @@ export default function MyRequests({ onRequireAuth }) {
   const { requests: myRequests, loading: myLoading, refresh: refreshMine } = useMyRequests(user?.id);
   const [dismissingId, setDismissingId] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
+  const [confirmingId, setConfirmingId] = useState(null);
 
   const [stageInput, setStageInput] = useState("");
   const [showRequester, setShowRequester] = useState(true);
@@ -35,8 +36,7 @@ export default function MyRequests({ onRequireAuth }) {
     refreshMine();
   };
 
-  const handleCancel = async (requestId) => {
-    if (!window.confirm("Cancel this request? You'll be able to post a new one right after.")) return;
+  const performCancel = async (requestId) => {
     setCancellingId(requestId);
     const { error: cancelError } = await cancelRequest(requestId);
     setCancellingId(null);
@@ -45,6 +45,12 @@ export default function MyRequests({ onRequireAuth }) {
       return;
     }
     refreshMine();
+  };
+
+  const handleConfirmCancel = () => {
+    const requestId = confirmingId;
+    setConfirmingId(null);
+    performCancel(requestId);
   };
 
   const handleCreateRequest = async () => {
@@ -176,7 +182,7 @@ export default function MyRequests({ onRequireAuth }) {
                 </p>
               </div>
               <button
-                onClick={() => handleCancel(r.id)}
+                onClick={() => setConfirmingId(r.id)}
                 disabled={cancellingId === r.id}
                 style={{ background: "none", border: `1px solid ${DANGER}`, color: DANGER, borderRadius: 8, padding: "7px 13px", fontSize: 12, fontWeight: 600, cursor: cancellingId === r.id ? "default" : "pointer", flexShrink: 0 }}
               >
@@ -185,6 +191,54 @@ export default function MyRequests({ onRequireAuth }) {
             </div>
           )
         )
+      )}
+
+      {confirmingId && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              background: PANEL,
+              border: `1px solid ${LINE}`,
+              borderRadius: 16,
+              padding: 24,
+              maxWidth: 360,
+              width: "100%",
+              boxShadow: "0 20px 50px -12px rgba(0,0,0,0.5)",
+            }}
+          >
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 17, color: CREAM, margin: "0 0 8px" }}>
+              Cancel this request?
+            </p>
+            <p style={{ fontSize: 13, color: MUTED, margin: "0 0 20px", lineHeight: 1.55 }}>
+              You'll be able to post a new one right after.
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setConfirmingId(null)}
+                style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+              >
+                Never mind
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                style={{ background: DANGER, border: "none", color: "#FFFFFF", borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+              >
+                Cancel request
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
