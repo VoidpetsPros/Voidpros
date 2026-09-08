@@ -359,12 +359,6 @@ export default function App() {
       </div>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-
-      <footer style={{ borderTop: `1px solid ${LINE}`, background: PANEL, padding: "20px 24px", textAlign: "center" }}>
-        <Link to="/terms" style={{ fontSize: 12, color: MUTED, textDecoration: "none" }}>
-          Terms of Service
-        </Link>
-      </footer>
     </div>
   );
 }
