@@ -29,6 +29,18 @@ function VoidCreature({ style, variant = 1, color = "#D9CDF0" }) {
         <path d="M46 84 Q60 92 74 84" stroke="#2B2620" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.3" />
       </g>
     ),
+    // Sleeker, more angular head silhouette — pointed ears, narrower
+    // jaw. Reads as a "higher form" upgrade over the softer shapes above.
+    4: (
+      <g>
+        <path d="M34 44 L10 8 L46 26 Z" fill={color} />
+        <path d="M86 44 L110 8 L74 26 Z" fill={color} />
+        <path d="M60 18 L86 44 L78 102 L60 130 L42 102 L34 44 Z" fill={color} />
+        <circle cx="48" cy="66" r="6" fill="#2B2620" />
+        <circle cx="72" cy="66" r="6" fill="#2B2620" />
+        <path d="M60 80 L60 100" stroke="#2B2620" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
+      </g>
+    ),
   };
   return (
     <svg viewBox="0 0 120 140" width="120" height="140" style={style}>
