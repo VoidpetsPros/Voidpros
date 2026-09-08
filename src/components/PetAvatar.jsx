@@ -29,16 +29,43 @@ function VoidCreature({ style, variant = 1, color = "#D9CDF0" }) {
         <path d="M46 84 Q60 92 74 84" stroke="#2B2620" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.3" />
       </g>
     ),
-    // Sleeker, more angular head silhouette — pointed ears, narrower
-    // jaw. Reads as a "higher form" upgrade over the softer shapes above.
-    4: (
+    // Lust — sharp, heart-notched silhouette tapering to a point.
+    5: (
       <g>
-        <path d="M34 44 L10 8 L46 26 Z" fill={color} />
-        <path d="M86 44 L110 8 L74 26 Z" fill={color} />
-        <path d="M60 18 L86 44 L78 102 L60 130 L42 102 L34 44 Z" fill={color} />
-        <circle cx="48" cy="66" r="6" fill="#2B2620" />
-        <circle cx="72" cy="66" r="6" fill="#2B2620" />
-        <path d="M60 80 L60 100" stroke="#2B2620" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
+        <path d="M60 32 L34 14 L18 38 L60 128 L102 38 L86 14 Z" fill={color} />
+        <circle cx="46" cy="58" r="6" fill="#2B2620" />
+        <circle cx="74" cy="58" r="6" fill="#2B2620" />
+        <path d="M50 80 L60 94 L70 80" stroke="#2B2620" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" />
+      </g>
+    ),
+    // Down Bad — drooping ears, downturned frown.
+    6: (
+      <g>
+        <path d="M26 32 Q8 55 24 76" stroke={color} strokeWidth="12" fill="none" strokeLinecap="round" />
+        <path d="M94 32 Q112 55 96 76" stroke={color} strokeWidth="12" fill="none" strokeLinecap="round" />
+        <ellipse cx="60" cy="78" rx="42" ry="44" fill={color} />
+        <circle cx="46" cy="66" r="6" fill="#2B2620" />
+        <circle cx="74" cy="66" r="6" fill="#2B2620" />
+        <path d="M46 94 Q60 82 74 94" stroke="#2B2620" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.35" />
+      </g>
+    ),
+    // Greed — faceted gem cut, like a cut jewel.
+    7: (
+      <g>
+        <path d="M60 12 L98 44 L80 128 L40 128 L22 44 Z" fill={color} />
+        <path d="M22 44 L98 44 M60 12 L60 128" stroke="#2B2620" strokeWidth="2" opacity="0.2" />
+        <circle cx="47" cy="60" r="6" fill="#2B2620" />
+        <circle cx="73" cy="60" r="6" fill="#2B2620" />
+      </g>
+    ),
+    // Sloth — heavy, slumped shape, closed sleepy eyes, a little "z" drifting off.
+    8: (
+      <g>
+        <ellipse cx="58" cy="82" rx="48" ry="40" fill={color} />
+        <path d="M38 68 Q46 60 54 68" stroke="#2B2620" strokeWidth="4" fill="none" strokeLinecap="round" />
+        <path d="M64 68 Q72 60 80 68" stroke="#2B2620" strokeWidth="4" fill="none" strokeLinecap="round" />
+        <path d="M45 96 Q58 102 71 96" stroke="#2B2620" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.35" />
+        <path d="M92 24 L104 24 L92 36 L104 36" stroke={color} strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
       </g>
     ),
   };
