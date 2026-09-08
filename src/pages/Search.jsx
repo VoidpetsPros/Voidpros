@@ -25,7 +25,7 @@ export default function Search() {
           <Compass size={17} color={GOLD} />
         </div>
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>
-          Which floor are you stuck on?
+          Search a floor
         </p>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 24px", lineHeight: 1.6 }}>

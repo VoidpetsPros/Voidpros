@@ -161,7 +161,7 @@ export default function Results({ onRequireAuth }) {
       <div style={{ padding: "24px", maxWidth: 640, margin: "0 auto" }}>
         <BackButton />
         <div style={{ background: PANEL, border: `1px solid rgba(248,113,113,0.4)`, borderRadius: 12, padding: "24px", textAlign: "center" }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 17, color: CREAM, margin: "0 0 8px" }}>Something went wrong loading builds</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 17, color: CREAM, margin: "0 0 8px" }}>Something went wrong loading builds</p>
           <p style={{ fontSize: 12.5, color: MUTED, fontFamily: "monospace", margin: 0, wordBreak: "break-word" }}>{buildsError}</p>
         </div>
       </div>
@@ -178,11 +178,11 @@ export default function Results({ onRequireAuth }) {
         <BackButton />
         <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
           {matching.length > 0 ? (
-            <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
               {matching.length} build{matching.length > 1 ? "s" : ""} found for floor {stage}
             </p>
           ) : (
-            <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
               You're out of free lookups
             </p>
           )}
@@ -200,7 +200,7 @@ export default function Results({ onRequireAuth }) {
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />
 
-      <p style={{ fontFamily: "Georgia, serif", fontSize: 22, color: CREAM, margin: "0 0 4px" }}>Floor {stage}</p>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: "0 0 4px" }}>Floor {stage}</p>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
         {matching.length > 0
           ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
@@ -211,7 +211,7 @@ export default function Results({ onRequireAuth }) {
 
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
             Nobody's cracked floor {stage} yet
           </p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
@@ -226,7 +226,7 @@ export default function Results({ onRequireAuth }) {
         </div>
       ) : matching.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
             No build matches what you have
           </p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
@@ -270,7 +270,7 @@ export default function Results({ onRequireAuth }) {
         <>
           {requestSent ? (
             <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: 20, marginTop: 20, textAlign: "center" }}>
-              <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: "0 0 6px" }}>Request posted</p>
+              <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 16, color: CREAM, margin: "0 0 6px" }}>Request posted</p>
               <p style={{ fontSize: 13, color: MUTED, margin: 0, lineHeight: 1.6 }}>
                 Other players can now attempt floor {stage} using only the pets and items
                 you have. Check the{" "}

@@ -92,8 +92,7 @@ export default function Submit({ onRequireAuth }) {
         <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 16, padding: "32px 24px" }}>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
-            It's in review — once approved, it'll show up as verified in search and you'll
-            earn a free lookup.
+            It's in review — once approved, you'll earn karma!
           </p>
           <button
             onClick={() => navigate(`/results/${floor}`)}
@@ -116,8 +115,8 @@ export default function Submit({ onRequireAuth }) {
         <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · +5 karma when verified</span>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Just the screenshots — no need to type out your team. We'll review them and add
-        it to search once approved, and you'll earn a free lookup.
+        Just screenshot proof you beat the floor, a shot of your full team, and
+        screenshots of the items on each pet. Once it's approved, you'll earn karma.
       </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -159,7 +158,7 @@ export default function Submit({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Pets used"
-          hint="Screenshot of your team going into the fight — make sure names/icons are visible."
+          hint="Screenshot of your 4 pet team."
           files={petFiles}
           onAdd={addFiles(petFiles, setPetFiles, 2)}
           onRemove={removeFile(setPetFiles)}
@@ -169,7 +168,7 @@ export default function Submit({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Items used"
-          hint="Screenshots of the items equipped or consumed — up to 4."
+          hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
           files={itemFiles}
           onAdd={addFiles(itemFiles, setItemFiles, 4)}
           onRemove={removeFile(setItemFiles)}
@@ -185,7 +184,7 @@ export default function Submit({ onRequireAuth }) {
             setNote(e.target.value);
             if (error) setError("");
           }}
-          placeholder="Anything about timing or order that isn't obvious from the screenshots."
+          placeholder="Any certain strategy used with these pets?"
           rows={3}
           style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: 12, color: CREAM, fontSize: 13.5, resize: "none", marginBottom: error ? 8 : 4, fontFamily: "inherit" }}
         />

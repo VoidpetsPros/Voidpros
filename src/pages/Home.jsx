@@ -34,16 +34,11 @@ export default function Home({ onRequireAuth }) {
       {/* Hero */}
       <div style={{ padding: "48px 28px 8px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
         <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 32, lineHeight: 1.25, letterSpacing: -0.4, color: CREAM, margin: "0 0 14px" }}>
-          Find a build for your floor
+          Stuck on a floor? Find a solution now
         </h1>
         <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 8px" }}>
-          Search a floor and see which builds only use pets and items you actually own.
+          Match your existing collection on voidpros, then search the floor you're stuck on for solutions matching your build & items.
         </p>
-        {!isAuthed && (
-          <p style={{ color: MUTED, fontSize: 13, margin: "0 0 8px" }}>
-            Sign in to start — pets and items you own, saved for real this time.
-          </p>
-        )}
       </div>
 
       {/* Two-step guide: this is the actual point of the page — get your
@@ -59,8 +54,7 @@ export default function Home({ onRequireAuth }) {
           </div>
           <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Build your collection</p>
           <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
-            Mark every pet and item you actually own. This is what makes search results
-            real instead of a wishlist.
+            Mark every pet and item you actually own.
           </p>
           <button
             onClick={goCollection}
@@ -79,8 +73,7 @@ export default function Home({ onRequireAuth }) {
           </div>
           <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Search a floor</p>
           <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
-            Tell us which floor is giving you trouble — we'll only show builds you can
-            actually make with what you own.
+            Search a floor and we'll only show you solutions matching what you have.
           </p>
           <button
             onClick={goSearch}

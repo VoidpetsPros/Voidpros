@@ -14,7 +14,7 @@ const Section = ({ title, children }) => {
 };
 
 export default function TermsOfService() {
-  const { CREAM, GOLD } = useTheme();
+  const { CREAM, MUTED, GOLD } = useTheme();
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />

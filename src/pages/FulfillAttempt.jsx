@@ -170,9 +170,9 @@ export default function FulfillAttempt({ onRequireAuth }) {
 
       <p style={{ fontFamily: "Georgia, serif", fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Attempt floor {request.stage}</p>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
-        Use only pets and items from the requester's pool below. Just the screenshots —
-        no need to type out your team. We'll review them and enter what you used, and
-        you'll earn 10 karma once it's verified.
+        Use only pets and items from the requester's pool below. Just screenshot proof
+        you beat the floor, a shot of your full team, and screenshots of the items on
+        each pet. Once it's approved, you'll earn 10 karma.
       </p>
 
       <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: 14, marginBottom: 22 }}>
@@ -221,7 +221,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Pets used"
-          hint="Screenshot of your team going into the fight — make sure names/icons are visible."
+          hint="Screenshot of your 4 pet team."
           files={petFiles}
           onAdd={addFiles(petFiles, setPetFiles, 2)}
           onRemove={removeFile(setPetFiles)}
@@ -231,7 +231,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Items used"
-          hint="Screenshots of the items equipped or consumed — up to 4."
+          hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
           files={itemFiles}
           onAdd={addFiles(itemFiles, setItemFiles, 4)}
           onRemove={removeFile(setItemFiles)}
@@ -247,7 +247,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
             setNote(e.target.value);
             if (error) setError("");
           }}
-          placeholder="Anything about timing or order that isn't obvious from the screenshots."
+          placeholder="Any certain strategy used with these pets?"
           rows={3}
           style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: 12, color: CREAM, fontSize: 13.5, resize: "none", marginBottom: error ? 8 : 4, fontFamily: "inherit" }}
         />

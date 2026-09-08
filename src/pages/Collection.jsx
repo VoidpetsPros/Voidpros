@@ -98,8 +98,7 @@ export default function Collection({ onRequireAuth }) {
         </div>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
-        Changes save immediately — this is a real database now, not a browser tab.
-        Refresh the page and your picks will still be here.
+        Update your collection anytime you get a new item or pet!
       </p>
 
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 18, flexWrap: "wrap" }}>
