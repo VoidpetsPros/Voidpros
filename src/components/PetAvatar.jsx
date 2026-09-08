@@ -83,7 +83,7 @@ export default function PetAvatar({ pet, size = 40 }) {
       <img
         src={pet.image_url}
         alt={pet.name}
-        style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+        style={{ width: size, height: size, borderRadius: 10, objectFit: "cover", flexShrink: 0 }}
       />
     );
   }
@@ -92,19 +92,16 @@ export default function PetAvatar({ pet, size = 40 }) {
       style={{
         width: size,
         height: size,
-        borderRadius: "50%",
-        background: pet.color,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
         flexShrink: 0,
       }}
     >
       <VoidCreature
         variant={pet.variant}
         color={pet.color}
-        style={{ width: size * 1.35, height: size * 1.35, marginTop: size * 0.18 }}
+        style={{ width: size * 1.6, height: size * 1.6 }}
       />
     </div>
   );
