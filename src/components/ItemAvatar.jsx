@@ -5,6 +5,15 @@ const ITEM_ICONS = { lamp: Lamp, testtube: TestTube2, coins: Coins, sprout: Spro
 
 export default function ItemAvatar({ item, size = 40 }) {
   if (!item) return null;
+  if (item.image_url) {
+    return (
+      <img
+        src={item.image_url}
+        alt={item.name}
+        style={{ width: size, height: size, borderRadius: 10, objectFit: "cover", flexShrink: 0 }}
+      />
+    );
+  }
   const Icon = ITEM_ICONS[item.icon] || Sparkles;
   return (
     <div

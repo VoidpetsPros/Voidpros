@@ -39,6 +39,15 @@ function VoidCreature({ style, variant = 1, color = "#D9CDF0" }) {
 
 export default function PetAvatar({ pet, size = 40 }) {
   if (!pet) return null;
+  if (pet.image_url) {
+    return (
+      <img
+        src={pet.image_url}
+        alt={pet.name}
+        style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+      />
+    );
+  }
   return (
     <div
       style={{

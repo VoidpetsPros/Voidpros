@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -6,7 +6,10 @@ import { useAdminBuilds } from "../hooks/useAdminBuilds";
 import { useAdminFulfillments } from "../hooks/useAdminFulfillments";
 import { supabase } from "../lib/supabaseClient";
 import { imageUrl } from "../hooks/useBuilds";
+import { uploadCatalogImage } from "../lib/uploadImage";
 import PetSlotEditor, { emptySlot, slotIsComplete } from "../components/PetSlotEditor";
+import PetAvatar from "../components/PetAvatar";
+import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 import BackButton from "../components/BackButton";
 
@@ -525,6 +528,112 @@ function ManageBuilds() {
   );
 }
 
+// One row: current avatar, name, and an upload/replace button. Uploading
+// writes the file to the catalog-images bucket at a fixed path per
+// pet/item (so re-uploading just replaces it), then updates that row's
+// image_url — after which PetAvatar/ItemAvatar everywhere else on the
+// site render the real image instead of the placeholder shape/icon.
+function CatalogImageRow({ id, kind, name, imageUrl: currentImageUrl, avatar, onUploaded }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef(null);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError("");
+    setBusy(true);
+    try {
+      const url = await uploadCatalogImage(file, kind, id);
+      const { error: updateError } = await supabase.from(kind).update({ image_url: url }).eq("id", id);
+      if (updateError) throw updateError;
+      onUploaded(id, url);
+    } catch (err) {
+      setError(err.message || "Upload failed.");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${LINE}` }}>
+      {avatar}
+      <span style={{ flex: 1, fontSize: 13.5, color: CREAM, minWidth: 0 }}>{name}</span>
+      {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
+      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={busy}
+        style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+      >
+        {busy ? "Uploading…" : currentImageUrl ? "Replace" : "Upload"}
+      </button>
+    </div>
+  );
+}
+
+function CatalogImages({ pets, items }) {
+  const [localPets, setLocalPets] = useState(pets);
+  const [localItems, setLocalItems] = useState(items);
+  const [query, setQuery] = useState("");
+
+  const handlePetUploaded = (id, url) =>
+    setLocalPets((prev) => prev.map((p) => (p.id === id ? { ...p, image_url: url } : p)));
+  const handleItemUploaded = (id, url) =>
+    setLocalItems((prev) => prev.map((i) => (i.id === id ? { ...i, image_url: url } : i)));
+
+  const q = query.toLowerCase();
+  const filteredPets = localPets.filter((p) => p.name.toLowerCase().includes(q));
+  const filteredItems = localItems.filter((i) => i.name.toLowerCase().includes(q));
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search pets or items..."
+        style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "10px 12px", color: CREAM, fontSize: 14, outline: "none", marginBottom: 18 }}
+      />
+
+      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+        Pets — {localPets.filter((p) => p.image_url).length}/{localPets.length} have images
+      </p>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px", marginBottom: 24 }}>
+        {filteredPets.map((p) => (
+          <CatalogImageRow
+            key={p.id}
+            id={p.id}
+            kind="pets"
+            name={p.name}
+            imageUrl={p.image_url}
+            avatar={<PetAvatar pet={p} size={36} />}
+            onUploaded={handlePetUploaded}
+          />
+        ))}
+        {filteredPets.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
+      </div>
+
+      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+        Items — {localItems.filter((i) => i.image_url).length}/{localItems.length} have images
+      </p>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px" }}>
+        {filteredItems.map((i) => (
+          <CatalogImageRow
+            key={i.id}
+            id={i.id}
+            kind="items"
+            name={i.name}
+            imageUrl={i.image_url}
+            avatar={<ItemAvatar item={i} size={36} />}
+            onUploaded={handleItemUploaded}
+          />
+        ))}
+        {filteredItems.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { profile, loading: authLoading } = useAuth();
   const { pets, items, itemsByType, loading: catalogLoading } = useCatalog();
@@ -552,6 +661,7 @@ export default function Admin() {
     { id: "queue", label: "Review queue" },
     { id: "quick", label: "Quick submit" },
     { id: "manage", label: "Manage builds" },
+    { id: "images", label: "Catalog images" },
   ];
 
   return (
@@ -580,6 +690,7 @@ export default function Admin() {
 
       {tab === "quick" && <QuickSubmitBuild pets={pets} itemsByType={itemsByType} />}
       {tab === "manage" && <ManageBuilds />}
+      {tab === "images" && <CatalogImages pets={pets} items={items} />}
 
       {tab === "queue" && (
         <>
