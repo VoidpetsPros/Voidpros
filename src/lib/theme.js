@@ -50,3 +50,13 @@ export const RARITY_COLORS = {
   Uber: "#D9534F",
 };
 
+// Same idea, but for a pet's element/typing — matches the color values
+// already used on the pet rows themselves (see migration 0015).
+export const ELEMENT_COLORS = {
+  Metal: "#B8B8C4",
+  Wood: "#A8C97F",
+  Fire: "#E89B7D",
+  Earth: "#C9A876",
+  Water: "#8FC1E0",
+};
+

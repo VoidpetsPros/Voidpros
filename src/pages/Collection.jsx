@@ -7,7 +7,7 @@ import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
-import { RARITY_COLORS } from "../lib/theme";
+import { RARITY_COLORS, ELEMENT_COLORS } from "../lib/theme";
 
 const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
 
@@ -237,7 +237,7 @@ function PetTile({ pet, owned, onToggle }) {
         </div>
       )}
       <PetAvatar pet={pet} size={48} />
-      <span style={{ fontSize: 11.5, color: RARITY_COLORS[pet.rarity] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
+      <span style={{ fontSize: 11.5, color: ELEMENT_COLORS[pet.element] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
     </button>
   );
 }
@@ -267,7 +267,7 @@ function ItemTile({ item, owned, onToggle }) {
         </div>
       )}
       <ItemAvatar item={item} size={44} />
-      <span style={{ fontSize: 11.5, color: RARITY_COLORS[item.rarity] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
+      <span style={{ fontSize: 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
     </button>
   );
 }
