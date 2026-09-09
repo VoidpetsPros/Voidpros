@@ -1,9 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { ShieldCheck, Check, ThumbsUp, Lock } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import CommentsSection from "./CommentsSection";
+import TrialCTA from "./TrialCTA";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { missingForBuild } from "../lib/matching";
@@ -147,22 +147,15 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         ))}
       </div>
 
-      {itemsHidden &&
-        (build.you_own_all_items ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(127,201,127,0.1)", border: "1px solid rgba(127,201,127,0.35)", borderRadius: 9, padding: "9px 12px", marginBottom: 12 }}>
-            <Check size={14} color="#7FC97F" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: 12.5, color: CREAM }}>You already have every item this build needs.</span>
+      {itemsHidden && build.has_items && (
+        <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: 12, marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+            <Lock size={13} color={MUTED} />
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>Unlock Item View</span>
           </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "9px 12px", marginBottom: 12 }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: MUTED }}>
-              <Lock size={13} /> Item details are hidden on Free.
-            </span>
-            <Link to="/subscribe" style={{ fontSize: 12.5, fontWeight: 600, color: GOLD, textDecoration: "none" }}>
-              Unlock item view →
-            </Link>
-          </div>
-        ))}
+          <TrialCTA fullWidth />
+        </div>
+      )}
 
       {build.note && <p style={{ fontSize: 13.5, color: CREAM, lineHeight: 1.6, margin: "0 0 12px" }}>{build.note}</p>}
 
