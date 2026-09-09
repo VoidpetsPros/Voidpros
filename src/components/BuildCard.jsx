@@ -1,9 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Check, ThumbsUp, Lock } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import CommentsSection from "./CommentsSection";
-import TrialCTA from "./TrialCTA";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { missingForBuild } from "../lib/matching";
@@ -88,6 +88,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
 
 export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
   // items_visible comes back from get_search_results (undefined when a
@@ -147,57 +148,56 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         ))}
       </div>
 
-      {itemsHidden && build.has_items && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: CREAM }}>
-            <Lock size={13} color={MUTED} /> Unlock item view to see what this build needs
-          </span>
-          <TrialCTA
-            hideSubtext
-            style={{ padding: "7px 12px", fontSize: 12.5, borderRadius: 7 }}
-          />
-        </div>
-      )}
-
       {build.note && <p style={{ fontSize: 13.5, color: CREAM, lineHeight: 1.6, margin: "0 0 12px" }}>{build.note}</p>}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {isOwnBuild ? <span style={{ fontSize: 12, color: MUTED }}>Your submission</span> : <span />}
 
-        {isVerified && onVote && !isOwnBuild && (
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {itemsHidden && build.has_items && (
             <button
-              onClick={() => onVote(build.id)}
-              aria-label="Upvote this build"
-              style={{
-                background: build.userVote === "up" ? "rgba(139,92,246,0.12)" : "none",
-                border: `1px solid ${build.userVote === "up" ? GOLD : LINE}`,
-                color: build.userVote === "up" ? GOLD : MUTED,
-                borderRadius: 7,
-                width: 28,
-                height: 28,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-              }}
+              onClick={() => navigate("/subscribe")}
+              style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
             >
-              <ThumbsUp size={13} />
+              <Lock size={12} /> Unlock Item View
             </button>
-            <span style={{ fontSize: 12.5, color: CREAM, minWidth: 20, textAlign: "center" }}>
-              {build.upvotes}
-            </span>
-          </div>
-        )}
+          )}
 
-        {/* Read-only count wherever voting isn't wired up (Community, My
-            Requests) — upvotes never affected ranking anyway, karma or not. */}
-        {isVerified && (!onVote || isOwnBuild) && (
-          <div style={{ display: "flex", alignItems: "center", gap: 5, color: MUTED }}>
-            <ThumbsUp size={13} />
-            <span style={{ fontSize: 12.5 }}>{build.upvotes} upvote{build.upvotes !== 1 ? "s" : ""}</span>
-          </div>
-        )}
+          {isVerified && onVote && !isOwnBuild && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <button
+                onClick={() => onVote(build.id)}
+                aria-label="Upvote this build"
+                style={{
+                  background: build.userVote === "up" ? "rgba(139,92,246,0.12)" : "none",
+                  border: `1px solid ${build.userVote === "up" ? GOLD : LINE}`,
+                  color: build.userVote === "up" ? GOLD : MUTED,
+                  borderRadius: 7,
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <ThumbsUp size={13} />
+              </button>
+              <span style={{ fontSize: 12.5, color: CREAM, minWidth: 20, textAlign: "center" }}>
+                {build.upvotes}
+              </span>
+            </div>
+          )}
+
+          {/* Read-only count wherever voting isn't wired up (Community, My
+              Requests) — upvotes never affected ranking anyway, karma or not. */}
+          {isVerified && (!onVote || isOwnBuild) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 5, color: MUTED }}>
+              <ThumbsUp size={13} />
+              <span style={{ fontSize: 12.5 }}>{build.upvotes} upvote{build.upvotes !== 1 ? "s" : ""}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <CommentsSection buildId={build.id} verified={isVerified} initialCount={build.comment_count || 0} />
