@@ -16,6 +16,7 @@ export default function Submit({ onRequireAuth }) {
 
   const [floor, setFloor] = useState("");
   const [showAuthor, setShowAuthor] = useState(true);
+  const [petsOnly, setPetsOnly] = useState(false);
   const [note, setNote] = useState("");
   const [petFiles, setPetFiles] = useState([]);
   const [itemFiles, setItemFiles] = useState([]);
@@ -47,7 +48,7 @@ export default function Submit({ onRequireAuth }) {
     const floorNum = parseInt(floor, 10);
     if (!floorNum || floorNum < 1) missing.push("which floor this is for");
     if (petFiles.length === 0) missing.push("a screenshot of the pets you used");
-    if (itemFiles.length === 0) missing.push("at least one screenshot of the items you used");
+    if (!petsOnly && itemFiles.length === 0) missing.push("at least one screenshot of the items you used");
 
     if (missing.length > 0) {
       setError(`Add ${missing.join(", ")}. Submissions without these are automatically denied.`);
@@ -62,13 +63,16 @@ export default function Submit({ onRequireAuth }) {
     try {
       const uploaded = [];
       for (const f of petFiles) uploaded.push({ kind: "pets", storage_path: await uploadSubmissionImage(f.file, user.id) });
-      for (const f of itemFiles) uploaded.push({ kind: "items", storage_path: await uploadSubmissionImage(f.file, user.id) });
+      if (!petsOnly) {
+        for (const f of itemFiles) uploaded.push({ kind: "items", storage_path: await uploadSubmissionImage(f.file, user.id) });
+      }
 
       const { error: rpcError } = await supabase.rpc("submit_build", {
         p_stage: floorNum,
         p_note: note,
         p_show_author: showAuthor,
         p_images: uploaded,
+        p_pets_only: petsOnly,
       });
 
       if (rpcError) {
@@ -112,8 +116,9 @@ export default function Submit({ onRequireAuth }) {
         <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · counts toward Leaderboards</span>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Just a shot of your full team and screenshots of the items on each pet. Once
-        it's approved, it'll count toward the Leaderboards.
+        Just a shot of your full team and screenshots of the items on each pet — or
+        check "pets only" below to skip the items screenshot entirely. Once it's
+        approved, it'll count toward the Leaderboards.
       </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -135,10 +140,25 @@ export default function Submit({ onRequireAuth }) {
         />
       </div>
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 22px", cursor: "pointer" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 10px", cursor: "pointer" }}>
         <input type="checkbox" checked={showAuthor} onChange={(e) => setShowAuthor(e.target.checked)} style={{ width: 15, height: 15 }} />
         <span style={{ fontSize: 12.5, color: MUTED }}>
           Show my username on this submission {showAuthor ? "" : "(posting anonymously)"}
+        </span>
+      </label>
+
+      <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 22px", cursor: "pointer" }}>
+        <input
+          type="checkbox"
+          checked={petsOnly}
+          onChange={(e) => {
+            setPetsOnly(e.target.checked);
+            if (error) setError("");
+          }}
+          style={{ width: 15, height: 15 }}
+        />
+        <span style={{ fontSize: 12.5, color: MUTED }}>
+          Pets only — skip the items screenshot
         </span>
       </label>
 
@@ -153,16 +173,18 @@ export default function Submit({ onRequireAuth }) {
           required
           error={!!error}
         />
-        <ImageUploadSlot
-          label="Items used"
-          hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
-          files={itemFiles}
-          onAdd={addFiles(itemFiles, setItemFiles, 4)}
-          onRemove={removeFile(setItemFiles)}
-          max={4}
-          required
-          error={!!error}
-        />
+        {!petsOnly && (
+          <ImageUploadSlot
+            label="Items used"
+            hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
+            files={itemFiles}
+            onAdd={addFiles(itemFiles, setItemFiles, 4)}
+            onRemove={removeFile(setItemFiles)}
+            max={4}
+            required
+            error={!!error}
+          />
+        )}
 
         <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Notes (optional)</p>
         <textarea

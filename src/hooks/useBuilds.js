@@ -2,9 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 
 // Fetches every non-rejected build submitted for a given floor, along with
-// its 4 team slots and proof images. Also fetches which of these builds the
-// current viewer has already voted on, so the UI can reflect that without a
-// second round trip per build.
+// its 4 team slots and proof images, via get_search_results — a server-side
+// function that redacts item data (hat/scarf/accessory ids+levels, and
+// item-kind proof images) for anyone who isn't subscribed. Free/anonymous
+// viewers still get pet_id/pet_level and a you_own_all_items flag per
+// build. Also fetches which of these builds the current viewer has already
+// voted on, so the UI can reflect that without a second round trip per build.
 export function useBuilds(stage, userId) {
   const [builds, setBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,34 +22,24 @@ export function useBuilds(stage, userId) {
     setLoading(true);
     setError(null);
 
-    const { data, error: fetchError } = await supabase
-      .from("builds")
-      .select(
-        `
-        id, stage, note, status, upvotes, comment_count, show_author, author_id, created_at,
-        author:profiles!author_id(username),
-        team:build_team_slots(*),
-        images:build_images(kind, storage_path)
-      `
-      )
-      .eq("stage", Number(stage))
-      .neq("status", "rejected")
-      .order("status", { ascending: false }) // verified first
-      .order("upvotes", { ascending: false });
+    const { data, error: fetchError } = await supabase.rpc("get_search_results", {
+      p_stage: Number(stage),
+    });
 
     if (fetchError) {
-      console.error("useBuilds query failed:", fetchError);
+      console.error("get_search_results query failed:", fetchError);
       setError(fetchError.message);
       setLoading(false);
       return;
     }
 
     let withViewerState = data || [];
-    // sort team slots by slot_index client-side (Supabase doesn't let us
-    // order a nested relation independently of the parent order)
+    // team/images come back as null (not []) from jsonb_agg when a build
+    // has no rows to aggregate — normalize both to arrays.
     withViewerState = withViewerState.map((b) => ({
       ...b,
       team: [...(b.team || [])].sort((a, b2) => a.slot_index - b2.slot_index),
+      images: b.images || [],
     }));
 
     if (userId && withViewerState.length > 0) {

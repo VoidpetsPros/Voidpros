@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { startCheckout, startTrialCheckout } from "../lib/billing";
-import { getDisplayLookupUsage } from "../lib/lookups";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
-const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges, ranked on the Leaderboards"];
+const FREE_PERKS = [
+  "Unlimited floor searches",
+  "See which pets a build uses",
+  "Submit Completions & Challenges, ranked on the Leaderboards",
+];
 const UNLIMITED_PERKS = [
-  "Unlimited floor searches — no daily cap",
+  "See every item and level a build uses, not just the pets",
   "Post a custom build request for other players to solve using your exact pool",
   "Full activity history — everything you've submitted, plus votes and comments on it",
   "Everything in Free",
@@ -23,7 +26,6 @@ export default function Subscription({ onRequireAuth }) {
   const [error, setError] = useState("");
 
   const eligible = !profile?.trial_used;
-  const { used, limit } = getDisplayLookupUsage(profile);
 
   const handleUpgrade = async () => {
     if (!isAuthed) {
@@ -57,7 +59,7 @@ export default function Subscription({ onRequireAuth }) {
           <p style={{ fontSize: 13, color: MUTED, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Free</p>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 28, color: CREAM, margin: "0 0 4px" }}>$0</p>
           <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 20px" }}>
-            {profile ? `${limit - used} of ${limit} searches left` : "per month"}
+            Pets only — items stay hidden
           </p>
 
           <button

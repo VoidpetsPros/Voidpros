@@ -117,41 +117,12 @@ export function useAuthState() {
     if (error) console.error(error.message);
   };
 
-  // One-time +1 free lookup for reaching the tutorial's search step. The
-  // grant is idempotent server-side (checked against a flag on the profile
-  // row), so calling this more than once — e.g. the person goes Back and
-  // forward through the tutorial repeatedly — never grants more than once.
-  const grantTutorialSearchBonus = async () => {
-    const { error } = await supabase.rpc("grant_tutorial_search_bonus");
-    if (error) {
-      console.error(error.message);
-      return;
-    }
-    refreshProfile();
-  };
-
   // Clears the Challenges notification badge — call this when the person
   // opens the Challenges page.
   const markChallengesSeen = async () => {
     setHasNewChallenges(false);
     const { error } = await supabase.rpc("mark_challenges_seen");
     if (error) console.error(error.message);
-  };
-
-  // Only call this once a search has actually returned a full match — per
-  // the product rule, searches with no result don't cost a free lookup.
-  // Runs through a database function (see migrations/0004) rather than a
-  // direct table update, so it can't be gamed from the browser.
-  const consumeTrialLookup = async () => {
-    if (!session?.user?.id) return;
-    const { data, error } = await supabase.rpc("increment_trial_lookup");
-    if (error) {
-      console.error(error.message);
-      return;
-    }
-    if (data !== null) {
-      setProfile((p) => ({ ...p, trial_lookups_used: data }));
-    }
   };
 
   return {
@@ -168,10 +139,8 @@ export function useAuthState() {
     signInWithGoogle,
     signOut,
     refreshProfile,
-    consumeTrialLookup,
     markActivitySeen,
     markTutorialSeen,
-    grantTutorialSearchBonus,
     markChallengesSeen,
   };
 }

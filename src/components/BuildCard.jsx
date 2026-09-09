@@ -1,5 +1,6 @@
 import React from "react";
-import { ShieldCheck, Check, ThumbsUp } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ShieldCheck, Check, ThumbsUp, Lock } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import CommentsSection from "./CommentsSection";
@@ -22,7 +23,7 @@ function Pill({ children, tone = "default" }) {
   );
 }
 
-function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }) {
+function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, itemsHidden }) {
   const { CREAM, DANGER, GOLD, LINE, MUTED, PANEL_2 } = useTheme();
   const pet = pets.find((p) => p.id === slot.pet_id);
   const hat = items.find((i) => i.id === slot.hat_id);
@@ -69,9 +70,17 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
         </span>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5, flex: 1 }}>
-        {chip(hat, slot.hat_id, slot.hat_level)}
-        {chip(scarf, slot.scarf_id, slot.scarf_level)}
-        {accessories.map((a) => chip(a.item, a.id, a.level))}
+        {itemsHidden ? (
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px", borderRadius: 16, background: PANEL_2, color: MUTED, border: `1px solid ${LINE}` }}>
+            <Lock size={11} /> Items hidden
+          </span>
+        ) : (
+          <>
+            {chip(hat, slot.hat_id, slot.hat_level)}
+            {chip(scarf, slot.scarf_id, slot.scarf_level)}
+            {accessories.map((a) => chip(a.item, a.id, a.level))}
+          </>
+        )}
       </div>
     </div>
   );
@@ -79,8 +88,12 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar }
 
 export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
   const { user } = useAuth();
-  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
+  // items_visible comes back from get_search_results (undefined when a
+  // build was fetched some other way, e.g. Community/My Requests — those
+  // always show full detail, so itemsHidden correctly stays false there).
+  const itemsHidden = build.items_visible === false;
   const { missingPets, missingItems } = missingForBuild(build, ownedPets, ownedItemCounts);
   const missingCount = missingPets.length + missingItems.length;
   const usedSoFar = {};
@@ -129,9 +142,27 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
             ownedPets={ownedPets}
             ownedItemCounts={ownedItemCounts}
             usedSoFar={usedSoFar}
+            itemsHidden={itemsHidden}
           />
         ))}
       </div>
+
+      {itemsHidden &&
+        (build.you_own_all_items ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(127,201,127,0.1)", border: "1px solid rgba(127,201,127,0.35)", borderRadius: 9, padding: "9px 12px", marginBottom: 12 }}>
+            <Check size={14} color="#7FC97F" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, color: CREAM }}>You already have every item this build needs.</span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "9px 12px", marginBottom: 12 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: MUTED }}>
+              <Lock size={13} /> Item details are hidden on Free.
+            </span>
+            <Link to="/subscribe" style={{ fontSize: 12.5, fontWeight: 600, color: GOLD, textDecoration: "none" }}>
+              Unlock item view →
+            </Link>
+          </div>
+        ))}
 
       {build.note && <p style={{ fontSize: 13.5, color: CREAM, lineHeight: 1.6, margin: "0 0 12px" }}>{build.note}</p>}
 

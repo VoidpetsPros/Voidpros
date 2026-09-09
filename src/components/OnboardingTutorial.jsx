@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Sparkles, Users, Search, Trophy } from "lucide-react";
+import { X, Sparkles, Users, Search, Trophy, Home } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
-
-const SEARCH_STEP_INDEX = 2;
 
 const STEPS = [
   {
@@ -24,7 +22,7 @@ const STEPS = [
   {
     icon: Search,
     title: "Search a floor",
-    body: "Once your collection is set, open Floor Search and enter the floor giving you trouble. You've got a free search just for reaching this step — try floor 2000 if you just want to see how it works.",
+    body: "Once your collection is set, open Floor Search and enter the floor giving you trouble. Search is unlimited — try floor 2000 if you just want to see how it works.",
     cta: "Go to Floor Search",
     to: "/search",
   },
@@ -32,14 +30,21 @@ const STEPS = [
     icon: Trophy,
     title: "Climb the Leaderboards",
     body: "Every verified Completion and Challenge counts toward the Leaderboards — check them out anytime from the header. Top 3 in each category every month win a free month of Unlimited.",
-    cta: "Got it",
-    to: null,
+    cta: "Take Me To Leaderboards",
+    to: "/leaderboards",
+  },
+  {
+    icon: Home,
+    title: "You're all set",
+    body: "That's the tour — Collection, Search, and the Leaderboards. Jump back in whenever you're ready.",
+    cta: "Take Me Home",
+    to: "/",
   },
 ];
 
 export default function OnboardingTutorial() {
   const navigate = useNavigate();
-  const { markTutorialSeen, grantTutorialSearchBonus } = useAuth();
+  const { markTutorialSeen } = useAuth();
   const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
   const [step, setStep] = useState(0);
 
@@ -47,33 +52,27 @@ export default function OnboardingTutorial() {
   const Icon = current.icon;
   const isLast = step === STEPS.length - 1;
 
-  // Grants the one-time tutorial search bonus on reaching this step. Safe
-  // to fire every time this step becomes active (Back/forward, remounts,
-  // whatever) — the actual one-time check lives server-side, not here.
-  useEffect(() => {
-    if (step === SEARCH_STEP_INDEX) {
-      grantTutorialSearchBonus();
-    }
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleClose = () => {
     markTutorialSeen();
   };
 
-  // Steps with a page to visit (Collection, Floor Search) only navigate —
-  // they do NOT advance the step. The card stays showing that step's guidance
-  // while the person actually works on that page; they move on themselves
-  // with "Next step" whenever they're ready.
+  // Steps with a page to visit (Collection, Floor Search, Leaderboards) just
+  // navigate — they do NOT advance the step, so the card stays showing that
+  // step's guidance while the person actually works on that page; they move
+  // on themselves with "Next step" whenever they're ready. The final step
+  // is the one exception: it both navigates home AND closes the tutorial,
+  // since there's nothing left to come back to it for.
   const handlePrimary = () => {
+    if (isLast) {
+      markTutorialSeen();
+      if (current.to) navigate(current.to);
+      return;
+    }
     if (current.to) {
       navigate(current.to);
       return;
     }
-    if (isLast) {
-      markTutorialSeen();
-    } else {
-      setStep((s) => s + 1);
-    }
+    setStep((s) => s + 1);
   };
 
   return (

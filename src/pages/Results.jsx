@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useBuilds } from "../hooks/useBuilds";
 import { supabase } from "../lib/supabaseClient";
-import { startCheckout } from "../lib/billing";
 import { buildFullyMatches, missingCountForBuild } from "../lib/matching";
-import { getDisplayLookupUsage } from "../lib/lookups";
 import BuildCard from "../components/BuildCard";
 import TrialCTA from "../components/TrialCTA";
 import { useTheme } from "../hooks/ThemeContext";
@@ -17,7 +15,7 @@ import { useTheme } from "../hooks/ThemeContext";
 export default function Results({ onRequireAuth }) {
   const { stage } = useParams();
   const navigate = useNavigate();
-  const { isAuthed, user, profile, consumeTrialLookup } = useAuth();
+  const { isAuthed, user, profile } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
@@ -30,24 +28,10 @@ export default function Results({ onRequireAuth }) {
   const [requestSent, setRequestSent] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);
   const [requestError, setRequestError] = useState("");
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError] = useState("");
-  const lookupConsumed = useRef(false);
 
   useEffect(() => {
     if (!isAuthed) onRequireAuth();
   }, [isAuthed]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleSubscribe = async () => {
-    setCheckoutError("");
-    setCheckoutLoading(true);
-    try {
-      await startCheckout();
-    } catch (err) {
-      setCheckoutError(err.message || "Something went wrong starting checkout.");
-      setCheckoutLoading(false);
-    }
-  };
 
   const handleSubmitRequest = async () => {
     setRequestError("");
@@ -79,6 +63,9 @@ export default function Results({ onRequireAuth }) {
     }
   };
 
+  // For a free user, item ids on every slot come back null (redacted
+  // server-side), so buildItemCounts naturally returns {} and this
+  // reduces to pure pet-matching — no special-casing needed here.
   const matching = useMemo(
     () => builds.filter((b) => buildFullyMatches(b, ownedPets, ownedItems)),
     [builds, ownedPets, ownedItems]
@@ -92,53 +79,10 @@ export default function Results({ onRequireAuth }) {
     );
   }, [builds, matching, ownedPets, ownedItems]);
 
-  // Frozen at whatever it was when this floor's page first loaded — never
-  // recalculated after that. Without this, a search that legitimately uses
-  // your last lookup would immediately re-trigger this same check (now
-  // reading the freshly-bumped count) and hide the very results that search
-  // just earned.
-  const outOfLookupsSnapshot = useRef(null);
-  if (outOfLookupsSnapshot.current === null && profile) {
-    outOfLookupsSnapshot.current = !profile.is_subscribed && profile.trial_lookups_used >= profile.trial_lookups_limit;
-  }
-  const outOfLookups = outOfLookupsSnapshot.current ?? false;
-  const [alternativesBlocked, setAlternativesBlocked] = useState(false);
-  const revealingAlternatives = useRef(false);
-  // Once paid for, reopening alternatives during this same visit is free —
-  // only the very first reveal per floor should ever cost a lookup.
-  const alreadyRevealedAlternatives = useRef(false);
-
-  const handleToggleAlternatives = async () => {
-    if (showAlternatives) {
-      // Hiding them again is always free — only the reveal costs a lookup.
-      setShowAlternatives(false);
-      return;
-    }
-    if (alreadyRevealedAlternatives.current) {
-      setShowAlternatives(true);
-      return;
-    }
-    if (outOfLookups) {
-      setAlternativesBlocked(true);
-      return;
-    }
-    if (revealingAlternatives.current) return; // guard against a rapid double-click double-charging
-    revealingAlternatives.current = true;
-    await consumeTrialLookup();
-    revealingAlternatives.current = false;
-    alreadyRevealedAlternatives.current = true;
-    setAlternativesBlocked(false);
-    setShowAlternatives(true);
-  };
-
-  useEffect(() => {
-    if (lookupConsumed.current) return;
-    if (buildsLoading || collectionLoading) return;
-    if (matching.length > 0 && !outOfLookups) {
-      lookupConsumed.current = true;
-      consumeTrialLookup();
-    }
-  }, [matching.length, buildsLoading, collectionLoading, outOfLookups]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Every build in a single search response shares the same items_visible
+  // value (same viewer). If it's true but the account isn't actually
+  // subscribed, that's the one-time first-search preview at work.
+  const usedFirstSearchPreview = builds.length > 0 && builds[0].items_visible === true && !profile?.is_subscribed;
 
   if (!isAuthed) {
     return (
@@ -168,40 +112,12 @@ export default function Results({ onRequireAuth }) {
     );
   }
 
-  // Gate behind the subscription once free lookups are used up — this
-  // applies regardless of whether a match exists, so the person always sees
-  // one consistent "you're out" screen instead of sometimes landing on the
-  // normal results page with a blocked alternatives link.
-  if (outOfLookups) {
-    return (
-      <div style={{ padding: "24px", maxWidth: 640, margin: "0 auto" }}>
-        <BackButton />
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
-          {matching.length > 0 ? (
-            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
-              {matching.length} build{matching.length > 1 ? "s" : ""} found for floor {stage}
-            </p>
-          ) : (
-            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>
-              You're out of free lookups
-            </p>
-          )}
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px" }}>
-            You're out of free lookups ({getDisplayLookupUsage(profile).used}/{getDisplayLookupUsage(profile).limit} used).
-            Subscribe for unlimited lookups.
-          </p>
-          <TrialCTA />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />
 
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: "0 0 4px" }}>Floor {stage}</p>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: usedFirstSearchPreview ? "0 0 10px" : "0 0 22px" }}>
         {matching.length > 0
           ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
           : builds.length > 0
@@ -209,13 +125,22 @@ export default function Results({ onRequireAuth }) {
           : "No builds yet"}
       </p>
 
+      {usedFirstSearchPreview && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(232,179,61,0.1)", border: `1px solid ${GOLD}`, borderRadius: 9, padding: "9px 12px", marginBottom: 20 }}>
+          <Sparkles size={14} color={GOLD} style={{ flexShrink: 0 }} />
+          <span style={{ fontSize: 12.5, color: CREAM }}>
+            Your first search is on us — full item details unlocked, just this once.
+          </span>
+        </div>
+      )}
+
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
             Nobody's cracked floor {stage} yet
           </p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
-            This lookup didn't cost you a free search. Be the first to submit a build.
+            Be the first to submit a build.
           </p>
           <Link
             to="/submit"
@@ -234,22 +159,11 @@ export default function Results({ onRequireAuth }) {
             items from your <Link to="/collection" style={{ color: VIOLET }}>collection</Link>.
           </p>
           <button
-            onClick={handleToggleAlternatives}
+            onClick={() => setShowAlternatives((v) => !v)}
             style={{ background: "none", border: "none", color: VIOLET, fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline", padding: 0 }}
           >
             {showAlternatives ? "Hide alternative builds" : `See ${alternatives.length} alternative build${alternatives.length > 1 ? "s" : ""}`}
           </button>
-          {alternativesBlocked && (
-            <p style={{ fontSize: 12.5, color: MUTED, margin: "10px 0 0", lineHeight: 1.5 }}>
-              You're out of free lookups. Viewing alternative builds also uses a lookup,
-              same as a full match.{" "}
-              <button onClick={handleSubscribe} style={{ background: "none", border: "none", color: VIOLET, fontWeight: 600, cursor: "pointer", padding: 0, fontSize: 12.5, textDecoration: "underline" }}>
-                Subscribe for unlimited
-              </button>
-              .
-            </p>
-          )}
-          {checkoutError && <p style={{ fontSize: 12, color: DANGER, margin: "8px 0 0" }}>{checkoutError}</p>}
           {showAlternatives &&
             alternatives.map((b) => (
               <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
@@ -317,4 +231,3 @@ export default function Results({ onRequireAuth }) {
     </div>
   );
 }
-

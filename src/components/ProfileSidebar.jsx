@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, Search, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, Lock, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
-import { getDisplayLookupUsage } from "../lib/lookups";
 
 function ThemePopup({ onClose }) {
   const { mode, setMode, PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
@@ -172,10 +171,10 @@ export default function ProfileSidebar({ onClose }) {
 
             {!profile?.is_subscribed && (
               <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Search size={15} color={MUTED} />
-                    <span style={{ fontSize: 13.5, fontWeight: 600, color: CREAM }}>Free Searches</span>
+                    <Lock size={15} color={MUTED} />
+                    <span style={{ fontSize: 13.5, fontWeight: 600, color: CREAM }}>Item Details Locked</span>
                   </div>
                   <button
                     onClick={goToSubscribe}
@@ -184,21 +183,10 @@ export default function ProfileSidebar({ onClose }) {
                     Upgrade
                   </button>
                 </div>
-                {(() => {
-                  const { used, limit } = getDisplayLookupUsage(profile);
-                  return (
-                    <>
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
-                        <span style={{ fontSize: 12.5, color: MUTED }}>Total</span>
-                        <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 600 }}>{limit} searches</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
-                        <span style={{ fontSize: 12.5, color: MUTED }}>Remaining</span>
-                        <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 600 }}>{limit - used}</span>
-                      </div>
-                    </>
-                  );
-                })()}
+                <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.5 }}>
+                  Search is unlimited on Free, but you'll only see the pets a build uses.
+                  Unlock to see items and levels too.
+                </p>
               </div>
             )}
 

@@ -24,7 +24,6 @@ import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import { getDisplayLookupUsage } from "./lib/lookups";
 import { useTheme } from "./hooks/ThemeContext";
 
 const SUBMISSION_OPTIONS = [
@@ -41,7 +40,6 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const [showSearchTip, setShowSearchTip] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -218,87 +216,39 @@ export default function App() {
                   Leaderboards
                 </Link>
               )}
-              {(() => {
-                // Free lookups can be topped up by bonuses (the tutorial's +1,
-                // and anyone who already earned the old karma-milestone
-                // bonus keeps it) that raise the real limit past 3 —
-                // getDisplayLookupUsage hides that from the ring so it stays
-                // on a clean 33/66/100 scale.
-                const { used: effectiveUsed, limit: BASE_FREE_LOOKUPS } = getDisplayLookupUsage(profile);
-                const usagePct = profile && !profile.is_subscribed
-                  ? Math.round((effectiveUsed / BASE_FREE_LOOKUPS) * 100)
-                  : null;
-                const ringSize = 42;
-                const strokeWidth = 3;
-                const radius = (ringSize - strokeWidth) / 2;
-                const circumference = 2 * Math.PI * radius;
-                const dashOffset = usagePct === null ? circumference : circumference - (usagePct / 100) * circumference;
-
-                return (
-                  <div
-                    style={{ position: "relative", width: ringSize, height: ringSize }}
-                    onMouseEnter={() => setShowSearchTip(true)}
-                    onMouseLeave={() => setShowSearchTip(false)}
-                  >
-                    {usagePct !== null && (
-                      <svg width={ringSize} height={ringSize} style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)", pointerEvents: "none" }}>
-                        <circle cx={ringSize / 2} cy={ringSize / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={strokeWidth} />
-                        <circle
-                          cx={ringSize / 2}
-                          cy={ringSize / 2}
-                          r={radius}
-                          fill="none"
-                          stroke="#FFFFFF"
-                          strokeWidth={strokeWidth}
-                          strokeDasharray={circumference}
-                          strokeDashoffset={dashOffset}
-                          strokeLinecap="round"
-                          style={{ transition: "stroke-dashoffset 0.3s ease" }}
-                        />
-                      </svg>
-                    )}
-                    <button
-                      onClick={() => setShowProfile(true)}
-                      aria-label="Profile"
-                      style={{
-                        position: "absolute",
-                        top: (ringSize - 36) / 2,
-                        left: (ringSize - 36) / 2,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "rgba(255,255,255,0.14)",
-                        border: "1px solid rgba(255,255,255,0.22)",
-                        borderRadius: 999,
-                        width: 36,
-                        height: 36,
-                        cursor: "pointer",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {showSearchTip && usagePct !== null ? (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF" }}>{usagePct}%</span>
-                      ) : (
-                        <User size={16} color="#FFFFFF" />
-                      )}
-                      {hasNewActivity && (
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: -2,
-                            right: -2,
-                            width: 11,
-                            height: 11,
-                            borderRadius: "50%",
-                            background: "#dc2626",
-                            border: `2px solid ${GOLD_DIM}`,
-                          }}
-                        />
-                      )}
-                    </button>
-                  </div>
-                );
-              })()}
+              <button
+                onClick={() => setShowProfile(true)}
+                aria-label="Profile"
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  borderRadius: 999,
+                  width: 36,
+                  height: 36,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
+              >
+                <User size={16} color="#FFFFFF" />
+                {hasNewActivity && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      right: -2,
+                      width: 11,
+                      height: 11,
+                      borderRadius: "50%",
+                      background: "#dc2626",
+                      border: `2px solid ${GOLD_DIM}`,
+                    }}
+                  />
+                )}
+              </button>
               {isMobile && (
                 <button
                   onClick={() => setShowMobileMenu((v) => !v)}
