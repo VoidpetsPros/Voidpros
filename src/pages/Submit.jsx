@@ -17,7 +17,6 @@ export default function Submit({ onRequireAuth }) {
   const [floor, setFloor] = useState("");
   const [showAuthor, setShowAuthor] = useState(true);
   const [note, setNote] = useState("");
-  const [completionFiles, setCompletionFiles] = useState([]);
   const [petFiles, setPetFiles] = useState([]);
   const [itemFiles, setItemFiles] = useState([]);
   const [error, setError] = useState("");
@@ -47,7 +46,6 @@ export default function Submit({ onRequireAuth }) {
     const missing = [];
     const floorNum = parseInt(floor, 10);
     if (!floorNum || floorNum < 1) missing.push("which floor this is for");
-    if (completionFiles.length === 0) missing.push("a screenshot showing the floor cleared");
     if (petFiles.length === 0) missing.push("a screenshot of the pets you used");
     if (itemFiles.length === 0) missing.push("at least one screenshot of the items you used");
 
@@ -63,7 +61,6 @@ export default function Submit({ onRequireAuth }) {
     setSubmitting(true);
     try {
       const uploaded = [];
-      for (const f of completionFiles) uploaded.push({ kind: "completion", storage_path: await uploadSubmissionImage(f.file, user.id) });
       for (const f of petFiles) uploaded.push({ kind: "pets", storage_path: await uploadSubmissionImage(f.file, user.id) });
       for (const f of itemFiles) uploaded.push({ kind: "items", storage_path: await uploadSubmissionImage(f.file, user.id) });
 
@@ -115,8 +112,8 @@ export default function Submit({ onRequireAuth }) {
         <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · +5 karma when verified</span>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Just screenshot proof you beat the floor, a shot of your full team, and
-        screenshots of the items on each pet. Once it's approved, you'll earn karma.
+        Just a shot of your full team and screenshots of the items on each pet. Once
+        it's approved, you'll earn karma.
       </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -146,16 +143,6 @@ export default function Submit({ onRequireAuth }) {
       </label>
 
       <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 20 }}>
-        <ImageUploadSlot
-          label="Proof of completion"
-          hint="Victory screen or the moment the floor cleared."
-          files={completionFiles}
-          onAdd={addFiles(completionFiles, setCompletionFiles, 1)}
-          onRemove={removeFile(setCompletionFiles)}
-          max={1}
-          required
-          error={!!error}
-        />
         <ImageUploadSlot
           label="Pets used"
           hint="Screenshot of your 4 pet team."
