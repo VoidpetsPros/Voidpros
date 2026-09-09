@@ -25,30 +25,39 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
 
   const handleApprove = async () => {
     setError("");
-    const incompleteCount = team.filter((s) => !slotIsComplete(s)).length;
-    if (incompleteCount > 0) {
-      setError(`Fill in all 4 team slots first (${incompleteCount} incomplete).`);
+    const usedSlots = team.filter((s) => s.petId);
+    if (usedSlots.length === 0) {
+      setError("Enter at least one pet.");
       return;
     }
-    const petIds = team.map((s) => s.petId);
+    const petIds = usedSlots.map((s) => s.petId);
     if (new Set(petIds).size !== petIds.length) {
       setError("Each pet must be different — one is repeated.");
       return;
     }
+    const inconsistentSlot = usedSlots.some((s) => {
+      if (!s.petLevel) return true;
+      const pairs = [s.hat, s.scarf, s.accessories[0], s.accessories[1]];
+      return pairs.some((p) => !!p.id !== !!p.level);
+    });
+    if (inconsistentSlot) {
+      setError("Every pet used needs a level, and any item used needs a level.");
+      return;
+    }
 
     setBusy(true);
-    const teamPayload = team.map((s, i) => ({
+    const teamPayload = usedSlots.map((s, i) => ({
       slot_index: i,
       pet_id: s.petId,
       pet_level: s.petLevel,
-      hat_id: s.hat.id,
-      hat_level: s.hat.level,
-      scarf_id: s.scarf.id,
-      scarf_level: s.scarf.level,
-      accessory1_id: s.accessories[0].id,
-      accessory1_level: s.accessories[0].level,
-      accessory2_id: s.accessories[1].id,
-      accessory2_level: s.accessories[1].level,
+      hat_id: s.hat.id || "",
+      hat_level: s.hat.level || "",
+      scarf_id: s.scarf.id || "",
+      scarf_level: s.scarf.level || "",
+      accessory1_id: s.accessories[0].id || "",
+      accessory1_level: s.accessories[0].level || "",
+      accessory2_id: s.accessories[1].id || "",
+      accessory2_level: s.accessories[1].level || "",
     }));
 
     const { error: rpcError } = await supabase.rpc("admin_approve_build", {
