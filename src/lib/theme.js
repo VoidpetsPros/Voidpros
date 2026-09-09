@@ -40,3 +40,13 @@ export const GOLD_DIM = LIGHT_THEME.GOLD_DIM;
 export const VIOLET = LIGHT_THEME.VIOLET;
 export const DANGER = LIGHT_THEME.DANGER;
 
+// Shared across Collection (rarity filters) and Admin (catalog list) so
+// a pet/item's rarity always reads the same color everywhere.
+export const RARITY_COLORS = {
+  Common: "#7FC97F",
+  Rare: "#6FA8DC",
+  Epic: "#A98FE0",
+  Legendary: "#E8B33D",
+  Uber: "#D9534F",
+};
+

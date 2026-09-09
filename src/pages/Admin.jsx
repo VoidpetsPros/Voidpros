@@ -10,7 +10,7 @@ import { uploadCatalogImage } from "../lib/uploadImage";
 import PetSlotEditor, { emptySlot } from "../components/PetSlotEditor";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
-import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER, RARITY_COLORS } from "../lib/theme";
 import BackButton from "../components/BackButton";
 
 // Players now only submit screenshots — an admin looks at those screenshots
@@ -578,7 +578,7 @@ function CatalogImageRow({ row, kind, avatar, onUploaded, onUpdated }) {
     <div style={{ borderBottom: `1px solid ${LINE}` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0" }}>
         {avatar}
-        <span style={{ flex: 1, fontSize: 13.5, color: CREAM, minWidth: 0 }}>{row.name}</span>
+        <span style={{ flex: 1, fontSize: 13.5, color: RARITY_COLORS[row.rarity] || CREAM, minWidth: 0 }}>{row.name}</span>
         {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
         <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
         <button

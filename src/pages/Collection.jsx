@@ -7,15 +7,9 @@ import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
+import { RARITY_COLORS } from "../lib/theme";
 
 const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
-const RARITY_COLORS = {
-  Common: "#7FC97F",
-  Rare: "#6FA8DC",
-  Epic: "#A98FE0",
-  Legendary: "#E8B33D",
-  Uber: "#D9534F",
-};
 
 export default function Collection({ onRequireAuth }) {
   const { isAuthed, user } = useAuth();
