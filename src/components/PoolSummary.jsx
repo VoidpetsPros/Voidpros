@@ -4,7 +4,7 @@ import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 
-const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
+const RARITY_ORDER = ["Common", "Rare", "Epic", "Uber", "Legendary"];
 const ITEM_TYPE_LABELS = { hat: "Hats", scarf: "Scarves", accessory: "Accessories" };
 
 // Splits a pool into "complete" groups (the requester owns every pet/item
@@ -62,19 +62,6 @@ export default function PoolSummary({ petIds, itemCounts, pets, items, chipSize 
 
   return (
     <div>
-      {completeBadges.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: partialGroups.length > 0 ? 10 : 0 }}>
-          {completeBadges.map((label) => (
-            <span
-              key={label}
-              style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "4px 10px", borderRadius: 16, background: "rgba(127,201,127,0.1)", color: "#7FC97F", border: "1px solid rgba(127,201,127,0.35)" }}
-            >
-              <Check size={12} /> {label}
-            </span>
-          ))}
-        </div>
-      )}
-
       {partialGroups.map((group) => (
         <div key={group.label} style={{ marginBottom: 10 }}>
           <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>{group.label}</p>
@@ -101,6 +88,19 @@ export default function PoolSummary({ petIds, itemCounts, pets, items, chipSize 
           </div>
         </div>
       ))}
+
+      {completeBadges.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {completeBadges.map((label) => (
+            <span
+              key={label}
+              style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "4px 10px", borderRadius: 16, background: "rgba(127,201,127,0.1)", color: "#7FC97F", border: "1px solid rgba(127,201,127,0.35)" }}
+            >
+              <Check size={12} /> {label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

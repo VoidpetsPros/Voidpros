@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Mail, Lock, User } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
+import { supabase } from "../lib/supabaseClient";
 import logoMark from "../assets/logo.svg";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -72,9 +73,32 @@ export default function AuthModal({ onClose, headline, subhead }) {
       setError("Password must be at least 6 characters.");
       return;
     }
+    const trimmedUsername = username.trim();
+    if (mode === "signup" && trimmedUsername) {
+      setBusy(true);
+      // Check availability up front — usernames are unique in the
+      // database regardless, but without this a collision would only
+      // surface as a generic "database error" from Supabase Auth, since
+      // the failure happens inside a trigger it wraps for security.
+      const { data: existing, error: checkError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", trimmedUsername)
+        .maybeSingle();
+      if (checkError) {
+        setBusy(false);
+        setError(checkError.message);
+        return;
+      }
+      if (existing) {
+        setBusy(false);
+        setError("That username is taken.");
+        return;
+      }
+    }
     setBusy(true);
     const { data, error: authError } =
-      mode === "signup" ? await signUp(email, password, username.trim() || null) : await signIn(email, password);
+      mode === "signup" ? await signUp(email, password, trimmedUsername || null) : await signIn(email, password);
     setBusy(false);
     if (authError) {
       // Supabase's unconfirmed-account error — code is the reliable check,
