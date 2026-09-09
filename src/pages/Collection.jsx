@@ -237,7 +237,7 @@ function PetTile({ pet, owned, onToggle }) {
         </div>
       )}
       <PetAvatar pet={pet} size={48} />
-      <span style={{ fontSize: 11.5, color: ELEMENT_COLORS[pet.element] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
+      <span style={{ fontSize: 11.5, color: ELEMENT_COLORS[pet.element] || CREAM, textAlign: "center", fontWeight: 700 }}>{pet.name}</span>
     </button>
   );
 }

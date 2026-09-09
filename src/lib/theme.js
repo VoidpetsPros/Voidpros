@@ -51,12 +51,13 @@ export const RARITY_COLORS = {
 };
 
 // Same idea, but for a pet's element/typing — matches the color values
-// already used on the pet rows themselves (see migration 0015).
+// already used on the pet rows themselves (see migration 0015), darkened
+// a bit further since these are for text, not fill shapes.
 export const ELEMENT_COLORS = {
-  Metal: "#B8B8C4",
-  Wood: "#A8C97F",
-  Fire: "#E89B7D",
-  Earth: "#C9A876",
-  Water: "#8FC1E0",
+  Metal: "#6B6B78",
+  Wood: "#5C7A3A",
+  Fire: "#B85C3A",
+  Earth: "#8A6B3D",
+  Water: "#3D7A9E",
 };
 
