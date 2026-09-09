@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, Lock, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -169,34 +169,23 @@ export default function ProfileSidebar({ onClose }) {
               </button>
             </div>
 
-            {!profile?.is_subscribed && (
-              <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Lock size={15} color={MUTED} />
-                    <span style={{ fontSize: 13.5, fontWeight: 600, color: CREAM }}>Item Details Locked</span>
-                  </div>
-                  <button
-                    onClick={goToSubscribe}
-                    style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 7, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-                  >
-                    Upgrade
-                  </button>
-                </div>
-                <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.5 }}>
-                  Search is unlimited on Free, but you'll only see the pets a build uses.
-                  Unlock to see items and levels too.
+            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+              <div>
+                <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: CREAM, margin: "0 0 3px" }}>
+                  {profile?.username || "player"}
+                </p>
+                <p style={{ fontSize: 12.5, color: profile?.is_subscribed ? GOLD : MUTED, fontWeight: 600, margin: 0 }}>
+                  {profile?.is_subscribed ? "Unlimited plan" : "Free plan"}
                 </p>
               </div>
-            )}
-
-            <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14 }}>
-              <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: CREAM, margin: "0 0 3px" }}>
-                {profile?.username || "player"}
-              </p>
-              <p style={{ fontSize: 12.5, color: profile?.is_subscribed ? GOLD : MUTED, fontWeight: 600, margin: 0 }}>
-                {profile?.is_subscribed ? "Unlimited plan" : "Free plan"}
-              </p>
+              {!profile?.is_subscribed && (
+                <button
+                  onClick={goToSubscribe}
+                  style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 7, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+                >
+                  Upgrade
+                </button>
+              )}
             </div>
 
             <button onClick={goToCommunity} style={navButtonStyle}>
