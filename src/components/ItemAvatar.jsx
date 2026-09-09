@@ -1,7 +1,13 @@
 import React from "react";
-import { Lamp, TestTube2, Coins, Sprout, Wind, Flame, Feather, Bell, Crown, Gem, Sparkles } from "lucide-react";
+import { HardHat, Waves, ShoppingBag, Sparkles } from "lucide-react";
+import { RARITY_COLORS } from "../lib/theme";
 
-const ITEM_ICONS = { lamp: Lamp, testtube: TestTube2, coins: Coins, sprout: Sprout, wind: Wind, flame: Flame, feather: Feather, bell: Bell, crown: Crown, gem: Gem };
+// Icon is now standardized by item type — every hat looks like a hat,
+// every scarf a scarf, every accessory a bag — rather than each item
+// picking its own icon. Background is standardized by rarity too
+// (Common/Rare/Epic/Legendary/Uber), same colors used everywhere else
+// rarity shows up on the site.
+const TYPE_ICONS = { hat: HardHat, scarf: Waves, accessory: ShoppingBag };
 
 export default function ItemAvatar({ item, size = 40 }) {
   if (!item) return null;
@@ -14,14 +20,14 @@ export default function ItemAvatar({ item, size = 40 }) {
       />
     );
   }
-  const Icon = ITEM_ICONS[item.icon] || Sparkles;
+  const Icon = TYPE_ICONS[item.type] || Sparkles;
   return (
     <div
       style={{
         width: size,
         height: size,
         borderRadius: 10,
-        background: item.color,
+        background: RARITY_COLORS[item.rarity] || item.color,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

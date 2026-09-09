@@ -617,7 +617,6 @@ function CatalogEditPanel({ kind, row, onSaved, onCancel }) {
   const [element, setElement] = useState(row.element || "");
   const [role, setRole] = useState(row.role || "");
   const [itemType, setItemType] = useState(row.type || "");
-  const [icon, setIcon] = useState(row.icon || "");
   const [rarity, setRarity] = useState(row.rarity || "");
   const [color, setColor] = useState(row.color || "#8B5CF6");
   const [variant, setVariant] = useState(row.variant || 1);
@@ -634,7 +633,7 @@ function CatalogEditPanel({ kind, row, onSaved, onCancel }) {
     const patch =
       kind === "pets"
         ? { name: name.trim(), element, role, rarity, color, variant }
-        : { name: name.trim(), type: itemType, icon: icon || null, rarity, color };
+        : { name: name.trim(), type: itemType, rarity };
     const { data, error: updateError } = await supabase.from(kind).update(patch).eq("id", row.id).select().single();
     setBusy(false);
     if (updateError) {
@@ -645,7 +644,6 @@ function CatalogEditPanel({ kind, row, onSaved, onCancel }) {
   };
 
   const previewPet = { color, variant };
-  const previewItem = { color, icon };
 
   return (
     <div style={{ background: PANEL_2, borderRadius: 10, padding: 14, marginBottom: 12 }}>
@@ -687,41 +685,38 @@ function CatalogEditPanel({ kind, row, onSaved, onCancel }) {
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          style={{ width: 36, height: 28, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
-        />
-        <input
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          style={{ width: 80, boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 7, padding: "7px 9px", color: CREAM, fontSize: 12, outline: "none" }}
-        />
-        <div style={{ width: 1, height: 22, background: LINE }} />
-        {kind === "pets"
-          ? PET_VARIANTS.map((v) => (
-              <button
-                key={v}
-                onClick={() => setVariant(v)}
-                title={`Shape ${v}`}
-                style={{ background: "none", border: `2px solid ${variant === v ? GOLD : "transparent"}`, borderRadius: 8, padding: 2, cursor: "pointer", display: "flex" }}
-              >
-                <PetAvatar pet={{ ...previewPet, variant: v }} size={26} />
-              </button>
-            ))
-          : ITEM_ICON_KEYS.map((k) => (
-              <button
-                key={k}
-                onClick={() => setIcon(k)}
-                title={k}
-                style={{ background: "none", border: `2px solid ${icon === k ? GOLD : "transparent"}`, borderRadius: 8, padding: 2, cursor: "pointer", display: "flex" }}
-              >
-                <ItemAvatar item={{ ...previewItem, icon: k }} size={26} />
-              </button>
-            ))}
-      </div>
+      {kind === "pets" && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            style={{ width: 36, height: 28, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
+          />
+          <input
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            style={{ width: 80, boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 7, padding: "7px 9px", color: CREAM, fontSize: 12, outline: "none" }}
+          />
+          <div style={{ width: 1, height: 22, background: LINE }} />
+          {PET_VARIANTS.map((v) => (
+            <button
+              key={v}
+              onClick={() => setVariant(v)}
+              title={`Shape ${v}`}
+              style={{ background: "none", border: `2px solid ${variant === v ? GOLD : "transparent"}`, borderRadius: 8, padding: 2, cursor: "pointer", display: "flex" }}
+            >
+              <PetAvatar pet={{ ...previewPet, variant: v }} size={26} />
+            </button>
+          ))}
+        </div>
+      )}
+      {kind === "items" && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Icon and background are automatic, based on type and rarity:</p>
+          <ItemAvatar item={{ type: itemType, rarity }} size={26} />
+        </div>
+      )}
 
       {error && <p style={{ fontSize: 12, color: DANGER, margin: "0 0 8px" }}>{error}</p>}
 
@@ -751,7 +746,6 @@ const ITEM_TYPES = ["hat", "scarf", "accessory"];
 // Matches PetAvatar's VoidCreature shapes exactly (4 doesn't exist — it
 // was replaced by 5-8, see PetAvatar.jsx).
 const PET_VARIANTS = [1, 2, 3, 5, 6, 7, 8];
-const ITEM_ICON_KEYS = ["lamp", "testtube", "coins", "sprout", "wind", "flame", "feather", "bell", "crown", "gem"];
 
 function slugify(name) {
   return name
@@ -791,7 +785,6 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
   const [element, setElement] = useState("");
   const [role, setRole] = useState("");
   const [itemType, setItemType] = useState("");
-  const [icon, setIcon] = useState("");
   const [rarity, setRarity] = useState("");
   const [color, setColor] = useState("#8B5CF6");
   const [variant, setVariant] = useState(1);
@@ -805,7 +798,6 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
     setElement("");
     setRole("");
     setItemType("");
-    setIcon("");
     setRarity("");
     setColor("#8B5CF6");
     setVariant(1);
@@ -850,7 +842,7 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
       }
       const { data, error: insertError } = await supabase
         .from("items")
-        .insert({ id, name: name.trim(), type: itemType, icon: icon || null, color, rarity })
+        .insert({ id, name: name.trim(), type: itemType, rarity })
         .select()
         .single();
       setBusy(false);
@@ -865,7 +857,6 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
   };
 
   const previewPet = { color, variant };
-  const previewItem = { color, icon };
 
   return (
     <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 28 }}>
@@ -948,24 +939,25 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
         </div>
       )}
 
-      <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 6px" }}>
-        Placeholder color {kind === "pets" ? "& shape" : "& icon"} — shown until a real image is uploaded below
-      </p>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          style={{ width: 40, height: 32, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
-        />
-        <input
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          style={{ width: 90, boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "8px 10px", color: CREAM, fontSize: 12.5, outline: "none" }}
-        />
-        <div style={{ width: 1, height: 24, background: LINE }} />
-        {kind === "pets"
-          ? PET_VARIANTS.map((v) => (
+      {kind === "pets" && (
+        <>
+          <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 6px" }}>
+            Placeholder color & shape — shown until a real image is uploaded below
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              style={{ width: 40, height: 32, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
+            />
+            <input
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              style={{ width: 90, boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "8px 10px", color: CREAM, fontSize: 12.5, outline: "none" }}
+            />
+            <div style={{ width: 1, height: 24, background: LINE }} />
+            {PET_VARIANTS.map((v) => (
               <button
                 key={v}
                 onClick={() => setVariant(v)}
@@ -981,25 +973,18 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
               >
                 <PetAvatar pet={{ ...previewPet, variant: v }} size={30} />
               </button>
-            ))
-          : ITEM_ICON_KEYS.map((k) => (
-              <button
-                key={k}
-                onClick={() => setIcon(k)}
-                title={k}
-                style={{
-                  background: "none",
-                  border: `2px solid ${icon === k ? GOLD : "transparent"}`,
-                  borderRadius: 8,
-                  padding: 2,
-                  cursor: "pointer",
-                  display: "flex",
-                }}
-              >
-                <ItemAvatar item={{ ...previewItem, icon: k }} size={30} />
-              </button>
             ))}
-      </div>
+          </div>
+        </>
+      )}
+      {kind === "items" && itemType && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+          <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
+            Icon and background are automatic — every {itemType} looks like this until a real image is uploaded:
+          </p>
+          <ItemAvatar item={{ type: itemType, rarity: rarity || "Common" }} size={30} />
+        </div>
+      )}
 
       {error && <p style={{ fontSize: 12.5, color: DANGER, margin: "0 0 10px" }}>{error}</p>}
       {success && <p style={{ fontSize: 12.5, color: GOLD, margin: "0 0 10px" }}>{success}</p>}
