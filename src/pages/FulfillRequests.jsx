@@ -36,7 +36,7 @@ export default function FulfillRequests() {
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Challenges</p>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
         <Swords size={12} color={GOLD} />
-        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Challenge · +10 karma when verified</span>
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Challenge · counts toward Leaderboards</span>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
         Other players are stuck with a specific set of pets and items — sometimes not

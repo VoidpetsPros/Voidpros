@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 
-// Wraps Supabase auth + the matching row in `profiles` (karma, subscription
+// Wraps Supabase auth + the matching row in `profiles` (subscription
 // status, trial usage). Any component can call useAuth() and get the same
 // live session — this hook subscribes once and shares state via React context
 // in App.jsx, so it should only be instantiated at the top of the tree.

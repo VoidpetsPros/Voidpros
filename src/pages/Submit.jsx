@@ -89,7 +89,7 @@ export default function Submit({ onRequireAuth }) {
         <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 16, padding: "32px 24px" }}>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Build submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
-            It's in review — once approved, you'll earn karma!
+            It's in review — once approved, it'll count toward the Leaderboards!
           </p>
           <button
             onClick={() => navigate(`/results/${floor}`)}
@@ -109,11 +109,11 @@ export default function Submit({ onRequireAuth }) {
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
         <Trophy size={12} color={GOLD} />
-        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · +5 karma when verified</span>
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · counts toward Leaderboards</span>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
         Just a shot of your full team and screenshots of the items on each pet. Once
-        it's approved, you'll earn karma.
+        it's approved, it'll count toward the Leaderboards.
       </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>

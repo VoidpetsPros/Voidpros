@@ -165,7 +165,7 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         )}
 
         {/* Read-only count wherever voting isn't wired up (Community, My
-            Requests) — no reason to hide it now that upvotes don't affect karma. */}
+            Requests) — upvotes never affected ranking anyway, karma or not. */}
         {isVerified && (!onVote || isOwnBuild) && (
           <div style={{ display: "flex", alignItems: "center", gap: 5, color: MUTED }}>
             <ThumbsUp size={13} />

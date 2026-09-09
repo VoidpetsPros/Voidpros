@@ -50,7 +50,7 @@ export default function TermsOfService() {
         <p style={{ marginBottom: 6 }}>• Upload screenshots that aren't your own gameplay</p>
         <p style={{ marginBottom: 6 }}>• Harass, abuse, or impersonate other users</p>
         <p style={{ marginBottom: 6 }}>• Post hateful, obscene, or illegal content</p>
-        <p>• Attempt to manipulate karma, votes, confirmations, or the trial/subscription system through technical exploitation</p>
+        <p>• Attempt to manipulate leaderboard rank, votes, confirmations, or the trial/subscription system through technical exploitation</p>
       </Section>
 
       <Section title="5. Your content">

@@ -30,8 +30,8 @@ const STEPS = [
   },
   {
     icon: Trophy,
-    title: "Earn karma",
-    body: "You can also submit builds you've used to beat floors to get karma. Karma unlocks free bonus searches.",
+    title: "Climb the Leaderboards",
+    body: "Every verified Completion and Challenge counts toward the Leaderboards — check them out anytime from the header. Top 3 in each category every month win a free month of Unlimited.",
     cta: "Got it",
     to: null,
   },

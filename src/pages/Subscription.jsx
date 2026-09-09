@@ -7,7 +7,7 @@ import { getDisplayLookupUsage } from "../lib/lookups";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
-const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges for karma"];
+const FREE_PERKS = ["3 free floor searches", "Submit Completions & Challenges, ranked on the Leaderboards"];
 const UNLIMITED_PERKS = [
   "Unlimited floor searches — no daily cap",
   "Post a custom build request for other players to solve using your exact pool",

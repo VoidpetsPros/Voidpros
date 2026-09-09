@@ -1,6 +1,7 @@
 export const BASE_FREE_LOOKUPS = 3;
 
-// Bonus lookups (the tutorial's +1, the 100-karma milestone's +5) raise
+// Bonus lookups (the tutorial's +1; anyone who already earned the old
+// karma-milestone's +5 before it was removed keeps it) raise
 // trial_lookups_limit past its base of 3. They're real for gating purposes,
 // but showing them to the person makes "3/3" look like "4/4" or worse and
 // makes a free bonus search look like it cost something. Every user-facing

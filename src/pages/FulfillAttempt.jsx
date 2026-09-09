@@ -151,7 +151,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         <div style={{ background: PANEL, border: "1px solid rgba(139,92,246,0.35)", borderRadius: 12, padding: "32px 24px" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: 20, color: CREAM, margin: "0 0 8px" }}>Attempt submitted</p>
           <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
-            It's in review — if it gets verified, you'll earn 10 karma and the requester's floor gets marked solved.
+            It's in review — if it gets verified, it'll count toward the Leaderboards and the requester's floor gets marked solved.
           </p>
           <button
             onClick={() => navigate("/fulfill")}
@@ -172,7 +172,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
       <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
         Use only pets and items from the requester's pool below. Just screenshot proof
         you beat the floor, a shot of your full team, and screenshots of the items on
-        each pet. Once it's approved, you'll earn 10 karma.
+        each pet. Once it's approved, it'll count toward the Leaderboards.
       </p>
 
       <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 10, padding: 14, marginBottom: 22 }}>

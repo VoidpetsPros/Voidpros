@@ -19,6 +19,7 @@ import FulfillRequests from "./pages/FulfillRequests";
 import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
 import MyRequests from "./pages/MyRequests";
+import Leaderboards from "./pages/Leaderboards";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -27,8 +28,8 @@ import { getDisplayLookupUsage } from "./lib/lookups";
 import { useTheme } from "./hooks/ThemeContext";
 
 const SUBMISSION_OPTIONS = [
-  { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor and earn 5 karma." },
-  { to: "/fulfill", label: "Challenges", subtext: "Beat a floor with a limited pet & item pool for 10 karma." },
+  { to: "/submit", label: "Completions", subtext: "Submit the team you used to beat any floor." },
+  { to: "/fulfill", label: "Challenges", subtext: "Beat a floor with a limited pet & item pool." },
 ];
 
 export default function App() {
@@ -40,7 +41,6 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const [showKarmaTip, setShowKarmaTip] = useState(false);
   const [showSearchTip, setShowSearchTip] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMobile = useIsMobile();
@@ -195,62 +195,31 @@ export default function App() {
             >
               My Requests
             </Link>
+            <Link
+              to="/leaderboards"
+              style={{
+                fontSize: 12.5,
+                fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
+                color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
+                textDecoration: "none",
+                padding: "7px 12px",
+                borderRadius: 7,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Leaderboards
+            </Link>
           </nav>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
             <>
-              <div
-                style={{ width: isMobile ? 54 : 130, position: "relative" }}
-                onMouseEnter={() => setShowKarmaTip(true)}
-                onMouseLeave={() => setShowKarmaTip(false)}
-                onClick={() => isMobile && setShowKarmaTip((v) => !v)}
-              >
-                {!isMobile && (
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                    <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>
-                      Karma
-                    </span>
-                    <span style={{ fontSize: 9.5, color: "#FFFFFF", fontWeight: 600 }}>{profile?.karma ?? 0} / 100</span>
-                  </div>
-                )}
-                <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.25)", overflow: "hidden" }}>
-                  <div
-                    style={{
-                      height: "100%",
-                      width: `${Math.min(100, Math.max(0, profile?.karma ?? 0))}%`,
-                      background: "#FFFFFF",
-                      borderRadius: 999,
-                      transition: "width 0.3s ease",
-                    }}
-                  />
-                </div>
-                {showKarmaTip && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "calc(100% + 8px)",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: 190,
-                      background: PANEL,
-                      border: `1px solid ${LINE}`,
-                      borderRadius: 9,
-                      padding: "9px 11px",
-                      boxShadow: "0 10px 24px -8px rgba(0,0,0,0.35)",
-                      zIndex: 80,
-                    }}
-                  >
-                    <p style={{ margin: 0, fontSize: 11.5, color: CREAM, lineHeight: 1.4, fontWeight: 500 }}>
-                      Reach 100 Karma to Get 5 Free Floor Searches.
-                    </p>
-                  </div>
-                )}
-              </div>
               {(() => {
-                // Free lookups can be topped up by bonuses (tutorial, the
-                // 100-karma milestone) that raise the real limit past 3 —
+                // Free lookups can be topped up by bonuses (the tutorial's +1,
+                // and anyone who already earned the old karma-milestone
+                // bonus keeps it) that raise the real limit past 3 —
                 // getDisplayLookupUsage hides that from the ring so it stays
                 // on a clean 33/66/100 scale.
                 const { used: effectiveUsed, limit: BASE_FREE_LOOKUPS } = getDisplayLookupUsage(profile);
@@ -432,6 +401,20 @@ export default function App() {
             >
               My Requests
             </Link>
+            <Link
+              to="/leaderboards"
+              onClick={() => setShowMobileMenu(false)}
+              style={{
+                display: "block",
+                padding: "13px 20px",
+                fontSize: 13.5,
+                fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
+                color: location.pathname === "/leaderboards" ? GOLD : CREAM,
+                textDecoration: "none",
+              }}
+            >
+              Leaderboards
+            </Link>
           </div>
         </>
       )}
@@ -453,6 +436,7 @@ export default function App() {
           <Route path="/fulfill/:requestId" element={<FulfillAttempt onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/my-requests" element={<MyRequests onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/leaderboards" element={<Leaderboards />} />
           <Route path="/billing/success" element={<BillingSuccess />} />
           <Route path="/billing/cancelled" element={<BillingCancelled />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -87,7 +87,8 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
     <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 28 }}>
       <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 4px" }}>
         Floor {build.stage} · submitted {new Date(build.created_at).toLocaleString()} ·{" "}
-        {build.show_author ? build.author?.username || "a player" : "Anonymous"}
+        {build.author?.username || "a player"}
+        {!build.show_author && <span style={{ color: MUTED }}> (posted anonymously)</span>}
       </p>
       {build.note && <p style={{ fontSize: 13, color: CREAM, margin: "8px 0 0", lineHeight: 1.5 }}>{build.note}</p>}
 
@@ -223,7 +224,8 @@ function PendingFulfillmentReview({ fulfillment, pets, items, onApproved, onReje
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
         <p style={{ fontFamily: "Georgia, serif", fontSize: 16, color: CREAM, margin: 0 }}>Floor {fulfillment.request?.stage}</p>
         <span style={{ fontSize: 12, color: MUTED }}>
-          {fulfillment.show_fulfiller ? fulfillment.fulfiller?.username || "a player" : "Anonymous"} · submitted{" "}
+          {fulfillment.fulfiller?.username || "a player"}
+          {!fulfillment.show_fulfiller && <span> (anonymous)</span>} · submitted{" "}
           {new Date(fulfillment.created_at).toLocaleString()}
         </span>
       </div>
@@ -264,7 +266,7 @@ function PendingFulfillmentReview({ fulfillment, pets, items, onApproved, onReje
           disabled={busy}
           style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: busy ? "default" : "pointer" }}
         >
-          {busy ? "Working…" : "Approve (+10 karma)"}
+          {busy ? "Working…" : "Approve"}
         </button>
         <button
           onClick={handleReject}
@@ -279,7 +281,7 @@ function PendingFulfillmentReview({ fulfillment, pets, items, onApproved, onReje
 }
 
 // Bulk-seeding tool — publishes a build straight away, no photos, no review
-// queue, no karma. For pre-launch catalog data, not player submissions.
+// queue, doesn't count on the Leaderboards. For pre-launch catalog data, not player submissions.
 function QuickSubmitBuild({ pets, itemsByType }) {
   const [stage, setStage] = useState("");
   const [note, setNote] = useState("");

@@ -4,19 +4,17 @@ import { Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 
-const KARMA_WAYS = [
+const SUBMISSION_WAYS = [
   {
     icon: Trophy,
     title: "Completions",
     body: "Submit the team you used to beat any floor.",
-    reward: "+5 karma",
     to: "/submit",
   },
   {
     icon: Swords,
     title: "Challenges",
     body: "Beat a floor using a limited pet & item pool.",
-    reward: "+10 karma",
     to: "/fulfill",
   },
 ];
@@ -84,14 +82,21 @@ export default function Home({ onRequireAuth }) {
         </div>
       </div>
 
-      {/* Ways to earn karma — ties directly into the new Submissions menu */}
+      {/* Ways to submit — ties directly into the Submissions menu, and
+          into the Leaderboards that now track them instead of karma. */}
       {isAuthed && (
         <div style={{ maxWidth: 720, margin: "36px auto 0", padding: "0 24px" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, textAlign: "center", margin: "0 0 14px" }}>
-            Earn karma
-          </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 14 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: 0 }}>
+              Submit a build
+            </p>
+            <span style={{ color: MUTED }}>·</span>
+            <Link to="/leaderboards" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, textDecoration: "none" }}>
+              See Leaderboards
+            </Link>
+          </div>
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-            {KARMA_WAYS.map((k) => {
+            {SUBMISSION_WAYS.map((k) => {
               const Icon = k.icon;
               return (
                 <Link
@@ -116,10 +121,7 @@ export default function Home({ onRequireAuth }) {
                     <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 2px" }}>{k.title}</p>
                     <p style={{ fontSize: 12, color: MUTED, margin: 0, lineHeight: 1.4 }}>{k.body}</p>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: GOLD, whiteSpace: "nowrap" }}>{k.reward}</span>
-                    <ArrowRight size={13} color={GOLD} />
-                  </div>
+                  <ArrowRight size={13} color={GOLD} style={{ flexShrink: 0 }} />
                 </Link>
               );
             })}
