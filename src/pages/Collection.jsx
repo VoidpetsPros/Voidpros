@@ -237,7 +237,7 @@ function PetTile({ pet, owned, onToggle }) {
         </div>
       )}
       <PetAvatar pet={pet} size={48} />
-      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
+      <span style={{ fontSize: 11.5, color: RARITY_COLORS[pet.rarity] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
     </button>
   );
 }
@@ -267,7 +267,7 @@ function ItemTile({ item, owned, onToggle }) {
         </div>
       )}
       <ItemAvatar item={item} size={44} />
-      <span style={{ fontSize: 11.5, color: owned ? GOLD : CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
+      <span style={{ fontSize: 11.5, color: RARITY_COLORS[item.rarity] || CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
     </button>
   );
 }
