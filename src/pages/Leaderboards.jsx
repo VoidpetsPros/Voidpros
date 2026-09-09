@@ -81,16 +81,9 @@ export default function Leaderboards() {
         </div>
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>Leaderboards</p>
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 20px", lineHeight: 1.6 }}>
         Top verified Completions and Challenges.
       </p>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(232,179,61,0.1)", border: `1px solid ${GOLD}`, borderRadius: 10, padding: "10px 14px", marginBottom: 20 }}>
-        <Award size={16} color={GOLD} style={{ flexShrink: 0 }} />
-        <p style={{ fontSize: 12.5, color: CREAM, margin: 0, lineHeight: 1.5 }}>
-          The top 3 in each category every month get <strong>1 month of Unlimited</strong>, free.
-        </p>
-      </div>
 
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 12, width: "fit-content" }}>
         {CATEGORIES.map((c) => {
@@ -185,6 +178,13 @@ export default function Leaderboards() {
           )}
         </div>
       )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(232,179,61,0.1)", border: `1px solid ${GOLD}`, borderRadius: 10, padding: "10px 14px", marginTop: 20 }}>
+        <Award size={16} color={GOLD} style={{ flexShrink: 0 }} />
+        <p style={{ fontSize: 12.5, color: CREAM, margin: 0, lineHeight: 1.5 }}>
+          The top 3 in each category every month get <strong>1 month of Unlimited</strong>, free.
+        </p>
+      </div>
     </div>
   );
 }

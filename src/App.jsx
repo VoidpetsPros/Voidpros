@@ -195,27 +195,29 @@ export default function App() {
             >
               My Requests
             </Link>
-            <Link
-              to="/leaderboards"
-              style={{
-                fontSize: 12.5,
-                fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
-                color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
-                background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
-                textDecoration: "none",
-                padding: "7px 12px",
-                borderRadius: 7,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Leaderboards
-            </Link>
           </nav>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
           {isAuthed ? (
             <>
+              {!isMobile && (
+                <Link
+                  to="/leaderboards"
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
+                    color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                    background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
+                    textDecoration: "none",
+                    padding: "7px 12px",
+                    borderRadius: 7,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Leaderboards
+                </Link>
+              )}
               {(() => {
                 // Free lookups can be topped up by bonuses (the tutorial's +1,
                 // and anyone who already earned the old karma-milestone
