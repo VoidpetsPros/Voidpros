@@ -6,7 +6,7 @@ import { useTheme } from "../hooks/ThemeContext";
 // This button never talks to Stripe directly — it just sends the person to
 // the Subscription page, which is the one place that actually starts
 // checkout. Keeps every upgrade prompt in the app pointed at one funnel.
-export default function TrialCTA({ style, fullWidth = false }) {
+export default function TrialCTA({ style, fullWidth = false, hideSubtext = false }) {
   const { profile } = useAuth();
   const { GOLD, MUTED } = useTheme();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function TrialCTA({ style, fullWidth = false }) {
       >
         {eligible ? "Start 7-day free trial" : "Subscribe — $4.99/mo"}
       </button>
-      {eligible && (
+      {eligible && !hideSubtext && (
         <p style={{ fontSize: 11, color: MUTED, margin: "8px 0 0", textAlign: "center" }}>
           Card required. Cancel before day 7 and you won't be charged.
         </p>

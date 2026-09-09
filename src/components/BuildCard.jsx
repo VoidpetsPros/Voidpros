@@ -148,12 +148,14 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
       </div>
 
       {itemsHidden && build.has_items && (
-        <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: 12, marginBottom: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-            <Lock size={13} color={MUTED} />
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>Unlock Item View</span>
-          </div>
-          <TrialCTA fullWidth />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: CREAM }}>
+            <Lock size={13} color={MUTED} /> Unlock item view to see what this build needs
+          </span>
+          <TrialCTA
+            hideSubtext
+            style={{ padding: "7px 12px", fontSize: 12.5, borderRadius: 7 }}
+          />
         </div>
       )}
 
