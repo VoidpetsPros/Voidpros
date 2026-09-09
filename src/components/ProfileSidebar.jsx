@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -100,6 +100,11 @@ export default function ProfileSidebar({ onClose }) {
 
   const goToSettings = () => {
     navigate("/settings");
+    onClose();
+  };
+
+  const goToFeedback = () => {
+    navigate("/feedback");
     onClose();
   };
 
@@ -215,6 +220,11 @@ export default function ProfileSidebar({ onClose }) {
             <button onClick={goToSettings} style={navButtonStyle}>
               <SettingsIcon size={16} color={MUTED} />
               Settings
+            </button>
+
+            <button onClick={goToFeedback} style={navButtonStyle}>
+              <MessageSquare size={16} color={MUTED} />
+              Feedback
             </button>
 
             <button onClick={() => setShowTheme(true)} style={navButtonStyle}>

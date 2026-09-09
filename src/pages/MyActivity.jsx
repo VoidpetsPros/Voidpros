@@ -1,17 +1,16 @@
 import React, { useEffect } from "react";
-import { Award, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useMyActivity } from "../hooks/useMyActivity";
 import BuildCard from "../components/BuildCard";
-import TrialCTA from "../components/TrialCTA";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
 export default function MyActivity({ onRequireAuth }) {
-  const { isAuthed, user, profile, loading: authLoading, markActivitySeen } = useAuth();
-  const { PANEL, LINE, CREAM, MUTED, GOLD, VIOLET } = useTheme();
+  const { isAuthed, user, loading: authLoading, markActivitySeen } = useAuth();
+  const { PANEL, CREAM, MUTED, GOLD, VIOLET } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
   const { builds, loading: activityLoading, error } = useMyActivity(user?.id);
@@ -33,22 +32,6 @@ export default function MyActivity({ onRequireAuth }) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
-      </div>
-    );
-  }
-
-  if (!profile?.is_subscribed) {
-    return (
-      <div style={{ padding: "40px 24px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: "32px 24px" }}>
-          <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
-            Community — everything you've submitted or commented on, plus what people
-            have said about it — is part of the paid tier.
-          </p>
-          <TrialCTA />
-        </div>
       </div>
     );
   }

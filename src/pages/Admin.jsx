@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useAdminBuilds } from "../hooks/useAdminBuilds";
 import { useAdminFulfillments } from "../hooks/useAdminFulfillments";
+import { useAdminFeedback } from "../hooks/useAdminFeedback";
 import { supabase } from "../lib/supabaseClient";
 import { imageUrl } from "../hooks/useBuilds";
 import { uploadCatalogImage } from "../lib/uploadImage";
@@ -1068,6 +1069,28 @@ function CatalogImages({ pets, items }) {
   );
 }
 
+function AdminFeedback() {
+  const { feedback, loading, error } = useAdminFeedback();
+
+  if (loading) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
+  if (error) return <p style={{ color: DANGER, fontSize: 13.5 }}>{error}</p>;
+  if (feedback.length === 0) return <p style={{ color: MUTED, fontSize: 13.5 }}>No feedback yet.</p>;
+
+  return (
+    <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px" }}>
+      {feedback.map((f, i) => (
+        <div key={f.id} style={{ padding: "14px 0", borderBottom: i < feedback.length - 1 ? `1px solid ${LINE}` : "none" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6, gap: 10 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>{f.user?.username || "a player"}</span>
+            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{new Date(f.created_at).toLocaleString()}</span>
+          </div>
+          <p style={{ fontSize: 13, color: CREAM, margin: 0, lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{f.message}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { profile, loading: authLoading } = useAuth();
   const { pets, items, itemsByType, loading: catalogLoading } = useCatalog();
@@ -1096,6 +1119,7 @@ export default function Admin() {
     { id: "quick", label: "Quick submit" },
     { id: "manage", label: "Manage builds" },
     { id: "images", label: "Catalog" },
+    { id: "feedback", label: "Feedback" },
   ];
 
   return (
@@ -1125,6 +1149,7 @@ export default function Admin() {
       {tab === "quick" && <QuickSubmitBuild pets={pets} itemsByType={itemsByType} />}
       {tab === "manage" && <ManageBuilds />}
       {tab === "images" && <CatalogImages pets={pets} items={items} />}
+      {tab === "feedback" && <AdminFeedback />}
 
       {tab === "queue" && (
         <>

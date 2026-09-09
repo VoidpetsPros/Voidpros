@@ -20,6 +20,7 @@ import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
 import MyRequests from "./pages/MyRequests";
 import Leaderboards from "./pages/Leaderboards";
+import Feedback from "./pages/Feedback";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -389,6 +390,7 @@ export default function App() {
           <Route path="/my-activity" element={<MyActivity onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/my-requests" element={<MyRequests onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/leaderboards" element={<Leaderboards />} />
+          <Route path="/feedback" element={<Feedback onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/billing/success" element={<BillingSuccess />} />
           <Route path="/billing/cancelled" element={<BillingCancelled />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

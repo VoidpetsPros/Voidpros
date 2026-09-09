@@ -17,7 +17,7 @@ export function useAdminFulfillments() {
       .select(
         `
         id, request_id, note, status, show_fulfiller, created_at,
-        fulfiller:profiles!fulfiller_id(username),
+        fulfiller:profiles!fulfiller_id(username, is_subscribed),
         request:requests!request_id(
           stage,
           pets:request_pets(pet_id),
@@ -36,8 +36,17 @@ export function useAdminFulfillments() {
       return;
     }
 
+    // Priority review: Unlimited subscribers' attempts get reviewed
+    // first. Oldest-first is still the tiebreaker within each group.
+    const sorted = [...(data || [])].sort((a, b) => {
+      const aSub = a.fulfiller?.is_subscribed ? 0 : 1;
+      const bSub = b.fulfiller?.is_subscribed ? 0 : 1;
+      if (aSub !== bSub) return aSub - bSub;
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+
     setFulfillments(
-      (data || []).map((f) => ({
+      sorted.map((f) => ({
         ...f,
         allowedPetIds: (f.request?.pets || []).map((p) => p.pet_id),
         allowedItems: Object.fromEntries((f.request?.items || []).map((i) => [i.item_id, i.count])),

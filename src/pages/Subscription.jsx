@@ -7,14 +7,15 @@ import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
 const FREE_PERKS = [
-  "Unlimited floor searches",
   "See which pets a build uses",
   "Submit Completions & Challenges, ranked on the Leaderboards",
+  "Community — see everything you've submitted or commented on",
 ];
 const UNLIMITED_PERKS = [
   "See every item and level a build uses, not just the pets",
+  "See exactly what you're missing on every build — not just an incomplete pets-only guess",
   "Post a custom build request for other players to solve using your exact pool",
-  "Full activity history — everything you've submitted, plus votes and comments on it",
+  "Priority review — your Completions and Challenges get reviewed first",
   "Everything in Free",
 ];
 

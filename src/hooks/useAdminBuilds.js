@@ -14,7 +14,7 @@ export function useAdminBuilds() {
       .select(
         `
         id, stage, note, status, upvotes, comment_count, show_author, author_id, created_at,
-        author:profiles!author_id(username),
+        author:profiles!author_id(username, is_subscribed),
         team:build_team_slots(*),
         images:build_images(kind, storage_path)
       `
@@ -29,7 +29,17 @@ export function useAdminBuilds() {
       return;
     }
 
-    setBuilds((data || []).map((b) => ({ ...b, team: [...(b.team || [])].sort((a, c) => a.slot_index - c.slot_index) })));
+    // Priority review: Unlimited subscribers' submissions get reviewed
+    // first. Oldest-first is still the tiebreaker within each group, so
+    // it's still fair ordering among peers.
+    const sorted = [...(data || [])].sort((a, b) => {
+      const aSub = a.author?.is_subscribed ? 0 : 1;
+      const bSub = b.author?.is_subscribed ? 0 : 1;
+      if (aSub !== bSub) return aSub - bSub;
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+
+    setBuilds(sorted.map((b) => ({ ...b, team: [...(b.team || [])].sort((a, c) => a.slot_index - c.slot_index) })));
     setLoading(false);
   }, []);
 
