@@ -7,16 +7,15 @@ import { supabase } from "../lib/supabaseClient";
 import { uploadSubmissionImage } from "../lib/uploadImage";
 import { containsProfanity } from "../lib/profanity";
 import ImageUploadSlot from "../components/ImageUploadSlot";
-import PetAvatar from "../components/PetAvatar";
+import PoolSummary from "../components/PoolSummary";
 import BackButton from "../components/BackButton";
-import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 
 export default function FulfillAttempt({ onRequireAuth }) {
   const { requestId } = useParams();
   const navigate = useNavigate();
   const { isAuthed, user } = useAuth();
-  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
 
   const [request, setRequest] = useState(null);
@@ -179,26 +178,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 8px" }}>
           Must use only these
         </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {request.pets.map((pid) => {
-            const p = pets.find((x) => x.id === pid);
-            if (!p) return null;
-            return (
-              <span key={pid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(139,92,246,0.1)", color: VIOLET, border: "1px solid rgba(139,92,246,0.3)" }}>
-                <PetAvatar pet={p} size={18} /> {p.name}
-              </span>
-            );
-          })}
-          {Object.entries(request.items).map(([iid, count]) => {
-            const it = items.find((x) => x.id === iid);
-            if (!it) return null;
-            return (
-              <span key={iid} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, padding: "3px 8px 3px 3px", borderRadius: 16, background: "rgba(139,92,246,0.08)", color: GOLD, border: "1px solid rgba(139,92,246,0.25)" }}>
-                <ItemAvatar item={it} size={18} /> {it.name} {count > 1 ? `×${count}` : ""}
-              </span>
-            );
-          })}
-        </div>
+        <PoolSummary petIds={request.pets} itemCounts={request.items} pets={pets} items={items} chipSize={18} />
       </div>
 
       <label style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 22px", cursor: "pointer" }}>
@@ -231,7 +211,7 @@ export default function FulfillAttempt({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Items used"
-          hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
+          hint="Screenshots of the items on each pet."
           files={itemFiles}
           onAdd={addFiles(itemFiles, setItemFiles, 4)}
           onRemove={removeFile(setItemFiles)}

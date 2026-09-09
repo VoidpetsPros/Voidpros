@@ -4,8 +4,7 @@ import { Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useRequests } from "../hooks/useRequests";
-import PetAvatar from "../components/PetAvatar";
-import ItemAvatar from "../components/ItemAvatar";
+import PoolSummary from "../components/PoolSummary";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
@@ -67,25 +66,8 @@ export default function FulfillRequests() {
             <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
               Must use only these
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-              {r.pets.map((pid) => {
-                const p = pets.find((x) => x.id === pid);
-                if (!p) return null;
-                return (
-                  <span key={pid} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, padding: "4px 10px 4px 4px", borderRadius: 20, background: "rgba(139,92,246,0.1)", color: GOLD, border: "1px solid rgba(139,92,246,0.3)" }}>
-                    <PetAvatar pet={p} size={22} /> {p.name}
-                  </span>
-                );
-              })}
-              {Object.entries(r.items).map(([iid, count]) => {
-                const it = items.find((x) => x.id === iid);
-                if (!it) return null;
-                return (
-                  <span key={iid} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, padding: "4px 10px 4px 4px", borderRadius: 20, background: "rgba(139,92,246,0.08)", color: GOLD, border: "1px solid rgba(139,92,246,0.25)" }}>
-                    <ItemAvatar item={it} size={22} /> {it.name} {count > 1 ? `×${count}` : ""}
-                  </span>
-                );
-              })}
+            <div style={{ marginBottom: 16 }}>
+              <PoolSummary petIds={r.pets} itemCounts={r.items} pets={pets} items={items} chipSize={22} />
             </div>
             <button
               onClick={() => navigate(`/fulfill/${r.id}`)}

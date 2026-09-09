@@ -154,7 +154,7 @@ export default function Submit({ onRequireAuth }) {
         />
         <ImageUploadSlot
           label="Items used (optional)"
-          hint="Screenshots of the items on each pet — 4 images required unless your team uses fewer than 4 pets."
+          hint="Screenshots of the items on each pet."
           files={itemFiles}
           onAdd={addFiles(itemFiles, setItemFiles, 4)}
           onRemove={removeFile(setItemFiles)}
