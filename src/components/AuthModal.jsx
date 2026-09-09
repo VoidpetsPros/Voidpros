@@ -77,20 +77,19 @@ export default function AuthModal({ onClose, headline, subhead }) {
     if (mode === "signup" && trimmedUsername) {
       setBusy(true);
       // Check availability up front — usernames are unique in the
-      // database regardless, but without this a collision would only
-      // surface as a generic "database error" from Supabase Auth, since
-      // the failure happens inside a trigger it wraps for security.
-      const { data: existing, error: checkError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("username", trimmedUsername)
-        .maybeSingle();
+      // database (case-insensitively) regardless, but without this a
+      // collision would only surface as a generic "database error" from
+      // Supabase Auth, since the failure happens inside a trigger it
+      // wraps for security.
+      const { data: available, error: checkError } = await supabase.rpc("username_available", {
+        p_username: trimmedUsername,
+      });
       if (checkError) {
         setBusy(false);
         setError(checkError.message);
         return;
       }
-      if (existing) {
+      if (!available) {
         setBusy(false);
         setError("That username is taken.");
         return;

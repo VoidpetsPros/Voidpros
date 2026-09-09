@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus } from "lucide-react";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -80,9 +80,8 @@ export default function Results({ onRequireAuth }) {
   }, [builds, matching, ownedPets, ownedItems]);
 
   // Every build in a single search response shares the same items_visible
-  // value (same viewer). If it's true but the account isn't actually
-  // subscribed, that's the one-time first-search preview at work.
-  const usedFirstSearchPreview = builds.length > 0 && builds[0].items_visible === true && !profile?.is_subscribed;
+  // value (same viewer) — used elsewhere by BuildCard to decide whether to
+  // show item detail; no UI banner announces it here anymore.
 
   if (!isAuthed) {
     return (
@@ -117,22 +116,13 @@ export default function Results({ onRequireAuth }) {
       <BackButton />
 
       <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: "0 0 4px" }}>Floor {stage}</p>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: usedFirstSearchPreview ? "0 0 10px" : "0 0 22px" }}>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
         {matching.length > 0
           ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
           : builds.length > 0
           ? "No build matches your exact team"
           : "No builds yet"}
       </p>
-
-      {usedFirstSearchPreview && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(232,179,61,0.1)", border: `1px solid ${GOLD}`, borderRadius: 9, padding: "9px 12px", marginBottom: 20 }}>
-          <Sparkles size={14} color={GOLD} style={{ flexShrink: 0 }} />
-          <span style={{ fontSize: 12.5, color: CREAM }}>
-            Your first search is on us — full item details unlocked, just this once.
-          </span>
-        </div>
-      )}
 
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
