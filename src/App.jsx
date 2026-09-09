@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { User, ChevronDown } from "lucide-react";
+import { User, ChevronDown, Menu, X } from "lucide-react";
 import logoMark from "./assets/logo.svg";
 import { useAuth } from "./hooks/AuthContext";
+import useIsMobile from "./hooks/useIsMobile";
 import AuthModal from "./components/AuthModal";
 import ProfileSidebar from "./components/ProfileSidebar";
 import OnboardingTutorial from "./components/OnboardingTutorial";
@@ -41,6 +42,8 @@ export default function App() {
   const [showSubmissions, setShowSubmissions] = useState(false);
   const [showKarmaTip, setShowKarmaTip] = useState(false);
   const [showSearchTip, setShowSearchTip] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const isMobile = useIsMobile();
   const location = useLocation();
 
   if (loading) {
@@ -71,7 +74,7 @@ export default function App() {
           </span>
         </Link>
 
-        {isAuthed && (
+        {isAuthed && !isMobile && (
           <nav
             style={{
               display: "flex",
@@ -199,16 +202,19 @@ export default function App() {
           {isAuthed ? (
             <>
               <div
-                style={{ width: 130, position: "relative" }}
+                style={{ width: isMobile ? 54 : 130, position: "relative" }}
                 onMouseEnter={() => setShowKarmaTip(true)}
                 onMouseLeave={() => setShowKarmaTip(false)}
+                onClick={() => isMobile && setShowKarmaTip((v) => !v)}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                  <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>
-                    Karma
-                  </span>
-                  <span style={{ fontSize: 9.5, color: "#FFFFFF", fontWeight: 600 }}>{profile?.karma ?? 0} / 100</span>
-                </div>
+                {!isMobile && (
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                    <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.75)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase" }}>
+                      Karma
+                    </span>
+                    <span style={{ fontSize: 9.5, color: "#FFFFFF", fontWeight: 600 }}>{profile?.karma ?? 0} / 100</span>
+                  </div>
+                )}
                 <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.25)", overflow: "hidden" }}>
                   <div
                     style={{
@@ -322,6 +328,41 @@ export default function App() {
                   </div>
                 );
               })()}
+              {isMobile && (
+                <button
+                  onClick={() => setShowMobileMenu((v) => !v)}
+                  aria-label="Menu"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: 8,
+                    width: 36,
+                    height: 36,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    position: "relative",
+                  }}
+                >
+                  {showMobileMenu ? <X size={17} color="#FFFFFF" /> : <Menu size={17} color="#FFFFFF" />}
+                  {hasNewChallenges && !showMobileMenu && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -2,
+                        right: -2,
+                        width: 9,
+                        height: 9,
+                        borderRadius: "50%",
+                        background: "#dc2626",
+                        border: `1.5px solid ${GOLD_DIM}`,
+                      }}
+                    />
+                  )}
+                </button>
+              )}
             </>
           ) : (
             <button
@@ -333,6 +374,67 @@ export default function App() {
           )}
         </div>
       </header>
+
+      {isMobile && showMobileMenu && (
+        <>
+          <div onClick={() => setShowMobileMenu(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 70,
+              background: PANEL,
+              borderBottom: `1px solid ${LINE}`,
+              boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
+            }}
+          >
+            {SUBMISSION_OPTIONS.map((opt) => (
+              <Link
+                key={opt.to}
+                to={opt.to}
+                onClick={() => setShowMobileMenu(false)}
+                style={{
+                  position: "relative",
+                  display: "block",
+                  padding: "13px 20px",
+                  textDecoration: "none",
+                  borderBottom: `1px solid ${LINE}`,
+                }}
+              >
+                <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
+                <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
+                {opt.to === "/fulfill" && hasNewChallenges && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 14,
+                      right: 20,
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "#dc2626",
+                    }}
+                  />
+                )}
+              </Link>
+            ))}
+            <Link
+              to="/my-requests"
+              onClick={() => setShowMobileMenu(false)}
+              style={{
+                display: "block",
+                padding: "13px 20px",
+                fontSize: 13.5,
+                fontWeight: location.pathname === "/my-requests" ? 600 : 500,
+                color: location.pathname === "/my-requests" ? GOLD : CREAM,
+                textDecoration: "none",
+              }}
+            >
+              My Requests
+            </Link>
+          </div>
+        </>
+      )}
 
       {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
       {isAuthed && profile && !profile.tutorial_completed && <OnboardingTutorial />}
