@@ -590,6 +590,277 @@ function CatalogImageRow({ id, kind, name, imageUrl: currentImageUrl, avatar, on
   );
 }
 
+const PET_ELEMENTS = ["Metal", "Wood", "Fire", "Earth", "Water"];
+const PET_ROLES = ["Fighter", "Tank", "Support", "Healer"];
+const CATALOG_RARITIES = ["Common", "Rare", "Epic", "Legendary", "Uber"];
+const ITEM_TYPES = ["hat", "scarf", "accessory"];
+// Matches PetAvatar's VoidCreature shapes exactly (4 doesn't exist — it
+// was replaced by 5-8, see PetAvatar.jsx).
+const PET_VARIANTS = [1, 2, 3, 5, 6, 7, 8];
+const ITEM_ICON_KEYS = ["lamp", "testtube", "coins", "sprout", "wind", "flame", "feather", "bell", "crown", "gem"];
+
+function slugify(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+// A single small select styled to match the rest of the admin panel.
+function AdminSelect({ value, onChange, options, placeholder }) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 10px", color: value ? CREAM : MUTED, fontSize: 13, outline: "none" }}
+    >
+      <option value="">{placeholder}</option>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+// Lets an admin create a brand new pet or item from scratch — name, the
+// handful of catalog fields each table needs, and a placeholder shape/
+// icon + color to show until a real image is uploaded through the list
+// below. The id is auto-generated from the name (editable if it'd
+// collide with an existing one).
+function AddCatalogEntry({ onPetAdded, onItemAdded }) {
+  const [kind, setKind] = useState("pets");
+  const [name, setName] = useState("");
+  const [idOverride, setIdOverride] = useState("");
+  const [element, setElement] = useState("");
+  const [role, setRole] = useState("");
+  const [itemType, setItemType] = useState("");
+  const [icon, setIcon] = useState("");
+  const [rarity, setRarity] = useState("");
+  const [color, setColor] = useState("#8B5CF6");
+  const [variant, setVariant] = useState(1);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const resetForm = () => {
+    setName("");
+    setIdOverride("");
+    setElement("");
+    setRole("");
+    setItemType("");
+    setIcon("");
+    setRarity("");
+    setColor("#8B5CF6");
+    setVariant(1);
+  };
+
+  const handleSubmit = async () => {
+    setError("");
+    setSuccess("");
+    if (!name.trim()) {
+      setError("Enter a name.");
+      return;
+    }
+    const id = (idOverride.trim() || slugify(name)) || null;
+    if (!id) {
+      setError("Couldn't generate an id from that name — try a different one or type an id manually.");
+      return;
+    }
+
+    setBusy(true);
+    if (kind === "pets") {
+      if (!element || !role || !rarity) {
+        setBusy(false);
+        setError("Element, role, and rarity are all required.");
+        return;
+      }
+      const { data, error: insertError } = await supabase
+        .from("pets")
+        .insert({ id, name: name.trim(), element, role, rarity, color, variant })
+        .select()
+        .single();
+      setBusy(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      onPetAdded(data);
+    } else {
+      if (!itemType || !rarity) {
+        setBusy(false);
+        setError("Type and rarity are both required.");
+        return;
+      }
+      const { data, error: insertError } = await supabase
+        .from("items")
+        .insert({ id, name: name.trim(), type: itemType, icon: icon || null, color, rarity })
+        .select()
+        .single();
+      setBusy(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+      onItemAdded(data);
+    }
+    setSuccess(`Added "${name.trim()}".`);
+    resetForm();
+  };
+
+  const previewPet = { color, variant };
+  const previewItem = { color, icon };
+
+  return (
+    <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 18, marginBottom: 28 }}>
+      <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 9, padding: 4, marginBottom: 16, width: "fit-content" }}>
+        {[
+          { id: "pets", label: "New pet" },
+          { id: "items", label: "New item" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => {
+              setKind(t.id);
+              setError("");
+              setSuccess("");
+            }}
+            style={{
+              border: "none",
+              cursor: "pointer",
+              fontSize: 12.5,
+              fontWeight: kind === t.id ? 600 : 500,
+              color: kind === t.id ? "#FFFFFF" : MUTED,
+              background: kind === t.id ? GOLD : "transparent",
+              padding: "7px 14px",
+              borderRadius: 6,
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+        <div>
+          <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Name</p>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={kind === "pets" ? "e.g. Higher Form Envy" : "e.g. Rusty Crown"}
+            style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 10px", color: CREAM, fontSize: 13, outline: "none" }}
+          />
+        </div>
+        <div>
+          <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>
+            Id {!idOverride && name.trim() && <span style={{ color: MUTED, textTransform: "none", letterSpacing: 0 }}>(auto: {slugify(name)})</span>}
+          </p>
+          <input
+            value={idOverride}
+            onChange={(e) => setIdOverride(e.target.value)}
+            placeholder="Leave blank to auto-generate"
+            style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 10px", color: CREAM, fontSize: 13, outline: "none" }}
+          />
+        </div>
+      </div>
+
+      {kind === "pets" ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Element</p>
+            <AdminSelect value={element} onChange={setElement} options={PET_ELEMENTS} placeholder="Select element" />
+          </div>
+          <div>
+            <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Role</p>
+            <AdminSelect value={role} onChange={setRole} options={PET_ROLES} placeholder="Select role" />
+          </div>
+          <div>
+            <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Rarity</p>
+            <AdminSelect value={rarity} onChange={setRarity} options={CATALOG_RARITIES} placeholder="Select rarity" />
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Type</p>
+            <AdminSelect value={itemType} onChange={setItemType} options={ITEM_TYPES} placeholder="Select type" />
+          </div>
+          <div>
+            <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 5px" }}>Rarity</p>
+            <AdminSelect value={rarity} onChange={setRarity} options={CATALOG_RARITIES} placeholder="Select rarity" />
+          </div>
+        </div>
+      )}
+
+      <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 6px" }}>
+        Placeholder color {kind === "pets" ? "& shape" : "& icon"} — shown until a real image is uploaded below
+      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          style={{ width: 40, height: 32, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
+        />
+        <input
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          style={{ width: 90, boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "8px 10px", color: CREAM, fontSize: 12.5, outline: "none" }}
+        />
+        <div style={{ width: 1, height: 24, background: LINE }} />
+        {kind === "pets"
+          ? PET_VARIANTS.map((v) => (
+              <button
+                key={v}
+                onClick={() => setVariant(v)}
+                title={`Shape ${v}`}
+                style={{
+                  background: "none",
+                  border: `2px solid ${variant === v ? GOLD : "transparent"}`,
+                  borderRadius: 8,
+                  padding: 2,
+                  cursor: "pointer",
+                  display: "flex",
+                }}
+              >
+                <PetAvatar pet={{ ...previewPet, variant: v }} size={30} />
+              </button>
+            ))
+          : ITEM_ICON_KEYS.map((k) => (
+              <button
+                key={k}
+                onClick={() => setIcon(k)}
+                title={k}
+                style={{
+                  background: "none",
+                  border: `2px solid ${icon === k ? GOLD : "transparent"}`,
+                  borderRadius: 8,
+                  padding: 2,
+                  cursor: "pointer",
+                  display: "flex",
+                }}
+              >
+                <ItemAvatar item={{ ...previewItem, icon: k }} size={30} />
+              </button>
+            ))}
+      </div>
+
+      {error && <p style={{ fontSize: 12.5, color: DANGER, margin: "0 0 10px" }}>{error}</p>}
+      {success && <p style={{ fontSize: 12.5, color: GOLD, margin: "0 0 10px" }}>{success}</p>}
+
+      <button
+        onClick={handleSubmit}
+        disabled={busy}
+        style={{ background: busy ? PANEL_2 : GOLD, color: busy ? MUTED : "#FFFFFF", border: "none", borderRadius: 8, padding: "10px 18px", fontSize: 13, fontWeight: 600, cursor: busy ? "default" : "pointer" }}
+      >
+        {busy ? "Adding…" : kind === "pets" ? "Add pet" : "Add item"}
+      </button>
+    </div>
+  );
+}
+
 function CatalogImages({ pets, items }) {
   const [localPets, setLocalPets] = useState(pets);
   const [localItems, setLocalItems] = useState(items);
@@ -599,6 +870,8 @@ function CatalogImages({ pets, items }) {
     setLocalPets((prev) => prev.map((p) => (p.id === id ? { ...p, image_url: url } : p)));
   const handleItemUploaded = (id, url) =>
     setLocalItems((prev) => prev.map((i) => (i.id === id ? { ...i, image_url: url } : i)));
+  const handlePetAdded = (row) => setLocalPets((prev) => [...prev, row]);
+  const handleItemAdded = (row) => setLocalItems((prev) => [...prev, row]);
 
   const q = query.toLowerCase();
   const filteredPets = localPets.filter((p) => p.name.toLowerCase().includes(q));
@@ -606,6 +879,8 @@ function CatalogImages({ pets, items }) {
 
   return (
     <div>
+      <AddCatalogEntry onPetAdded={handlePetAdded} onItemAdded={handleItemAdded} />
+
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -679,7 +954,7 @@ export default function Admin() {
     { id: "queue", label: "Review queue" },
     { id: "quick", label: "Quick submit" },
     { id: "manage", label: "Manage builds" },
-    { id: "images", label: "Catalog images" },
+    { id: "images", label: "Catalog" },
   ];
 
   return (
