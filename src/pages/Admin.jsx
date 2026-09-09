@@ -551,9 +551,10 @@ function ManageBuilds() {
 // pet/item (so re-uploading just replaces it), then updates that row's
 // image_url — after which PetAvatar/ItemAvatar everywhere else on the
 // site render the real image instead of the placeholder shape/icon.
-function CatalogImageRow({ id, kind, name, imageUrl: currentImageUrl, avatar, onUploaded }) {
+function CatalogImageRow({ row, kind, avatar, onUploaded, onUpdated }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
 
   const handleFile = async (e) => {
@@ -563,10 +564,10 @@ function CatalogImageRow({ id, kind, name, imageUrl: currentImageUrl, avatar, on
     setError("");
     setBusy(true);
     try {
-      const url = await uploadCatalogImage(file, kind, id);
-      const { error: updateError } = await supabase.from(kind).update({ image_url: url }).eq("id", id);
+      const url = await uploadCatalogImage(file, kind, row.id);
+      const { error: updateError } = await supabase.from(kind).update({ image_url: url }).eq("id", row.id);
       if (updateError) throw updateError;
-      onUploaded(id, url);
+      onUploaded(row.id, url);
     } catch (err) {
       setError(err.message || "Upload failed.");
     }
@@ -574,18 +575,171 @@ function CatalogImageRow({ id, kind, name, imageUrl: currentImageUrl, avatar, on
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${LINE}` }}>
-      {avatar}
-      <span style={{ flex: 1, fontSize: 13.5, color: CREAM, minWidth: 0 }}>{name}</span>
-      {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
-      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
-      <button
-        onClick={() => inputRef.current?.click()}
-        disabled={busy}
-        style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
-      >
-        {busy ? "Uploading…" : currentImageUrl ? "Replace" : "Upload"}
-      </button>
+    <div style={{ borderBottom: `1px solid ${LINE}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0" }}>
+        {avatar}
+        <span style={{ flex: 1, fontSize: 13.5, color: CREAM, minWidth: 0 }}>{row.name}</span>
+        {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
+        <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+        <button
+          onClick={() => setEditing((v) => !v)}
+          style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          {editing ? "Close" : "Edit"}
+        </button>
+        <button
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+          style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          {busy ? "Uploading…" : row.image_url ? "Replace" : "Upload"}
+        </button>
+      </div>
+      {editing && (
+        <CatalogEditPanel
+          kind={kind}
+          row={row}
+          onSaved={(updated) => {
+            onUpdated(updated);
+            setEditing(false);
+          }}
+          onCancel={() => setEditing(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Inline edit form for an existing pet/item — same fields as
+// AddCatalogEntry (minus the id, which never changes once created).
+function CatalogEditPanel({ kind, row, onSaved, onCancel }) {
+  const [name, setName] = useState(row.name);
+  const [element, setElement] = useState(row.element || "");
+  const [role, setRole] = useState(row.role || "");
+  const [itemType, setItemType] = useState(row.type || "");
+  const [icon, setIcon] = useState(row.icon || "");
+  const [rarity, setRarity] = useState(row.rarity || "");
+  const [color, setColor] = useState(row.color || "#8B5CF6");
+  const [variant, setVariant] = useState(row.variant || 1);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSave = async () => {
+    setError("");
+    if (!name.trim()) {
+      setError("Name can't be empty.");
+      return;
+    }
+    setBusy(true);
+    const patch =
+      kind === "pets"
+        ? { name: name.trim(), element, role, rarity, color, variant }
+        : { name: name.trim(), type: itemType, icon: icon || null, rarity, color };
+    const { data, error: updateError } = await supabase.from(kind).update(patch).eq("id", row.id).select().single();
+    setBusy(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    onSaved(data);
+  };
+
+  const previewPet = { color, variant };
+  const previewItem = { color, icon };
+
+  return (
+    <div style={{ background: PANEL_2, borderRadius: 10, padding: 14, marginBottom: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: kind === "pets" ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+        <div>
+          <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Name</p>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ width: "100%", boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 7, padding: "8px 9px", color: CREAM, fontSize: 12.5, outline: "none" }}
+          />
+        </div>
+        {kind === "pets" ? (
+          <>
+            <div>
+              <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Element</p>
+              <AdminSelect value={element} onChange={setElement} options={PET_ELEMENTS} placeholder="—" />
+            </div>
+            <div>
+              <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Role</p>
+              <AdminSelect value={role} onChange={setRole} options={PET_ROLES} placeholder="—" />
+            </div>
+            <div>
+              <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Rarity</p>
+              <AdminSelect value={rarity} onChange={setRarity} options={CATALOG_RARITIES} placeholder="—" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Type</p>
+              <AdminSelect value={itemType} onChange={setItemType} options={ITEM_TYPES} placeholder="—" />
+            </div>
+            <div>
+              <p style={{ fontSize: 10, color: MUTED, textTransform: "uppercase", letterSpacing: 0.6, margin: "0 0 4px" }}>Rarity</p>
+              <AdminSelect value={rarity} onChange={setRarity} options={CATALOG_RARITIES} placeholder="—" />
+            </div>
+          </>
+        )}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          style={{ width: 36, height: 28, padding: 0, border: `1px solid ${LINE}`, borderRadius: 6, background: "none", cursor: "pointer" }}
+        />
+        <input
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          style={{ width: 80, boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 7, padding: "7px 9px", color: CREAM, fontSize: 12, outline: "none" }}
+        />
+        <div style={{ width: 1, height: 22, background: LINE }} />
+        {kind === "pets"
+          ? PET_VARIANTS.map((v) => (
+              <button
+                key={v}
+                onClick={() => setVariant(v)}
+                title={`Shape ${v}`}
+                style={{ background: "none", border: `2px solid ${variant === v ? GOLD : "transparent"}`, borderRadius: 8, padding: 2, cursor: "pointer", display: "flex" }}
+              >
+                <PetAvatar pet={{ ...previewPet, variant: v }} size={26} />
+              </button>
+            ))
+          : ITEM_ICON_KEYS.map((k) => (
+              <button
+                key={k}
+                onClick={() => setIcon(k)}
+                title={k}
+                style={{ background: "none", border: `2px solid ${icon === k ? GOLD : "transparent"}`, borderRadius: 8, padding: 2, cursor: "pointer", display: "flex" }}
+              >
+                <ItemAvatar item={{ ...previewItem, icon: k }} size={26} />
+              </button>
+            ))}
+      </div>
+
+      {error && <p style={{ fontSize: 12, color: DANGER, margin: "0 0 8px" }}>{error}</p>}
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          onClick={handleSave}
+          disabled={busy}
+          style={{ background: busy ? PANEL : GOLD, color: busy ? MUTED : "#FFFFFF", border: "none", borderRadius: 7, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: busy ? "default" : "pointer" }}
+        >
+          {busy ? "Saving…" : "Save"}
+        </button>
+        <button
+          onClick={onCancel}
+          style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 7, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
@@ -872,6 +1026,8 @@ function CatalogImages({ pets, items }) {
     setLocalItems((prev) => prev.map((i) => (i.id === id ? { ...i, image_url: url } : i)));
   const handlePetAdded = (row) => setLocalPets((prev) => [...prev, row]);
   const handleItemAdded = (row) => setLocalItems((prev) => [...prev, row]);
+  const handlePetUpdated = (updated) => setLocalPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  const handleItemUpdated = (updated) => setLocalItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
 
   const q = query.toLowerCase();
   const filteredPets = localPets.filter((p) => p.name.toLowerCase().includes(q));
@@ -895,12 +1051,11 @@ function CatalogImages({ pets, items }) {
         {filteredPets.map((p) => (
           <CatalogImageRow
             key={p.id}
-            id={p.id}
+            row={p}
             kind="pets"
-            name={p.name}
-            imageUrl={p.image_url}
             avatar={<PetAvatar pet={p} size={36} />}
             onUploaded={handlePetUploaded}
+            onUpdated={handlePetUpdated}
           />
         ))}
         {filteredPets.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
@@ -913,12 +1068,11 @@ function CatalogImages({ pets, items }) {
         {filteredItems.map((i) => (
           <CatalogImageRow
             key={i.id}
-            id={i.id}
+            row={i}
             kind="items"
-            name={i.name}
-            imageUrl={i.image_url}
             avatar={<ItemAvatar item={i} size={36} />}
             onUploaded={handleItemUploaded}
+            onUpdated={handleItemUpdated}
           />
         ))}
         {filteredItems.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
