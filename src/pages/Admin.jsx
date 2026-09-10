@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, ChevronDown } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useAdminBuilds } from "../hooks/useAdminBuilds";
@@ -1003,6 +1003,52 @@ function AddCatalogEntry({ onPetAdded, onItemAdded }) {
   );
 }
 
+const ITEM_TYPE_SECTIONS = [
+  { type: "hat", label: "Hats" },
+  { type: "scarf", label: "Scarves" },
+  { type: "accessory", label: "Accessories" },
+];
+
+// A collapsible group of catalog rows — closed by default so the whole
+// tab doesn't turn into one giant scroll of every pet and item at once.
+function CatalogSection({ title, count, total, rows, kind, avatarFor, onUploaded, onUpdated }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          background: PANEL_2,
+          border: `1px solid ${LINE}`,
+          borderRadius: open ? "10px 10px 0 0" : 10,
+          padding: "10px 14px",
+          cursor: "pointer",
+        }}
+      >
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>{title}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 11.5, color: MUTED }}>
+            {count}/{total} have images
+          </span>
+          <ChevronDown size={14} color={MUTED} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s ease" }} />
+        </span>
+      </button>
+      {open && (
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "0 16px" }}>
+          {rows.map((row) => (
+            <CatalogImageRow key={row.id} row={row} kind={kind} avatar={avatarFor(row)} onUploaded={onUploaded} onUpdated={onUpdated} />
+          ))}
+          {rows.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CatalogImages({ pets, items }) {
   const [localPets, setLocalPets] = useState(pets);
   const [localItems, setLocalItems] = useState(items);
@@ -1032,39 +1078,34 @@ function CatalogImages({ pets, items }) {
         style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "10px 12px", color: CREAM, fontSize: 14, outline: "none", marginBottom: 18 }}
       />
 
-      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
-        Pets — {localPets.filter((p) => p.image_url).length}/{localPets.length} have images
-      </p>
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px", marginBottom: 24 }}>
-        {filteredPets.map((p) => (
-          <CatalogImageRow
-            key={p.id}
-            row={p}
-            kind="pets"
-            avatar={<PetAvatar pet={p} size={36} />}
-            onUploaded={handlePetUploaded}
-            onUpdated={handlePetUpdated}
-          />
-        ))}
-        {filteredPets.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
-      </div>
+      <CatalogSection
+        title="Pets"
+        count={localPets.filter((p) => p.image_url).length}
+        total={localPets.length}
+        rows={filteredPets}
+        kind="pets"
+        avatarFor={(p) => <PetAvatar pet={p} size={36} />}
+        onUploaded={handlePetUploaded}
+        onUpdated={handlePetUpdated}
+      />
 
-      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
-        Items — {localItems.filter((i) => i.image_url).length}/{localItems.length} have images
-      </p>
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px" }}>
-        {filteredItems.map((i) => (
-          <CatalogImageRow
-            key={i.id}
-            row={i}
+      {ITEM_TYPE_SECTIONS.map((section) => {
+        const rowsOfType = localItems.filter((i) => i.type === section.type);
+        const filteredOfType = filteredItems.filter((i) => i.type === section.type);
+        return (
+          <CatalogSection
+            key={section.type}
+            title={section.label}
+            count={rowsOfType.filter((i) => i.image_url).length}
+            total={rowsOfType.length}
+            rows={filteredOfType}
             kind="items"
-            avatar={<ItemAvatar item={i} size={36} />}
+            avatarFor={(i) => <ItemAvatar item={i} size={36} />}
             onUploaded={handleItemUploaded}
             onUpdated={handleItemUpdated}
           />
-        ))}
-        {filteredItems.length === 0 && <p style={{ color: MUTED, fontSize: 13, padding: "16px 0", margin: 0 }}>No matches.</p>}
-      </div>
+        );
+      })}
     </div>
   );
 }
