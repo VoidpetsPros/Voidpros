@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Search, Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -19,18 +19,6 @@ export default function Collection({ onRequireAuth }) {
   const [tab, setTab] = useState("pets");
   const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    if (!isAuthed) onRequireAuth();
-  }, [isAuthed]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!isAuthed) {
-    return (
-      <div style={{ padding: 40, textAlign: "center" }}>
-        <p style={{ color: MUTED, fontSize: 14 }}>Sign in to manage your collection.</p>
-      </div>
-    );
-  }
-
   if (catalogLoading || collectionLoading) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
@@ -38,6 +26,25 @@ export default function Collection({ onRequireAuth }) {
       </div>
     );
   }
+
+  // Anonymous visitors can browse the whole catalog freely — signing in
+  // is only required the moment they actually try to mark something as
+  // owned, which is when it actually matters to have an account.
+  const handlePetToggle = (petId) => {
+    if (!isAuthed) {
+      onRequireAuth();
+      return;
+    }
+    togglePet(petId);
+  };
+
+  const handleItemToggle = (itemId) => {
+    if (!isAuthed) {
+      onRequireAuth();
+      return;
+    }
+    setItemCount(itemId, ownedItems[itemId] > 0 ? 0 : 1);
+  };
 
   const ownedCountFor = (id, isPetsTab) => (isPetsTab ? ownedPets.includes(id) : (ownedItems[id] || 0) > 0);
 
@@ -61,6 +68,10 @@ export default function Collection({ onRequireAuth }) {
   const rarityOptions = RARITY_ORDER.filter((r) => currentOptions.some((o) => o.rarity === r));
 
   const handleRarityToggle = (rarity) => {
+    if (!isAuthed) {
+      onRequireAuth();
+      return;
+    }
     const idsInRarity = currentOptions.filter((o) => o.rarity === rarity).map((o) => o.id);
     if (tab === "pets") {
       const allOwned = idsInRarity.every((id) => ownedPets.includes(id));
@@ -195,14 +206,14 @@ export default function Collection({ onRequireAuth }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 10 }}>
           {tab === "pets"
             ? filtered.map((pet) => (
-                <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => togglePet(pet.id)} />
+                <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => handlePetToggle(pet.id)} />
               ))
             : filtered.map((item) => (
                 <ItemTile
                   key={item.id}
                   item={item}
                   owned={(ownedItems[item.id] || 0) > 0}
-                  onToggle={() => setItemCount(item.id, ownedItems[item.id] > 0 ? 0 : 1)}
+                  onToggle={() => handleItemToggle(item.id)}
                 />
               ))}
           {filtered.length === 0 && <p style={{ color: MUTED, fontSize: 13 }}>No matches.</p>}

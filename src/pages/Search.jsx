@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon, Compass } from "lucide-react";
+import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
 const POPULAR_FLOORS = [12, 24, 33, 47, 58, 61, 75];
 
-export default function Search() {
+export default function Search({ onRequireAuth }) {
   const [floor, setFloor] = useState("");
+  const { isAuthed } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const navigate = useNavigate();
 
   const goToResults = (f) => {
     const n = parseInt(f, 10);
-    if (!isNaN(n) && n > 0) navigate(`/results/${n}`);
+    if (isNaN(n) || n <= 0) return;
+    if (!isAuthed) {
+      onRequireAuth();
+      return;
+    }
+    navigate(`/results/${n}`);
   };
 
   return (

@@ -24,8 +24,8 @@ export default function Home({ onRequireAuth }) {
   const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
 
-  const goCollection = () => (isAuthed ? navigate("/collection") : onRequireAuth());
-  const goSearch = () => (isAuthed ? navigate("/search") : onRequireAuth());
+  const goCollection = () => navigate("/collection");
+  const goSearch = () => navigate("/search");
 
   return (
     <div>

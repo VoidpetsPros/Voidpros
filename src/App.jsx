@@ -381,7 +381,7 @@ export default function App() {
           <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/settings" element={<Settings onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="/search" element={<Search onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/submit" element={<Submit onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/admin" element={<Admin />} />
