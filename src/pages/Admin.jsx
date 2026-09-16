@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Trash2, ChevronDown } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -290,6 +290,22 @@ function QuickSubmitBuild({ pets, itemsByType }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [statsError, setStatsError] = useState("");
+
+  const loadStats = async () => {
+    const { data, error: statsErr } = await supabase.rpc("get_quick_submit_stats");
+    if (statsErr) {
+      setStatsError(statsErr.message);
+      return;
+    }
+    setStatsError("");
+    setStats(data || []);
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   const updateSlot = (i, newSlot) => setTeam((prev) => prev.map((s, idx) => (idx === i ? newSlot : s)));
 
@@ -351,6 +367,7 @@ function QuickSubmitBuild({ pets, itemsByType }) {
     // back to back. Just clear the team so the next one starts fresh.
     setTeam([emptySlot(), emptySlot(), emptySlot(), emptySlot()]);
     setNote("");
+    loadStats();
   };
 
   return (
@@ -398,6 +415,40 @@ function QuickSubmitBuild({ pets, itemsByType }) {
       >
         {busy ? "Publishing…" : "Publish build"}
       </button>
+
+      <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${LINE}` }}>
+        <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 12px" }}>
+          Quick Submit activity by admin
+        </p>
+        {statsError && <p style={{ fontSize: 12.5, color: DANGER, margin: "0 0 12px" }}>{statsError}</p>}
+        {!statsError && stats === null && <p style={{ fontSize: 13, color: MUTED }}>Loading…</p>}
+        {!statsError && stats !== null && stats.length === 0 && (
+          <p style={{ fontSize: 13, color: MUTED }}>No Quick Submit builds yet.</p>
+        )}
+        {!statsError && stats !== null && stats.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {stats.map((row) => (
+              <div
+                key={row.admin_id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: PANEL_2,
+                  border: `1px solid ${LINE}`,
+                  borderRadius: 9,
+                  padding: "10px 14px",
+                }}
+              >
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: CREAM }}>{row.username || "Unknown"}</span>
+                <span style={{ fontSize: 13, color: MUTED }}>
+                  {row.build_count} build{row.build_count === 1 ? "" : "s"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
