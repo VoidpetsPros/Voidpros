@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
-import { supabase } from "../lib/supabaseClient";
 
 const SUBMISSION_WAYS = [
   {
@@ -24,31 +23,9 @@ export default function Home({ onRequireAuth }) {
   const { isAuthed } = useAuth();
   const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
-  const [verifiedCount, setVerifiedCount] = useState(null);
 
   const goCollection = () => navigate("/collection");
   const goSearch = () => navigate("/search");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchVerifiedCount() {
-      const { count, error } = await supabase
-        .from("builds")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "verified");
-
-      if (!error && isMounted) {
-        setVerifiedCount(count);
-      }
-    }
-
-    fetchVerifiedCount();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <div>
@@ -60,27 +37,6 @@ export default function Home({ onRequireAuth }) {
         <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 8px" }}>
           Match your existing collection on Voidpets, then search the floor you're stuck on for solutions matching your build & items.
         </p>
-
-        {verifiedCount !== null && (
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 14,
-              padding: "8px 16px",
-              background: PANEL,
-              border: `1px solid ${LINE}`,
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 600,
-              color: CREAM,
-            }}
-          >
-            <Trophy size={14} color={GOLD} />
-            {verifiedCount.toLocaleString()} Builds Submitted
-          </div>
-        )}
       </div>
 
       {/* Two-step guide: this is the actual point of the page — get your
