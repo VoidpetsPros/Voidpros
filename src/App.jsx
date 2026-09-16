@@ -81,7 +81,7 @@ export default function App() {
       <header
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr)",
           alignItems: "center",
           gap: 20,
           padding: "14px 24px",
@@ -224,10 +224,15 @@ export default function App() {
         <span
           style={{
             fontWeight: 800,
-            fontSize: 13.5,
+            fontSize: isMobile ? 11.5 : 13.5,
             color: "#FFFFFF",
             whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "block",
+            maxWidth: "100%",
             justifySelf: "center",
+            textAlign: "center",
           }}
         >
           {verifiedCount !== null ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
