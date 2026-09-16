@@ -44,6 +44,10 @@ export default function App() {
   const [showSubmissions, setShowSubmissions] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMobile = useIsMobile();
+  // Separate, wider breakpoint than isMobile: below this width the nav
+  // pills + counter no longer comfortably fit on one header row, so the
+  // counter moves to its own line below the header instead of squeezing in.
+  const isNarrowHeader = useIsMobile(900);
   const location = useLocation();
   const [verifiedCount, setVerifiedCount] = useState(null);
 
@@ -224,7 +228,7 @@ export default function App() {
         <span
           style={{
             fontWeight: 800,
-            fontSize: isMobile ? 11.5 : 13.5,
+            fontSize: 13.5,
             color: "#FFFFFF",
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -235,7 +239,7 @@ export default function App() {
             textAlign: "center",
           }}
         >
-          {verifiedCount !== null ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
+          {verifiedCount !== null && !isNarrowHeader ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
         </span>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, justifySelf: "end", minWidth: 0 }}>
@@ -337,6 +341,14 @@ export default function App() {
           )}
         </div>
       </header>
+
+      {verifiedCount !== null && isNarrowHeader && (
+        <div style={{ padding: "10px 24px", textAlign: "center" }}>
+          <span style={{ fontWeight: 800, fontSize: 13.5, color: "#000000" }}>
+            Community Has Submitted {verifiedCount.toLocaleString()} Builds
+          </span>
+        </div>
+      )}
 
       {isMobile && showMobileMenu && (
         <>
