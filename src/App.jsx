@@ -87,7 +87,6 @@ export default function App() {
           padding: "14px 24px",
           background: GOLD_DIM,
           flexWrap: "wrap",
-          position: "relative",
         }}
       >
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
@@ -98,20 +97,20 @@ export default function App() {
         </Link>
 
         {verifiedCount !== null && (
-          <span
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
-              fontWeight: 800,
-              fontSize: 13.5,
-              color: "#FFFFFF",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Community Has Submitted {verifiedCount.toLocaleString()} Builds
-          </span>
+          <div style={{ flex: 1, display: "flex", justifyContent: "center", minWidth: 0, overflow: "hidden" }}>
+            <span
+              style={{
+                fontWeight: 800,
+                fontSize: 13.5,
+                color: "#FFFFFF",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Community Has Submitted {verifiedCount.toLocaleString()} Builds
+            </span>
+          </div>
         )}
 
         {isAuthed && !isMobile && (
