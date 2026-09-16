@@ -80,15 +80,15 @@ export default function App() {
     <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <header
         style={{
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          justifyContent: "space-between",
           gap: 20,
           padding: "14px 24px",
           background: GOLD_DIM,
-          flexWrap: "wrap",
         }}
       >
+        <div style={{ display: "flex", alignItems: "center", gap: 20, minWidth: 0 }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
           <img src={logoMark} alt="Voidpros" style={{ width: 32, height: 32, borderRadius: 8, display: "block" }} />
           <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#FFFFFF" }}>
@@ -219,25 +219,21 @@ export default function App() {
             </Link>
           </nav>
         )}
+        </div>
 
-        {verifiedCount !== null && (
-          <div style={{ flex: 1, display: "flex", justifyContent: "center", minWidth: 0, overflow: "hidden" }}>
-            <span
-              style={{
-                fontWeight: 800,
-                fontSize: 13.5,
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              Community Has Submitted {verifiedCount.toLocaleString()} Builds
-            </span>
-          </div>
-        )}
+        <span
+          style={{
+            fontWeight: 800,
+            fontSize: 13.5,
+            color: "#FFFFFF",
+            whiteSpace: "nowrap",
+            justifySelf: "center",
+          }}
+        >
+          {verifiedCount !== null ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
+        </span>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, justifySelf: "end", minWidth: 0 }}>
           {isAuthed ? (
             <>
               {!isMobile && (
