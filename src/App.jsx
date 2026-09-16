@@ -96,23 +96,6 @@ export default function App() {
           </span>
         </Link>
 
-        {verifiedCount !== null && (
-          <div style={{ flex: 1, display: "flex", justifyContent: "center", minWidth: 0, overflow: "hidden" }}>
-            <span
-              style={{
-                fontWeight: 800,
-                fontSize: 13.5,
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              Community Has Submitted {verifiedCount.toLocaleString()} Builds
-            </span>
-          </div>
-        )}
-
         {isAuthed && !isMobile && (
           <nav
             style={{
@@ -235,6 +218,23 @@ export default function App() {
               My Requests
             </Link>
           </nav>
+        )}
+
+        {verifiedCount !== null && (
+          <div style={{ flex: 1, display: "flex", justifyContent: "center", minWidth: 0, overflow: "hidden" }}>
+            <span
+              style={{
+                fontWeight: 800,
+                fontSize: 13.5,
+                color: "#FFFFFF",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              Community Has Submitted {verifiedCount.toLocaleString()} Builds
+            </span>
+          </div>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
