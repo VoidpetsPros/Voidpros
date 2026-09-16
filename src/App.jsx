@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { User, ChevronDown, Menu, X } from "lucide-react";
 import logoMark from "./assets/logo.svg";
+import { supabase } from "./lib/supabaseClient";
 import { useAuth } from "./hooks/AuthContext";
 import useIsMobile from "./hooks/useIsMobile";
 import AuthModal from "./components/AuthModal";
@@ -44,6 +45,28 @@ export default function App() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
+  const [verifiedCount, setVerifiedCount] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchVerifiedCount() {
+      const { count, error } = await supabase
+        .from("builds")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "verified");
+
+      if (!error && isMounted) {
+        setVerifiedCount(count);
+      }
+    }
+
+    fetchVerifiedCount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -72,6 +95,19 @@ export default function App() {
             voidpros
           </span>
         </Link>
+
+        {verifiedCount !== null && (
+          <span
+            style={{
+              fontWeight: 800,
+              fontSize: 13.5,
+              color: "#000000",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Community Has Submitted {verifiedCount.toLocaleString()} Builds
+          </span>
+        )}
 
         {isAuthed && !isMobile && (
           <nav
