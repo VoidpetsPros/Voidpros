@@ -36,10 +36,17 @@ export default function Results({ onRequireAuth }) {
   // Counts toward "Popular Floors" on the Search page — fires once per
   // results page load, regardless of how the user got here (typed it in,
   // tapped a popular-floor chip, or a direct link).
+  //
+  // supabase-js's query/rpc builders are lazy "thenables" — the request
+  // is only actually sent once you await/.then() them. A bare
+  // `supabase.rpc(...)` with no await never fires the network call at
+  // all, which is why this silently never recorded anything before.
   useEffect(() => {
     const stageNum = Number(stage);
     if (!isAuthed || !stageNum || stageNum < 1) return;
-    supabase.rpc("increment_floor_search", { p_stage: stageNum });
+    supabase.rpc("increment_floor_search", { p_stage: stageNum }).then(({ error }) => {
+      if (error) console.error("increment_floor_search failed:", error.message);
+    });
   }, [stage, isAuthed]);
 
   const handleSubmitRequest = async () => {
