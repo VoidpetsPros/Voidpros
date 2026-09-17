@@ -1,17 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon, Compass } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
+import { supabase } from "../lib/supabaseClient";
 import BackButton from "../components/BackButton";
 
-const POPULAR_FLOORS = [12, 24, 33, 47, 58, 61, 75];
+// Shown until real search data exists (or if the fetch fails) — once floors
+// have actual search history, FALLBACK_POPULAR_FLOORS is never used.
+const FALLBACK_POPULAR_FLOORS = [12, 24, 33, 47, 58, 61, 75];
 
 export default function Search({ onRequireAuth }) {
   const [floor, setFloor] = useState("");
+  const [popularFloors, setPopularFloors] = useState(FALLBACK_POPULAR_FLOORS);
   const { isAuthed } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+    supabase.rpc("get_popular_floors", { p_limit: 7 }).then(({ data, error }) => {
+      if (error || !isMounted || !data || data.length === 0) return;
+      setPopularFloors(data.map((row) => row.stage));
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const goToResults = (f) => {
     const n = parseInt(f, 10);
@@ -67,7 +82,7 @@ export default function Search({ onRequireAuth }) {
 
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 20 }}>
           <span style={{ fontSize: 12, color: MUTED, marginRight: 2 }}>Popular:</span>
-          {POPULAR_FLOORS.map((f) => (
+          {popularFloors.map((f) => (
             <button
               key={f}
               onClick={() => goToResults(f)}
