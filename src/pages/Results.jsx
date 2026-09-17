@@ -162,9 +162,28 @@ export default function Results({ onRequireAuth }) {
             ))}
         </div>
       ) : (
-        matching.map((b) => (
-          <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} />
-        ))
+        <>
+          {matching.map((b) => (
+            <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} />
+          ))}
+
+          {alternatives.length > 0 && (
+            <div style={{ marginTop: 20, textAlign: "center" }}>
+              <button
+                onClick={() => setShowAlternatives((v) => !v)}
+                style={{ background: "none", border: "none", color: VIOLET, fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "underline", padding: 0 }}
+              >
+                {showAlternatives ? "Hide alternative builds" : `See ${alternatives.length} alternative build${alternatives.length > 1 ? "s" : ""}`}
+              </button>
+              {showAlternatives &&
+                alternatives.map((b) => (
+                  <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
+                    <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} />
+                  </div>
+                ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Posting a request makes sense any time there's no exact match yet —
