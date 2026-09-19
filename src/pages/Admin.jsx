@@ -8,11 +8,38 @@ import { useAdminFeedback } from "../hooks/useAdminFeedback";
 import { supabase } from "../lib/supabaseClient";
 import { imageUrl } from "../hooks/useBuilds";
 import { uploadCatalogImage } from "../lib/uploadImage";
+import { petLevelForStage } from "../lib/petLevels";
 import PetSlotEditor, { emptySlot } from "../components/PetSlotEditor";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 import BackButton from "../components/BackButton";
+
+// Off by default — this changes how typing behaves (jumping fields as you
+// type), so admins opt in rather than being surprised by it. Persisted so
+// it stays on/off across sessions once they've picked.
+function useAutoFillPref() {
+  const [autoFill, setAutoFill] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("admin_autofill") === "true";
+  });
+  useEffect(() => {
+    window.localStorage.setItem("admin_autofill", String(autoFill));
+  }, [autoFill]);
+  return [autoFill, setAutoFill];
+}
+
+function AutoFillToggle({ autoFill, setAutoFill }) {
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, color: MUTED, marginBottom: 16, cursor: "pointer" }}>
+      <input type="checkbox" checked={autoFill} onChange={(e) => setAutoFill(e.target.checked)} />
+      <span>
+        <span style={{ color: CREAM, fontWeight: 600 }}>Auto Fill</span> — instantly select a pet/item once your
+        typing narrows it to one match, jump to the next field, and auto-fill pet levels by floor
+      </span>
+    </label>
+  );
+}
 
 // Players now only submit screenshots — an admin looks at those screenshots
 // and enters the team shown, right here, before approving. Rejecting still
@@ -21,8 +48,20 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
   const [team, setTeam] = useState([emptySlot(), emptySlot(), emptySlot(), emptySlot()]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [autoFill, setAutoFill] = useAutoFillPref();
+  const slotRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
   const updateSlot = (i, newSlot) => setTeam((prev) => prev.map((s, idx) => (idx === i ? newSlot : s)));
+
+  // The floor is already fixed (the player picked it at submission time),
+  // so as soon as Auto Fill is on, every pet level prefills right away —
+  // no separate floor input needed here like in Quick Submit.
+  useEffect(() => {
+    if (!autoFill) return;
+    const lvl = petLevelForStage(build.stage);
+    if (!lvl) return;
+    setTeam((prev) => prev.map((s) => ({ ...s, petLevel: lvl })));
+  }, [autoFill, build.stage]);
 
   const handleApprove = async () => {
     setError("");
@@ -108,9 +147,11 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>
         Enter the team shown above
       </p>
+      <AutoFillToggle autoFill={autoFill} setAutoFill={setAutoFill} />
       {team.map((slot, i) => (
         <PetSlotEditor
           key={i}
+          ref={slotRefs[i]}
           index={i}
           slot={slot}
           onChange={(s) => updateSlot(i, s)}
@@ -118,6 +159,8 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
           hatOptions={itemsByType.hat}
           scarfOptions={itemsByType.scarf}
           accessoryOptions={itemsByType.accessory}
+          autoFill={autoFill}
+          onAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirst()}
         />
       ))}
 
@@ -292,6 +335,19 @@ function QuickSubmitBuild({ pets, itemsByType }) {
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState(null);
   const [statsError, setStatsError] = useState("");
+  const [autoFill, setAutoFill] = useAutoFillPref();
+  const slotRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+
+  // Every pet level prefills the instant a valid floor is entered — before
+  // any pet is even picked — so it's already sitting there by the time you
+  // get to typing pets in. Changing the floor re-applies it to all four
+  // slots; a manually-typed level stays put until the floor changes again.
+  useEffect(() => {
+    if (!autoFill) return;
+    const lvl = petLevelForStage(stage);
+    if (!lvl) return;
+    setTeam((prev) => prev.map((s) => ({ ...s, petLevel: lvl })));
+  }, [stage, autoFill]);
 
   const loadStats = async () => {
     const { data, error: statsErr } = await supabase.rpc("get_quick_submit_stats");
@@ -384,9 +440,11 @@ function QuickSubmitBuild({ pets, itemsByType }) {
       />
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Team</p>
+      <AutoFillToggle autoFill={autoFill} setAutoFill={setAutoFill} />
       {team.map((slot, i) => (
         <PetSlotEditor
           key={i}
+          ref={slotRefs[i]}
           index={i}
           slot={slot}
           onChange={(s) => updateSlot(i, s)}
@@ -394,6 +452,8 @@ function QuickSubmitBuild({ pets, itemsByType }) {
           hatOptions={itemsByType.hat}
           scarfOptions={itemsByType.scarf}
           accessoryOptions={itemsByType.accessory}
+          autoFill={autoFill}
+          onAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirst()}
         />
       ))}
 
