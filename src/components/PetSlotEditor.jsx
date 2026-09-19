@@ -2,19 +2,29 @@ import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Combobox from "./Combobox";
 import { useTheme } from "../hooks/ThemeContext";
 
-function LevelInput({ value, onChange }) {
+// onAdvance: fires when Enter is pressed in this level field — lets the
+// auto-advance chain skip down into the next name field once a level is
+// entered (or just accepted as-is, e.g. an Auto Fill-prefilled value).
+const LevelInput = forwardRef(function LevelInput({ value, onChange, onAdvance }, ref) {
   const { LINE, CREAM, PANEL } = useTheme();
   return (
     <input
+      ref={ref}
       type="number"
       min="1"
       value={value === "" || value === undefined || value === null ? "" : value}
       onChange={(e) => onChange(e.target.value ? parseInt(e.target.value, 10) : "")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onAdvance?.();
+        }
+      }}
       placeholder="Lv"
       style={{ width: 52, boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 7, padding: "7px 6px", color: CREAM, fontSize: 12.5, textAlign: "center", outline: "none", flexShrink: 0 }}
     />
   );
-}
+});
 
 function FieldRow({ label, children }) {
   const { MUTED } = useTheme();
@@ -45,11 +55,14 @@ export function slotIsComplete(slot) {
   );
 }
 
-// autoFill: when on, selecting a pet/item auto-advances focus straight into
-// the next field in this slot (pet -> hat -> scarf -> accessory 1 ->
-// accessory 2); finishing accessory 2 calls onAdvanceOut so the parent can
-// jump into the next slot entirely. focusFirst (via ref) lets a parent
-// (or the previous slot) jump into this slot's first field.
+// autoFill: when on, selecting a pet/item auto-advances focus into that
+// field's own level box next; pressing Enter in a level box then jumps
+// down into the next field's name box. The full chain per slot is:
+// pet name -> pet level -> hat name -> hat level -> scarf name ->
+// scarf level -> accessory 1 name -> accessory 1 level -> accessory 2
+// name -> accessory 2 level -> (onAdvanceOut) next slot's pet name.
+// focusFirst (via ref) lets a parent (or the previous slot) jump into
+// this slot's first field.
 const PetSlotEditor = forwardRef(function PetSlotEditor(
   { index, slot, onChange, petOptions, hatOptions, scarfOptions, accessoryOptions, autoFill = false, onAdvanceOut },
   ref
@@ -64,10 +77,15 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
   };
 
   const petRef = useRef(null);
+  const petLevelRef = useRef(null);
   const hatRef = useRef(null);
+  const hatLevelRef = useRef(null);
   const scarfRef = useRef(null);
+  const scarfLevelRef = useRef(null);
   const acc1Ref = useRef(null);
+  const acc1LevelRef = useRef(null);
   const acc2Ref = useRef(null);
+  const acc2LevelRef = useRef(null);
 
   useImperativeHandle(ref, () => ({
     focusFirst: () => petRef.current?.openAndFocus(),
@@ -85,9 +103,9 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
           placeholder="Select pet"
           kind="pet"
           autoFill={autoFill}
-          onAutoAdvance={() => hatRef.current?.openAndFocus()}
+          onAutoAdvance={() => petLevelRef.current?.focus()}
         />
-        <LevelInput value={slot.petLevel} onChange={(v) => update({ petLevel: v })} />
+        <LevelInput ref={petLevelRef} value={slot.petLevel} onChange={(v) => update({ petLevel: v })} onAdvance={() => hatRef.current?.openAndFocus()} />
       </FieldRow>
       <FieldRow label="Hat">
         <Combobox
@@ -98,9 +116,9 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
           placeholder="Select hat"
           kind="item"
           autoFill={autoFill}
-          onAutoAdvance={() => scarfRef.current?.openAndFocus()}
+          onAutoAdvance={() => hatLevelRef.current?.focus()}
         />
-        <LevelInput value={slot.hat.level} onChange={(v) => updateNested("hat", { level: v })} />
+        <LevelInput ref={hatLevelRef} value={slot.hat.level} onChange={(v) => updateNested("hat", { level: v })} onAdvance={() => scarfRef.current?.openAndFocus()} />
       </FieldRow>
       <FieldRow label="Scarf">
         <Combobox
@@ -111,9 +129,9 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
           placeholder="Select scarf"
           kind="item"
           autoFill={autoFill}
-          onAutoAdvance={() => acc1Ref.current?.openAndFocus()}
+          onAutoAdvance={() => scarfLevelRef.current?.focus()}
         />
-        <LevelInput value={slot.scarf.level} onChange={(v) => updateNested("scarf", { level: v })} />
+        <LevelInput ref={scarfLevelRef} value={slot.scarf.level} onChange={(v) => updateNested("scarf", { level: v })} onAdvance={() => acc1Ref.current?.openAndFocus()} />
       </FieldRow>
       <FieldRow label="Accessory 1">
         <Combobox
@@ -124,9 +142,9 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
           placeholder="Select accessory"
           kind="item"
           autoFill={autoFill}
-          onAutoAdvance={() => acc2Ref.current?.openAndFocus()}
+          onAutoAdvance={() => acc1LevelRef.current?.focus()}
         />
-        <LevelInput value={slot.accessories[0].level} onChange={(v) => updateAccessory(0, { level: v })} />
+        <LevelInput ref={acc1LevelRef} value={slot.accessories[0].level} onChange={(v) => updateAccessory(0, { level: v })} onAdvance={() => acc2Ref.current?.openAndFocus()} />
       </FieldRow>
       <FieldRow label="Accessory 2">
         <Combobox
@@ -137,9 +155,9 @@ const PetSlotEditor = forwardRef(function PetSlotEditor(
           placeholder="Select accessory"
           kind="item"
           autoFill={autoFill}
-          onAutoAdvance={() => onAdvanceOut?.()}
+          onAutoAdvance={() => acc2LevelRef.current?.focus()}
         />
-        <LevelInput value={slot.accessories[1].level} onChange={(v) => updateAccessory(1, { level: v })} />
+        <LevelInput ref={acc2LevelRef} value={slot.accessories[1].level} onChange={(v) => updateAccessory(1, { level: v })} onAdvance={() => onAdvanceOut?.()} />
       </FieldRow>
     </div>
   );
