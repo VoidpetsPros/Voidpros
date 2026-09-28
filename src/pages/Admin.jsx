@@ -35,7 +35,7 @@ function AutoFillToggle({ autoFill, setAutoFill }) {
       <input type="checkbox" checked={autoFill} onChange={(e) => setAutoFill(e.target.checked)} />
       <span>
         <span style={{ color: CREAM, fontWeight: 600 }}>Auto Fill</span> — instantly select a pet/item once your
-        typing narrows it to one match, jump to the next field, and auto-fill pet levels by floor
+        typing narrows it to one match, jump to the next field, auto-fill pet levels by floor, and move through item levels after 2 digits
       </span>
     </label>
   );
@@ -160,7 +160,11 @@ function PendingBuildReview({ build, pets, itemsByType, onApproved, onRejected }
           scarfOptions={itemsByType.scarf}
           accessoryOptions={itemsByType.accessory}
           autoFill={autoFill}
-          onAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirst()}
+          onAdvanceOut={() => {
+            if (i < slotRefs.length - 1) slotRefs[i + 1].current?.focusFirst();
+            else if (autoFill) slotRefs[0].current?.focusFirstLevel();
+          }}
+          onLevelAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirstLevel()}
         />
       ))}
 
@@ -453,7 +457,11 @@ function QuickSubmitBuild({ pets, itemsByType }) {
           scarfOptions={itemsByType.scarf}
           accessoryOptions={itemsByType.accessory}
           autoFill={autoFill}
-          onAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirst()}
+          onAdvanceOut={() => {
+            if (i < slotRefs.length - 1) slotRefs[i + 1].current?.focusFirst();
+            else if (autoFill) slotRefs[0].current?.focusFirstLevel();
+          }}
+          onLevelAdvanceOut={() => slotRefs[i + 1]?.current?.focusFirstLevel()}
         />
       ))}
 
