@@ -31,6 +31,7 @@ export default function Settings({ onRequireAuth }) {
   const [usernameSaving, setUsernameSaving] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const [portalLoading, setPortalLoading] = useState(false);
+  const [levelsPrefSaving, setLevelsPrefSaving] = useState(false);
 
   if (!isAuthed) {
     onRequireAuth();
@@ -76,6 +77,20 @@ export default function Settings({ onRequireAuth }) {
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleToggleLevelsPref = async () => {
+    setLevelsPrefSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ show_levels_and_items: !profile?.show_levels_and_items })
+      .eq("id", user.id);
+    setLevelsPrefSaving(false);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    await refreshProfile();
   };
 
   return (
@@ -142,6 +157,47 @@ export default function Settings({ onRequireAuth }) {
             style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: portalLoading ? "default" : "pointer", whiteSpace: "nowrap" }}
           >
             {portalLoading ? "Opening…" : profile?.is_subscribed ? "Manage Subscription" : "Upgrade"}
+          </button>
+        }
+      />
+
+      <Row
+        label="Pet Levels & Item View"
+        value={
+          profile?.is_subscribed
+            ? "Show pet levels and item names/levels on build cards"
+            : "Show pet levels on build cards — item view still requires Unlimited"
+        }
+        action={
+          <button
+            onClick={handleToggleLevelsPref}
+            disabled={levelsPrefSaving}
+            role="switch"
+            aria-checked={!!profile?.show_levels_and_items}
+            style={{
+              position: "relative",
+              width: 44,
+              height: 26,
+              borderRadius: 999,
+              border: "none",
+              background: profile?.show_levels_and_items ? GOLD : LINE,
+              cursor: levelsPrefSaving ? "default" : "pointer",
+              flexShrink: 0,
+              opacity: levelsPrefSaving ? 0.6 : 1,
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: 3,
+                left: profile?.show_levels_and_items ? 21 : 3,
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                background: "#FFFFFF",
+                transition: "left 0.15s ease",
+              }}
+            />
           </button>
         }
       />

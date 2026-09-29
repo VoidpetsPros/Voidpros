@@ -22,7 +22,7 @@ function Pill({ children, tone = "default" }) {
   );
 }
 
-function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, itemsHidden }) {
+function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, itemsHidden, showLevelsAndItems }) {
   const { CREAM, DANGER, GOLD, LINE, MUTED, PANEL_2 } = useTheme();
   const pet = pets.find((p) => p.id === slot.pet_id);
   const hat = items.find((i) => i.id === slot.hat_id);
@@ -65,30 +65,37 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
       <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 108 }}>
         <PetAvatar pet={pet} size={28} />
         <span style={{ fontSize: 12.5, color: hasPet ? CREAM : DANGER, fontWeight: 500 }}>
-          {pet.name} <span style={{ color: MUTED, fontWeight: 400 }}>Lv{slot.pet_level}</span>
+          {pet.name} {showLevelsAndItems && <span style={{ color: MUTED, fontWeight: 400 }}>Lv{slot.pet_level}</span>}
         </span>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, flex: 1 }}>
-        {itemsHidden ? (
-          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px", borderRadius: 16, background: PANEL_2, color: MUTED, border: `1px solid ${LINE}` }}>
-            <Lock size={11} /> Items hidden
-          </span>
-        ) : (
-          <>
-            {chip(hat, slot.hat_id, slot.hat_level)}
-            {chip(scarf, slot.scarf_id, slot.scarf_level)}
-            {accessories.map((a) => chip(a.item, a.id, a.level))}
-          </>
-        )}
-      </div>
+      {showLevelsAndItems && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, flex: 1 }}>
+          {itemsHidden ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px", borderRadius: 16, background: PANEL_2, color: MUTED, border: `1px solid ${LINE}` }}>
+              <Lock size={11} /> Items hidden
+            </span>
+          ) : (
+            <>
+              {chip(hat, slot.hat_id, slot.hat_level)}
+              {chip(scarf, slot.scarf_id, slot.scarf_level)}
+              {accessories.map((a) => chip(a.item, a.id, a.level))}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
+  // Off by default — a personal display preference (Settings) for whether
+  // to show pet levels and the item view at all. Independent of the
+  // item-visibility paywall below: even with this on, item chips still
+  // only render for Unlimited subscribers.
+  const showLevelsAndItems = !!profile?.show_levels_and_items;
   // items_visible comes back from get_search_results (undefined when a
   // build was fetched some other way, e.g. Community/My Requests — those
   // always show full detail, so itemsHidden correctly stays false there).
@@ -142,6 +149,7 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
             ownedItemCounts={ownedItemCounts}
             usedSoFar={usedSoFar}
             itemsHidden={itemsHidden}
+            showLevelsAndItems={showLevelsAndItems}
           />
         ))}
       </div>

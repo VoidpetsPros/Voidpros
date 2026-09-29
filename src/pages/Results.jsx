@@ -133,7 +133,7 @@ export default function Results({ onRequireAuth }) {
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
-        {builds.some((b) => b.items_visible === false && b.has_items) && (
+        {profile?.show_levels_and_items && builds.some((b) => b.items_visible === false && b.has_items) && (
           <button
             onClick={() => navigate("/subscribe")}
             style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
