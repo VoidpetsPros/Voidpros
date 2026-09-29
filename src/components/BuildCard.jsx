@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Check, ThumbsUp, Lock } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
@@ -88,7 +87,6 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
 
 export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
   // items_visible comes back from get_search_results (undefined when a
@@ -154,15 +152,6 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
         {isOwnBuild ? <span style={{ fontSize: 12, color: MUTED }}>Your submission</span> : <span />}
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {itemsHidden && build.has_items && (
-            <button
-              onClick={() => navigate("/subscribe")}
-              style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-            >
-              <Lock size={12} /> Unlock Item View
-            </button>
-          )}
-
           {isVerified && onVote && !isOwnBuild && (
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <button

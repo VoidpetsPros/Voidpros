@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Lock } from "lucide-react";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -131,7 +131,17 @@ export default function Results({ onRequireAuth }) {
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />
 
-      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: "0 0 4px" }}>Floor {stage}</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
+        {builds.some((b) => b.items_visible === false && b.has_items) && (
+          <button
+            onClick={() => navigate("/subscribe")}
+            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+          >
+            <Lock size={12} /> Unlock Item View
+          </button>
+        )}
+      </div>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
         {matching.length > 0
           ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
