@@ -280,7 +280,15 @@ export default function App() {
                   flexShrink: 0,
                 }}
               >
-                <User size={16} color="#FFFFFF" />
+                {profile?.equipped_achievement?.image_url ? (
+                  <img
+                    src={profile.equipped_achievement.image_url}
+                    alt=""
+                    style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <User size={16} color="#FFFFFF" />
+                )}
                 {hasNewActivity && (
                   <span
                     style={{
