@@ -1355,7 +1355,7 @@ function AchievementCosmeticRow({ achievement, onUploaded, onRenamed }) {
             </button>
           </p>
         )}
-        {achievement.category !== "base" && achievement.category !== "admin_exclusive" && (
+        {achievement.category !== "base" && achievement.category !== "admin_exclusive" && achievement.category !== "founding" && (
           <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Threshold: {achievement.threshold}</p>
         )}
       </div>
@@ -1372,7 +1372,7 @@ function AchievementCosmeticRow({ achievement, onUploaded, onRenamed }) {
   );
 }
 
-const ACHIEVEMENT_CATEGORY_LABELS = { completions: "Completions", challenges: "Challenges", searches: "Searches", base: "Base (everyone has)", admin_exclusive: "Admin Exclusive" };
+const ACHIEVEMENT_CATEGORY_LABELS = { completions: "Completions", challenges: "Challenges", searches: "Searches", founding: "Founding Member (first 100 accounts)", base: "Base (everyone has)", admin_exclusive: "Admin Exclusive" };
 
 function AchievementCosmetics() {
   const [achievements, setAchievements] = useState(null);
@@ -1401,7 +1401,7 @@ function AchievementCosmetics() {
 
   return (
     <div>
-      {["completions", "challenges", "searches", "base", "admin_exclusive"].map((category) => {
+      {["completions", "challenges", "searches", "founding", "base", "admin_exclusive"].map((category) => {
         const rows = achievements.filter((a) => a.category === category);
         if (rows.length === 0) return null;
         return (
