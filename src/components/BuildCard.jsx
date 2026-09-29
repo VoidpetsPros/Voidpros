@@ -53,7 +53,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
         }}
       >
         <ItemAvatar item={item} size={18} />
-        {item.name} <span style={{ opacity: 0.75 }}>Lv{level}</span>
+        {item.name} {showLevelsAndItems && <span style={{ opacity: 0.75 }}>Lv{level}</span>}
       </span>
     );
   };
@@ -68,21 +68,19 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
           {pet.name} {showLevelsAndItems && <span style={{ color: MUTED, fontWeight: 400 }}>Lv{slot.pet_level}</span>}
         </span>
       </div>
-      {showLevelsAndItems && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, flex: 1 }}>
-          {itemsHidden ? (
-            <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px", borderRadius: 16, background: PANEL_2, color: MUTED, border: `1px solid ${LINE}` }}>
-              <Lock size={11} /> Items hidden
-            </span>
-          ) : (
-            <>
-              {chip(hat, slot.hat_id, slot.hat_level)}
-              {chip(scarf, slot.scarf_id, slot.scarf_level)}
-              {accessories.map((a) => chip(a.item, a.id, a.level))}
-            </>
-          )}
-        </div>
-      )}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, flex: 1 }}>
+        {itemsHidden ? (
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px", borderRadius: 16, background: PANEL_2, color: MUTED, border: `1px solid ${LINE}` }}>
+            <Lock size={11} /> Items hidden
+          </span>
+        ) : (
+          <>
+            {chip(hat, slot.hat_id, slot.hat_level)}
+            {chip(scarf, slot.scarf_id, slot.scarf_level)}
+            {accessories.map((a) => chip(a.item, a.id, a.level))}
+          </>
+        )}
+      </div>
     </div>
   );
 }

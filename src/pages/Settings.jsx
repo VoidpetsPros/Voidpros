@@ -162,12 +162,8 @@ export default function Settings({ onRequireAuth }) {
       />
 
       <Row
-        label="Pet Levels & Item View"
-        value={
-          profile?.is_subscribed
-            ? "Show pet levels and item names/levels on build cards"
-            : "Show pet levels on build cards — item view still requires Unlimited"
-        }
+        label="Pet & Item Levels"
+        value="Show level numbers on build cards. Item names are unaffected — Unlimited still controls whether items are visible at all."
         action={
           <button
             onClick={handleToggleLevelsPref}
