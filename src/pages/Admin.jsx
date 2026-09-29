@@ -1297,7 +1297,9 @@ function AchievementCosmeticRow({ achievement, onUploaded }) {
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontSize: 13.5, color: CREAM, margin: "0 0 2px" }}>{achievement.name}</p>
-        <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Threshold: {achievement.threshold}</p>
+        {achievement.category !== "base" && achievement.category !== "admin_exclusive" && (
+          <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Threshold: {achievement.threshold}</p>
+        )}
       </div>
       {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
       <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
@@ -1312,7 +1314,7 @@ function AchievementCosmeticRow({ achievement, onUploaded }) {
   );
 }
 
-const ACHIEVEMENT_CATEGORY_LABELS = { completions: "Completions", challenges: "Challenges", searches: "Searches" };
+const ACHIEVEMENT_CATEGORY_LABELS = { completions: "Completions", challenges: "Challenges", searches: "Searches", base: "Base (everyone has)", admin_exclusive: "Admin Exclusive" };
 
 function AchievementCosmetics() {
   const [achievements, setAchievements] = useState(null);
@@ -1338,7 +1340,7 @@ function AchievementCosmetics() {
 
   return (
     <div>
-      {["completions", "challenges", "searches"].map((category) => {
+      {["completions", "challenges", "searches", "base", "admin_exclusive"].map((category) => {
         const rows = achievements.filter((a) => a.category === category);
         if (rows.length === 0) return null;
         return (
