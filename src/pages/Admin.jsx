@@ -529,6 +529,8 @@ function ManageBuilds() {
   const [error, setError] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [comments, setComments] = useState({});
+  const [expandedTeamId, setExpandedTeamId] = useState(null);
+  const [teams, setTeams] = useState({});
 
   const handleSearch = async () => {
     const stageNum = parseInt(stageQuery, 10);
@@ -564,6 +566,32 @@ function ManageBuilds() {
       .eq("build_id", buildId)
       .order("created_at", { ascending: false });
     setComments((prev) => ({ ...prev, [buildId]: data || [] }));
+  };
+
+  // Full, unredacted team — this queries build_team_slots directly rather
+  // than the paywall-aware get_search_results RPC, since admins reviewing
+  // builds always need to see every pet and item regardless of anyone's
+  // subscription status.
+  const loadTeam = async (buildId) => {
+    if (expandedTeamId === buildId) {
+      setExpandedTeamId(null);
+      return;
+    }
+    setExpandedTeamId(buildId);
+    if (teams[buildId]) return;
+    const { data, error: teamError } = await supabase
+      .from("build_team_slots")
+      .select(
+        "slot_index, pet_level, hat_level, scarf_level, accessory1_level, accessory2_level, " +
+          "pet:pets(name, image_url, variant, color), " +
+          "hat:items!hat_id(name, image_url, type, rarity, color), " +
+          "scarf:items!scarf_id(name, image_url, type, rarity, color), " +
+          "accessory1:items!accessory1_id(name, image_url, type, rarity, color), " +
+          "accessory2:items!accessory2_id(name, image_url, type, rarity, color)"
+      )
+      .eq("build_id", buildId)
+      .order("slot_index");
+    setTeams((prev) => ({ ...prev, [buildId]: teamError ? { error: teamError.message } : { slots: data || [] } }));
   };
 
   const handleDeleteBuild = async (buildId) => {
@@ -621,12 +649,24 @@ function ManageBuilds() {
                   Floor {b.stage} · {b.status} · {b.author?.username || "System"}
                 </p>
                 {b.note && <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 8px" }}>{b.note}</p>}
-                <button
-                  onClick={() => loadComments(b.id)}
-                  style={{ background: "none", border: "none", color: GOLD, fontSize: 12, cursor: "pointer", padding: 0, textDecoration: "underline" }}
-                >
-                  {expandedId === b.id ? "Hide comments" : "View comments"}
-                </button>
+                <div style={{ display: "flex", gap: 14 }}>
+                  <button
+                    onClick={() => loadTeam(b.id)}
+                    style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", color: GOLD, fontSize: 12, cursor: "pointer", padding: 0, fontWeight: 600 }}
+                  >
+                    <ChevronDown
+                      size={13}
+                      style={{ transform: expandedTeamId === b.id ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}
+                    />
+                    {expandedTeamId === b.id ? "Hide team" : "Show team"}
+                  </button>
+                  <button
+                    onClick={() => loadComments(b.id)}
+                    style={{ background: "none", border: "none", color: GOLD, fontSize: 12, cursor: "pointer", padding: 0, textDecoration: "underline" }}
+                  >
+                    {expandedId === b.id ? "Hide comments" : "View comments"}
+                  </button>
+                </div>
               </div>
               <button
                 onClick={() => handleDeleteBuild(b.id)}
@@ -636,6 +676,49 @@ function ManageBuilds() {
                 <Trash2 size={14} />
               </button>
             </div>
+
+            {expandedTeamId === b.id && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LINE}` }}>
+                {!teams[b.id] ? (
+                  <p style={{ fontSize: 12.5, color: MUTED }}>Loading…</p>
+                ) : teams[b.id].error ? (
+                  <p style={{ fontSize: 12.5, color: DANGER }}>{teams[b.id].error}</p>
+                ) : teams[b.id].slots.length === 0 ? (
+                  <p style={{ fontSize: 12.5, color: MUTED }}>No team data saved for this build.</p>
+                ) : (
+                  teams[b.id].slots.map((slot, i) => {
+                    const itemChips = [
+                      { item: slot.hat, level: slot.hat_level },
+                      { item: slot.scarf, level: slot.scarf_level },
+                      { item: slot.accessory1, level: slot.accessory1_level },
+                      { item: slot.accessory2, level: slot.accessory2_level },
+                    ].filter((c) => c.item);
+                    return (
+                      <div key={i} style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, padding: "6px 0", borderBottom: i < teams[b.id].slots.length - 1 ? `1px solid ${LINE}` : "none" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 130 }}>
+                          <PetAvatar pet={slot.pet} size={22} />
+                          <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 500 }}>
+                            {slot.pet?.name || "?"} <span style={{ color: MUTED, fontWeight: 400 }}>Lv{slot.pet_level}</span>
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                          {itemChips.length === 0 ? (
+                            <span style={{ fontSize: 11.5, color: MUTED }}>No items</span>
+                          ) : (
+                            itemChips.map((c, ci) => (
+                              <span key={ci} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px 2px 2px", borderRadius: 16, background: PANEL_2, border: `1px solid ${LINE}`, color: MUTED }}>
+                                <ItemAvatar item={c.item} size={17} />
+                                {c.item.name} <span style={{ opacity: 0.75 }}>Lv{c.level}</span>
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
 
             {expandedId === b.id && (
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LINE}` }}>
