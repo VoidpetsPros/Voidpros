@@ -90,10 +90,12 @@ export default function Results({ onRequireAuth }) {
     const nonMatching = builds.filter((b) => !matching.includes(b));
     // Closest-to-working first — a build you're missing one thing from is
     // far easier to act on (swap a pet/item) than one missing several.
+    // Unlimited-only: everyone else sees them in the order they arrived.
+    if (!profile?.is_subscribed) return nonMatching;
     return [...nonMatching].sort(
       (a, b) => missingCountForBuild(a, ownedPets, ownedItems) - missingCountForBuild(b, ownedPets, ownedItems)
     );
-  }, [builds, matching, ownedPets, ownedItems]);
+  }, [builds, matching, ownedPets, ownedItems, profile?.is_subscribed]);
 
   // Every build in a single search response shares the same items_visible
   // value (same viewer) — used elsewhere by BuildCard to decide whether to
