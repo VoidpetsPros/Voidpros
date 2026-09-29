@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import { containsProfanity } from "../lib/profanity";
 import { useTheme } from "../hooks/ThemeContext";
+import CosmeticAvatar from "./CosmeticAvatar";
 
 export default function CommentsSection({ buildId, verified = true, initialCount = 0 }) {
   const { user } = useAuth();
@@ -20,7 +21,7 @@ export default function CommentsSection({ buildId, verified = true, initialCount
     setLoading(true);
     const { data, error: fetchError } = await supabase
       .from("comments")
-      .select("id, body, show_author, created_at, author:profiles!user_id(username)")
+      .select("id, body, show_author, created_at, author:profiles!user_id(username, equipped_achievement:achievements!equipped_achievement_id(image_url))")
       .eq("build_id", buildId)
       .order("created_at", { ascending: true });
     if (fetchError) {
@@ -72,7 +73,8 @@ export default function CommentsSection({ buildId, verified = true, initialCount
           {!loading &&
             comments.map((c) => (
               <div key={c.id} style={{ marginBottom: 10 }}>
-                <p style={{ fontSize: 12.5, color: CREAM, margin: "0 0 2px", fontWeight: 500 }}>
+                <p style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: CREAM, margin: "0 0 2px", fontWeight: 500 }}>
+                  {c.show_author && <CosmeticAvatar url={c.author?.equipped_achievement?.image_url} size={16} />}
                   {c.show_author ? c.author?.username || "a player" : "Anonymous"}
                 </p>
                 <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.5 }}>{c.body}</p>

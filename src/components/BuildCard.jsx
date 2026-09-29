@@ -2,6 +2,7 @@ import React from "react";
 import { ShieldCheck, Check, ThumbsUp, Lock } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
+import CosmeticAvatar from "./CosmeticAvatar";
 import CommentsSection from "./CommentsSection";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
@@ -131,7 +132,10 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
             <Pill>Missing {missingCount} thing{missingCount > 1 ? "s" : ""}</Pill>
           )}
         </div>
-        <span style={{ fontSize: 12, color: MUTED }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: MUTED }}>
+          {build.show_author && (
+            <CosmeticAvatar url={build.author?.cosmetic_url ?? build.author?.equipped_achievement?.image_url} size={18} />
+          )}
           {build.show_author ? build.author?.username || "a player" : "Anonymous"}
         </span>
       </div>

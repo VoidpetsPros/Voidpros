@@ -21,6 +21,7 @@ import FulfillAttempt from "./pages/FulfillAttempt";
 import MyActivity from "./pages/MyActivity";
 import MyRequests from "./pages/MyRequests";
 import Leaderboards from "./pages/Leaderboards";
+import Achievements from "./pages/Achievements";
 import Feedback from "./pages/Feedback";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
@@ -433,6 +434,7 @@ export default function App() {
           <Route path="/" element={<Home onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/settings" element={<Settings onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/achievements" element={<Achievements onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/search" element={<Search onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />

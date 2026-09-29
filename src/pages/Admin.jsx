@@ -1251,6 +1251,111 @@ function CatalogSection({ title, count, total, rows, kind, avatarFor, onUploaded
   );
 }
 
+// One row per achievement, grouped by category — upload a cosmetic image
+// for it. Reuses the same catalog-images bucket/upload helper as pets and
+// items, just under kind "achievements" — a fixed path per achievement id,
+// so re-uploading just replaces it, exactly like pet/item images.
+function AchievementCosmeticRow({ achievement, onUploaded }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef(null);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError("");
+    setBusy(true);
+    try {
+      const url = await uploadCatalogImage(file, "achievements", achievement.id);
+      const { error: updateError } = await supabase.from("achievements").update({ image_url: url }).eq("id", achievement.id);
+      if (updateError) throw updateError;
+      onUploaded(achievement.id, url);
+    } catch (err) {
+      setError(err.message || "Upload failed.");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${LINE}` }}>
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: "50%",
+          background: PANEL_2,
+          border: `1px solid ${LINE}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        {achievement.image_url && <img src={achievement.image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 13.5, color: CREAM, margin: "0 0 2px" }}>{achievement.name}</p>
+        <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Threshold: {achievement.threshold}</p>
+      </div>
+      {error && <span style={{ fontSize: 11.5, color: DANGER }}>{error}</span>}
+      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={busy}
+        style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+      >
+        {busy ? "Uploading…" : achievement.image_url ? "Replace" : "Upload"}
+      </button>
+    </div>
+  );
+}
+
+const ACHIEVEMENT_CATEGORY_LABELS = { completions: "Completions", challenges: "Challenges", searches: "Searches" };
+
+function AchievementCosmetics() {
+  const [achievements, setAchievements] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    supabase
+      .from("achievements")
+      .select("id, category, threshold, name, image_url")
+      .order("category")
+      .order("threshold")
+      .then(({ data, error: fetchError }) => {
+        if (fetchError) setError(fetchError.message);
+        else setAchievements(data || []);
+      });
+  }, []);
+
+  const handleUploaded = (id, url) =>
+    setAchievements((prev) => prev.map((a) => (a.id === id ? { ...a, image_url: url } : a)));
+
+  if (error) return <p style={{ fontSize: 12.5, color: DANGER }}>{error}</p>;
+  if (!achievements) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
+
+  return (
+    <div>
+      {["completions", "challenges", "searches"].map((category) => {
+        const rows = achievements.filter((a) => a.category === category);
+        if (rows.length === 0) return null;
+        return (
+          <div key={category} style={{ marginBottom: 24 }}>
+            <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+              {ACHIEVEMENT_CATEGORY_LABELS[category]}
+            </p>
+            {rows.map((a) => (
+              <AchievementCosmeticRow key={a.id} achievement={a} onUploaded={handleUploaded} />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function CatalogImages({ pets, items }) {
   const [localPets, setLocalPets] = useState(pets);
   const [localItems, setLocalItems] = useState(items);
@@ -1362,6 +1467,7 @@ export default function Admin() {
     { id: "quick", label: "Quick submit" },
     { id: "manage", label: "Manage builds" },
     { id: "images", label: "Catalog" },
+    { id: "cosmetics", label: "Cosmetics" },
     { id: "feedback", label: "Feedback" },
   ];
 
@@ -1392,6 +1498,7 @@ export default function Admin() {
       {tab === "quick" && <QuickSubmitBuild pets={pets} itemsByType={itemsByType} />}
       {tab === "manage" && <ManageBuilds />}
       {tab === "images" && <CatalogImages pets={pets} items={items} />}
+      {tab === "cosmetics" && <AchievementCosmetics />}
       {tab === "feedback" && <AdminFeedback />}
 
       {tab === "queue" && (

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check, Trophy } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
+import CosmeticAvatar from "./CosmeticAvatar";
 
 function ThemePopup({ onClose }) {
   const { mode, setMode, PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
@@ -103,6 +104,11 @@ export default function ProfileSidebar({ onClose }) {
     onClose();
   };
 
+  const goToAchievements = () => {
+    navigate("/achievements");
+    onClose();
+  };
+
   const goToFeedback = () => {
     navigate("/feedback");
     onClose();
@@ -175,13 +181,16 @@ export default function ProfileSidebar({ onClose }) {
             </div>
 
             <div style={{ background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-              <div>
-                <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: CREAM, margin: "0 0 3px" }}>
-                  {profile?.username || "player"}
-                </p>
-                <p style={{ fontSize: 12.5, color: profile?.is_subscribed ? GOLD : MUTED, fontWeight: 600, margin: 0 }}>
-                  {profile?.is_subscribed ? "Unlimited plan" : "Free plan"}
-                </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <CosmeticAvatar url={profile?.equipped_achievement?.image_url} size={40} />
+                <div>
+                  <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, color: CREAM, margin: "0 0 3px" }}>
+                    {profile?.username || "player"}
+                  </p>
+                  <p style={{ fontSize: 12.5, color: profile?.is_subscribed ? GOLD : MUTED, fontWeight: 600, margin: 0 }}>
+                    {profile?.is_subscribed ? "Unlimited plan" : "Free plan"}
+                  </p>
+                </div>
               </div>
               {!profile?.is_subscribed && (
                 <button
@@ -192,6 +201,11 @@ export default function ProfileSidebar({ onClose }) {
                 </button>
               )}
             </div>
+
+            <button onClick={goToAchievements} style={navButtonStyle}>
+              <Trophy size={16} color={GOLD} />
+              Achievements
+            </button>
 
             <button onClick={goToCommunity} style={navButtonStyle}>
               <Users size={16} color={GOLD} />

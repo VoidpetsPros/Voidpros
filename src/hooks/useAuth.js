@@ -19,7 +19,11 @@ export function useAuthState() {
       setHasNewChallenges(false);
       return;
     }
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*, equipped_achievement:achievements!equipped_achievement_id(id, name, image_url)")
+      .eq("id", userId)
+      .single();
     if (error) {
       console.error("Failed to load profile:", error.message);
       return;
