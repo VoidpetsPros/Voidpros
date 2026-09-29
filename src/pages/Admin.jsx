@@ -1255,9 +1255,12 @@ function CatalogSection({ title, count, total, rows, kind, avatarFor, onUploaded
 // for it. Reuses the same catalog-images bucket/upload helper as pets and
 // items, just under kind "achievements" — a fixed path per achievement id,
 // so re-uploading just replaces it, exactly like pet/item images.
-function AchievementCosmeticRow({ achievement, onUploaded }) {
+function AchievementCosmeticRow({ achievement, onUploaded, onRenamed }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(achievement.name);
+  const [savingName, setSavingName] = useState(false);
   const inputRef = useRef(null);
 
   const handleFile = async (e) => {
@@ -1275,6 +1278,24 @@ function AchievementCosmeticRow({ achievement, onUploaded }) {
       setError(err.message || "Upload failed.");
     }
     setBusy(false);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed) {
+      setError("Name can't be empty.");
+      return;
+    }
+    setError("");
+    setSavingName(true);
+    const { error: updateError } = await supabase.from("achievements").update({ name: trimmed }).eq("id", achievement.id);
+    setSavingName(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    onRenamed(achievement.id, trimmed);
+    setEditingName(false);
   };
 
   return (
@@ -1296,7 +1317,44 @@ function AchievementCosmeticRow({ achievement, onUploaded }) {
         {achievement.image_url && <img src={achievement.image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13.5, color: CREAM, margin: "0 0 2px" }}>{achievement.name}</p>
+        {editingName ? (
+          <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
+            <input
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
+              autoFocus
+              style={{ flex: 1, minWidth: 0, boxSizing: "border-box", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 6, padding: "5px 8px", color: CREAM, fontSize: 13, outline: "none" }}
+            />
+            <button
+              onClick={handleSaveName}
+              disabled={savingName}
+              style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, fontWeight: 600, cursor: savingName ? "default" : "pointer", flexShrink: 0 }}
+            >
+              {savingName ? "…" : "Save"}
+            </button>
+            <button
+              onClick={() => {
+                setNameInput(achievement.name);
+                setEditingName(false);
+                setError("");
+              }}
+              style={{ background: "none", border: `1px solid ${LINE}`, color: MUTED, borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", flexShrink: 0 }}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <p style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13.5, color: CREAM, margin: "0 0 2px" }}>
+            {achievement.name}
+            <button
+              onClick={() => setEditingName(true)}
+              style={{ background: "none", border: "none", color: GOLD, fontSize: 11.5, cursor: "pointer", padding: 0, textDecoration: "underline" }}
+            >
+              Rename
+            </button>
+          </p>
+        )}
         {achievement.category !== "base" && achievement.category !== "admin_exclusive" && (
           <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Threshold: {achievement.threshold}</p>
         )}
@@ -1335,6 +1393,9 @@ function AchievementCosmetics() {
   const handleUploaded = (id, url) =>
     setAchievements((prev) => prev.map((a) => (a.id === id ? { ...a, image_url: url } : a)));
 
+  const handleRenamed = (id, name) =>
+    setAchievements((prev) => prev.map((a) => (a.id === id ? { ...a, name } : a)));
+
   if (error) return <p style={{ fontSize: 12.5, color: DANGER }}>{error}</p>;
   if (!achievements) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
 
@@ -1349,7 +1410,7 @@ function AchievementCosmetics() {
               {ACHIEVEMENT_CATEGORY_LABELS[category]}
             </p>
             {rows.map((a) => (
-              <AchievementCosmeticRow key={a.id} achievement={a} onUploaded={handleUploaded} />
+              <AchievementCosmeticRow key={a.id} achievement={a} onUploaded={handleUploaded} onRenamed={handleRenamed} />
             ))}
           </div>
         );
