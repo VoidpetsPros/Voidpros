@@ -162,8 +162,7 @@ export default function Settings({ onRequireAuth }) {
       />
 
       <Row
-        label="Pet & Item Levels"
-        value="Show level numbers on build cards. Item names are unaffected — Unlimited still controls whether items are visible at all."
+        label="Show Levels"
         action={
           <button
             onClick={handleToggleLevelsPref}
