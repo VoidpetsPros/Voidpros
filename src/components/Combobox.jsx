@@ -102,6 +102,22 @@ const Combobox = forwardRef(function Combobox(
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                // Pets only, and only once typing has narrowed it to
+                // exactly 2 matches — e.g. "Sloth" vs "Higher Form Sloth",
+                // "Sad" vs "Sadge". Space then picks the shorter-named one
+                // right away. With any other match count, space still
+                // types a normal space (needed to search multi-word pet
+                // names like "Higher Form").
+                if (autoFill && kind === "pet" && e.key === " " && filtered.length === 2) {
+                  e.preventDefault();
+                  const shortest = filtered[0].name.length <= filtered[1].name.length ? filtered[0] : filtered[1];
+                  onSelect(shortest.id);
+                  setOpen(false);
+                  setQuery("");
+                  onAutoAdvance?.();
+                }
+              }}
               placeholder="Search..."
               style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 6, padding: "6px 8px", fontSize: 12.5, color: CREAM, outline: "none" }}
             />
