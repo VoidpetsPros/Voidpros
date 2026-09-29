@@ -14,6 +14,7 @@ const FREE_PERKS = [
 const UNLIMITED_PERKS = [
   "See every item and level a build uses, not just the pets",
   "See exactly what you're missing on every build — not just an incomplete pets-only guess",
+  "Alternative builds sorted by closest match, so the easiest one to finish shows first",
   "Post a custom build request for other players to solve using your exact pool",
   "Priority review — your Completions and Challenges get reviewed first",
   "Everything in Free",
