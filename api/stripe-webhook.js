@@ -76,6 +76,23 @@ export default async function handler(req, res) {
         break;
       }
 
+      // Fires for every successful subscription charge — the initial one
+      // and every renewal. Feeds the affiliate commission system: 20% of
+      // whatever was actually paid, capped at 3 lifetime months per
+      // referred person (enforced inside credit_affiliate_commission, not
+      // here — this just reports the fact of payment).
+      case "invoice.paid": {
+        const invoice = event.data.object;
+        if (invoice.customer) {
+          await supabaseAdmin.rpc("credit_affiliate_commission", {
+            p_customer_id: invoice.customer,
+            p_invoice_id: invoice.id,
+            p_amount_cents: invoice.amount_paid,
+          });
+        }
+        break;
+      }
+
       default:
         // Other event types are ignored on purpose — we only act on the ones above.
         break;

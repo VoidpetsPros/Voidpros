@@ -22,6 +22,7 @@ import MyActivity from "./pages/MyActivity";
 import MyRequests from "./pages/MyRequests";
 import Leaderboards from "./pages/Leaderboards";
 import Achievements from "./pages/Achievements";
+import Affiliate from "./pages/Affiliate";
 import Feedback from "./pages/Feedback";
 import BillingSuccess from "./pages/BillingSuccess";
 import BillingCancelled from "./pages/BillingCancelled";
@@ -50,6 +51,22 @@ export default function App() {
   // counter moves to its own line below the header instead of squeezing in.
   const isNarrowHeader = useIsMobile(900);
   const location = useLocation();
+
+  // Capture a referral link (?ref=CODE) the moment it's seen, from any
+  // page — someone could land on a floor's results page, not just the
+  // homepage. Stored until there's an active session (see
+  // useAuth.js/fetchProfile, which calls attach_referral_code), then
+  // cleared either way so it's not reused by a later, unrelated signup.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      window.localStorage.setItem("pending_referral_code", ref);
+      params.delete("ref");
+      const cleanSearch = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (cleanSearch ? `?${cleanSearch}` : ""));
+    }
+  }, []);
   const [verifiedCount, setVerifiedCount] = useState(null);
 
   useEffect(() => {
@@ -443,6 +460,7 @@ export default function App() {
           <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/settings" element={<Settings onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/achievements" element={<Achievements onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/affiliate" element={<Affiliate onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/search" element={<Search onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/results/:stage" element={<Results onRequireAuth={() => setShowAuth(true)} />} />

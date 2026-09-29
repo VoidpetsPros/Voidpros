@@ -31,6 +31,18 @@ export function useAuthState() {
     setProfile(data);
     checkActivity(userId);
     checkChallenges(userId);
+
+    // If a referral link was visited earlier this session (or before an
+    // email-confirmation redirect), attach it now that there's a real
+    // session — covers Google sign-in too, which can't carry custom
+    // signup metadata the way a direct signUp() call can. Safe to call on
+    // every login: attach_referral_code no-ops once it's already set.
+    const pendingCode = window.localStorage.getItem("pending_referral_code");
+    if (pendingCode) {
+      supabase.rpc("attach_referral_code", { p_code: pendingCode }).then(() => {
+        window.localStorage.removeItem("pending_referral_code");
+      });
+    }
   }, []);
 
   const checkActivity = useCallback(async (userId) => {

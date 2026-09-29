@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check, Trophy } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check, Trophy, DollarSign } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import CosmeticAvatar from "./CosmeticAvatar";
@@ -109,6 +109,11 @@ export default function ProfileSidebar({ onClose }) {
     onClose();
   };
 
+  const goToAffiliate = () => {
+    navigate("/affiliate");
+    onClose();
+  };
+
   const goToFeedback = () => {
     navigate("/feedback");
     onClose();
@@ -205,6 +210,11 @@ export default function ProfileSidebar({ onClose }) {
             <button onClick={goToAchievements} style={navButtonStyle}>
               <Trophy size={16} color={GOLD} />
               Achievements
+            </button>
+
+            <button onClick={goToAffiliate} style={navButtonStyle}>
+              <DollarSign size={16} color={GOLD} />
+              Affiliate Program
             </button>
 
             <button onClick={goToCommunity} style={navButtonStyle}>

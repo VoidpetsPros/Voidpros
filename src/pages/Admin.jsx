@@ -1251,7 +1251,65 @@ function CatalogSection({ title, count, total, rows, kind, avatarFor, onUploaded
   );
 }
 
-// One row per achievement, grouped by category — upload a cosmetic image
+function formatCents(cents) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function AffiliatePayouts() {
+  const [payouts, setPayouts] = useState(null);
+  const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState(null);
+
+  const load = async () => {
+    const { data, error: fetchError } = await supabase.rpc("get_affiliate_payouts");
+    if (fetchError) setError(fetchError.message);
+    else setPayouts(data || []);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleMarkPaid = async (affiliateUserId) => {
+    if (!window.confirm("Mark all pending commissions for this affiliate as paid? Only do this after you've actually sent the money.")) return;
+    setBusyId(affiliateUserId);
+    const { error: rpcError } = await supabase.rpc("mark_affiliate_paid", { p_affiliate_user_id: affiliateUserId });
+    setBusyId(null);
+    if (rpcError) {
+      alert(rpcError.message);
+      return;
+    }
+    load();
+  };
+
+  if (error) return <p style={{ fontSize: 12.5, color: DANGER }}>{error}</p>;
+  if (!payouts) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
+  if (payouts.length === 0) return <p style={{ color: MUTED, fontSize: 14 }}>No pending payouts.</p>;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {payouts.map((p) => (
+        <div key={p.affiliate_user_id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 14 }}>
+          <div>
+            <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 3px" }}>{p.username}</p>
+            <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
+              {formatCents(p.pending_cents)} pending · {formatCents(p.paid_cents)} paid to date
+            </p>
+          </div>
+          <button
+            onClick={() => handleMarkPaid(p.affiliate_user_id)}
+            disabled={busyId === p.affiliate_user_id}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: busyId === p.affiliate_user_id ? "default" : "pointer", flexShrink: 0 }}
+          >
+            {busyId === p.affiliate_user_id ? "…" : "Mark Paid"}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
 // for it. Reuses the same catalog-images bucket/upload helper as pets and
 // items, just under kind "achievements" — a fixed path per achievement id,
 // so re-uploading just replaces it, exactly like pet/item images.
@@ -1531,6 +1589,7 @@ export default function Admin() {
     { id: "manage", label: "Manage builds" },
     { id: "images", label: "Catalog" },
     { id: "cosmetics", label: "Cosmetics" },
+    { id: "affiliates", label: "Affiliates" },
     { id: "feedback", label: "Feedback" },
   ];
 
@@ -1562,6 +1621,7 @@ export default function Admin() {
       {tab === "manage" && <ManageBuilds />}
       {tab === "images" && <CatalogImages pets={pets} items={items} />}
       {tab === "cosmetics" && <AchievementCosmetics />}
+      {tab === "affiliates" && <AffiliatePayouts />}
       {tab === "feedback" && <AdminFeedback />}
 
       {tab === "queue" && (
