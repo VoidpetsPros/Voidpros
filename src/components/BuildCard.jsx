@@ -86,7 +86,7 @@ function LoadoutRow({ slot, pets, items, ownedPets, ownedItemCounts, usedSoFar, 
   );
 }
 
-export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote }) {
+export default function BuildCard({ build, pets, items, ownedPets, ownedItemCounts, fullMatch = true, onVote, accentColor }) {
   const { user, profile } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const isOwnBuild = user && build.author_id === user.id;
@@ -107,8 +107,8 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
   return (
     <div
       style={{
-        background: PANEL,
-        border: `1px solid ${LINE}`,
+        background: accentColor ? `${accentColor}1A` : PANEL,
+        border: `1px solid ${accentColor ? `${accentColor}55` : LINE}`,
         borderRadius: 12,
         padding: 18,
         marginBottom: 14,

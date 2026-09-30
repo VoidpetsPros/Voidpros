@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Plus, Lock } from "lucide-react";
+import { getBossForFloor, ELEMENT_COLORS } from "../lib/bossFloors";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
@@ -14,6 +15,8 @@ import { useTheme } from "../hooks/ThemeContext";
 
 export default function Results({ onRequireAuth }) {
   const { stage } = useParams();
+  const boss = getBossForFloor(stage);
+  const bossColor = boss ? ELEMENT_COLORS[boss.element] : null;
   const navigate = useNavigate();
   const { isAuthed, user, profile } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
@@ -134,7 +137,27 @@ export default function Results({ onRequireAuth }) {
       <BackButton />
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
+          {boss && (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 12.5,
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: `${bossColor}22`,
+                color: bossColor,
+                border: `1px solid ${bossColor}55`,
+              }}
+            >
+              {boss.name} · {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)}
+            </span>
+          )}
+        </div>
         {builds.some((b) => b.items_visible === false && b.has_items) && (
           <button
             onClick={() => navigate("/subscribe")}
@@ -185,14 +208,14 @@ export default function Results({ onRequireAuth }) {
           {showAlternatives &&
             alternatives.map((b) => (
               <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
-                <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} />
+                <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} accentColor={bossColor} />
               </div>
             ))}
         </div>
       ) : (
         <>
           {matching.map((b) => (
-            <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} />
+            <BuildCard key={b.id} build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={true} onVote={handleVote} accentColor={bossColor} />
           ))}
 
           {alternatives.length > 0 && (
@@ -206,7 +229,7 @@ export default function Results({ onRequireAuth }) {
               {showAlternatives &&
                 alternatives.map((b) => (
                   <div key={b.id} style={{ marginTop: 16, textAlign: "left" }}>
-                    <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} />
+                    <BuildCard build={b} pets={pets} items={items} ownedPets={ownedPets} ownedItemCounts={ownedItems} fullMatch={false} onVote={handleVote} accentColor={bossColor} />
                   </div>
                 ))}
             </div>

@@ -212,11 +212,6 @@ export default function ProfileSidebar({ onClose }) {
               Achievements
             </button>
 
-            <button onClick={goToAffiliate} style={navButtonStyle}>
-              <DollarSign size={16} color={GOLD} />
-              Affiliate Program
-            </button>
-
             <button onClick={goToCommunity} style={navButtonStyle}>
               <Users size={16} color={GOLD} />
               Community
@@ -254,6 +249,11 @@ export default function ProfileSidebar({ onClose }) {
             <button onClick={() => setShowTheme(true)} style={navButtonStyle}>
               <Sun size={16} color={MUTED} />
               Theme
+            </button>
+
+            <button onClick={goToAffiliate} style={navButtonStyle}>
+              <DollarSign size={16} color={GOLD} />
+              Affiliate Program
             </button>
 
             <button onClick={goToPrivacy} style={navButtonStyle}>
