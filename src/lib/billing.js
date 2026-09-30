@@ -29,3 +29,14 @@ export async function openBillingPortal() {
   const { url } = await callBillingEndpoint("/api/create-portal-session");
   window.location.href = url;
 }
+
+// Unlike the other endpoints above, these don't redirect anywhere — they
+// return the updated subscription state directly so the caller (Settings)
+// can update the UI immediately without waiting for the webhook.
+export async function cancelSubscription() {
+  return callBillingEndpoint("/api/cancel-subscription");
+}
+
+export async function resumeSubscription() {
+  return callBillingEndpoint("/api/resume-subscription");
+}

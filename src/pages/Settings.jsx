@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { supabase } from "../lib/supabaseClient";
-import { openBillingPortal } from "../lib/billing";
+import { openBillingPortal, cancelSubscription, resumeSubscription } from "../lib/billing";
 import BackButton from "../components/BackButton";
 
 function Row({ label, value, action, children }) {
@@ -31,6 +31,8 @@ export default function Settings({ onRequireAuth }) {
   const [usernameSaving, setUsernameSaving] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const [portalLoading, setPortalLoading] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState("");
   const [levelsPrefSaving, setLevelsPrefSaving] = useState(false);
 
   if (!isAuthed) {
@@ -77,6 +79,31 @@ export default function Settings({ onRequireAuth }) {
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!window.confirm("Cancel your subscription? If you're still in your free trial this ends access right away — if you're already a paying subscriber, you'll keep access until your current billing period ends.")) return;
+    setCancelError("");
+    setCancelLoading(true);
+    try {
+      await cancelSubscription();
+      await refreshProfile();
+    } catch (err) {
+      setCancelError(err.message || "Couldn't cancel subscription");
+    }
+    setCancelLoading(false);
+  };
+
+  const handleResumeSubscription = async () => {
+    setCancelError("");
+    setCancelLoading(true);
+    try {
+      await resumeSubscription();
+      await refreshProfile();
+    } catch (err) {
+      setCancelError(err.message || "Couldn't resume subscription");
+    }
+    setCancelLoading(false);
   };
 
   const handleToggleLevelsPref = async () => {
@@ -149,17 +176,45 @@ export default function Settings({ onRequireAuth }) {
 
       <Row
         label="Current Plan"
-        value={profile?.is_subscribed ? "Unlimited" : "Free"}
-        action={
-          <button
-            onClick={handleManageSubscription}
-            disabled={portalLoading}
-            style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: portalLoading ? "default" : "pointer", whiteSpace: "nowrap" }}
-          >
-            {portalLoading ? "Opening…" : profile?.is_subscribed ? "Manage Subscription" : "Upgrade"}
-          </button>
+        value={
+          profile?.is_subscribed && profile?.subscription_cancel_at_period_end
+            ? `Unlimited — cancels ${profile?.subscription_current_period_end ? new Date(profile.subscription_current_period_end).toLocaleDateString() : "at end of billing period"}`
+            : profile?.is_subscribed
+            ? "Unlimited"
+            : "Free"
         }
-      />
+        action={
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button
+              onClick={handleManageSubscription}
+              disabled={portalLoading}
+              style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: portalLoading ? "default" : "pointer", whiteSpace: "nowrap" }}
+            >
+              {portalLoading ? "Opening…" : profile?.is_subscribed ? "Payment & Invoices" : "Upgrade"}
+            </button>
+            {profile?.is_subscribed && profile?.subscription_cancel_at_period_end && (
+              <button
+                onClick={handleResumeSubscription}
+                disabled={cancelLoading}
+                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: cancelLoading ? "default" : "pointer", whiteSpace: "nowrap" }}
+              >
+                {cancelLoading ? "…" : "Resume"}
+              </button>
+            )}
+            {profile?.is_subscribed && !profile?.subscription_cancel_at_period_end && (
+              <button
+                onClick={handleCancelSubscription}
+                disabled={cancelLoading}
+                style={{ background: "none", border: `1px solid ${DANGER}`, color: DANGER, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: cancelLoading ? "default" : "pointer", whiteSpace: "nowrap" }}
+              >
+                {cancelLoading ? "…" : "Cancel"}
+              </button>
+            )}
+          </div>
+        }
+      >
+        {cancelError && <p style={{ fontSize: 12, color: DANGER, margin: "6px 0 0" }}>{cancelError}</p>}
+      </Row>
 
       <Row
         label="Show Levels"

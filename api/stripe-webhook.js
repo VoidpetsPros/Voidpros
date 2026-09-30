@@ -66,11 +66,16 @@ export default async function handler(req, res) {
 
         if (profile) {
           const isActive = subscription.status === "active" || subscription.status === "trialing";
+          const currentPeriodEnd = subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null;
           await supabaseAdmin.rpc("admin_set_subscription_status", {
             p_user_id: profile.id,
             p_customer_id: subscription.customer,
             p_subscription_id: subscription.id,
             p_is_subscribed: isActive,
+            p_cancel_at_period_end: subscription.cancel_at_period_end || false,
+            p_current_period_end: currentPeriodEnd,
           });
         }
         break;
