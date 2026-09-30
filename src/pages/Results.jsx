@@ -138,24 +138,12 @@ export default function Results({ onRequireAuth }) {
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
-          {boss && (
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 12.5,
-                fontWeight: 600,
-                padding: "4px 10px",
-                borderRadius: 999,
-                background: `${bossColor}22`,
-                color: bossColor,
-                border: `1px solid ${bossColor}55`,
-              }}
-            >
+          {boss ? (
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: bossColor, margin: 0 }}>
               {boss.name} · {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)}
-            </span>
+            </p>
+          ) : (
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
           )}
         </div>
         {builds.some((b) => b.items_visible === false && b.has_items) && (
