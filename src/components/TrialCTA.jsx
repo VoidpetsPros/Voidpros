@@ -30,7 +30,7 @@ export default function TrialCTA({ style, fullWidth = false, hideSubtext = false
           ...style,
         }}
       >
-        {eligible ? "Start 7-day free trial" : "Subscribe — $4.99/mo"}
+        {eligible ? "Start 7-day free trial" : "Subscribe — $6.00/mo"}
       </button>
       {eligible && !hideSubtext && (
         <p style={{ fontSize: 11, color: MUTED, margin: "8px 0 0", textAlign: "center" }}>

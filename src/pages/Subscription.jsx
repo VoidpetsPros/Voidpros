@@ -85,11 +85,11 @@ export default function Subscription({ onRequireAuth }) {
         <div style={{ flex: "1 1 280px", background: "rgba(124,58,237,0.08)", border: `1.5px solid ${GOLD}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
           <p style={{ fontSize: 13, color: GOLD, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Unlimited</p>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 28, color: CREAM, margin: "0 0 4px" }}>
-            {eligible ? "7 days free" : "$4.99"}
+            {eligible ? "7 days free" : "$6.00"}
             {!eligible && <span style={{ fontSize: 15, fontWeight: 500, color: MUTED }}> /mo</span>}
           </p>
           <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 20px" }}>
-            {eligible ? "then $4.99/month. Cancel anytime." : "Cancel anytime."}
+            {eligible ? "then $6.00/month. Cancel anytime." : "Cancel anytime."}
           </p>
 
           {profile?.is_subscribed ? (
