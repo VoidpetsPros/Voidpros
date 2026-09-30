@@ -123,5 +123,71 @@ const BOSS_FLOORS = {
 };
 
 export function getBossForFloor(stage) {
-  return BOSS_FLOORS[Number(stage)] || null;
+  const n = Number(stage);
+  if (!n) return null;
+  if (n <= 1000) return BOSS_FLOORS[n] || null;
+  // Above 1000, the boss rotation repeats every 1000 floors — same boss
+  // and element for e.g. 3120 and 4120, both ending in "120".
+  const mod = n % 1000;
+  return BOSS_FLOORS_REPEATING[mod] || null;
 }
+
+// Floors above 1000: looked up by (floor mod 1000) — a completely
+// different, repeating set of bosses from the 1-1000 chart above. 0 here
+// represents floors ending in "000" (2000, 3000, ...).
+const BOSS_FLOORS_REPEATING = {
+  20: { name: "Rosetti", element: "fire" },
+  120: { name: "Gronk", element: "fire" },
+  40: { name: "Tyrant", element: "wood" },
+  140: { name: "Juglaw", element: "wood" },
+  60: { name: "Smokano", element: "earth" },
+  160: { name: "Kartharok", element: "earth" },
+  80: { name: "Tauron", element: "metal" },
+  180: { name: "Scylinder Trio", element: "metal" },
+  100: { name: "Meihua", element: "water" },
+  200: { name: "Umbros", element: "water" },
+
+  220: { name: "Rosetti", element: "wood" },
+  320: { name: "Gronk", element: "wood" },
+  240: { name: "Tyrant", element: "earth" },
+  340: { name: "Juglaw", element: "earth" },
+  260: { name: "Smokano", element: "metal" },
+  360: { name: "Kartharok", element: "metal" },
+  280: { name: "Tauron", element: "water" },
+  380: { name: "Scylinder Trio", element: "water" },
+  300: { name: "Meihua", element: "fire" },
+  400: { name: "Umbros", element: "fire" },
+
+  420: { name: "Rosetti", element: "earth" },
+  520: { name: "Gronk", element: "earth" },
+  440: { name: "Tyrant", element: "metal" },
+  540: { name: "Juglaw", element: "metal" },
+  460: { name: "Smokano", element: "water" },
+  560: { name: "Kartharok", element: "water" },
+  480: { name: "Tauron", element: "fire" },
+  580: { name: "Scylinder Trio", element: "fire" },
+  500: { name: "Meihua", element: "wood" },
+  600: { name: "Umbros", element: "wood" },
+
+  620: { name: "Rosetti", element: "metal" },
+  720: { name: "Gronk", element: "metal" },
+  640: { name: "Tyrant", element: "water" },
+  740: { name: "Juglaw", element: "water" },
+  660: { name: "Smokano", element: "fire" },
+  760: { name: "Kartharok", element: "fire" },
+  680: { name: "Tauron", element: "wood" },
+  780: { name: "Scylinder Trio", element: "wood" },
+  700: { name: "Meihua", element: "earth" },
+  800: { name: "Umbros", element: "earth" },
+
+  820: { name: "Rosetti", element: "water" },
+  920: { name: "Gronk", element: "water" },
+  840: { name: "Tyrant", element: "fire" },
+  940: { name: "Juglaw", element: "fire" },
+  860: { name: "Smokano", element: "wood" },
+  960: { name: "Kartharok", element: "wood" },
+  880: { name: "Tauron", element: "earth" },
+  980: { name: "Scylinder Trio", element: "earth" },
+  900: { name: "Meihua", element: "metal" },
+  0: { name: "Umbros", element: "metal" },
+};
