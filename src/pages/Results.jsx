@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Plus, Lock } from "lucide-react";
+import { Plus, Lock, Sparkles } from "lucide-react";
 import { getBossForFloor, ELEMENT_COLORS } from "../lib/bossFloors";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
@@ -10,6 +10,7 @@ import { useBuilds } from "../hooks/useBuilds";
 import { supabase } from "../lib/supabaseClient";
 import { buildFullyMatches, missingCountForBuild } from "../lib/matching";
 import BuildCard from "../components/BuildCard";
+import SuggestedBuildCard from "../components/SuggestedBuildCard";
 import TrialCTA from "../components/TrialCTA";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -28,6 +29,22 @@ export default function Results({ onRequireAuth }) {
   // than showing up as a phantom "match" or empty alternative.
   const builds = useMemo(() => rawBuilds.filter((b) => b.team && b.team.length > 0), [rawBuilds]);
   const [showAlternatives, setShowAlternatives] = useState(false);
+  const [suggestion, setSuggestion] = useState(null);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestError, setSuggestError] = useState("");
+
+  const handleSuggest = async () => {
+    setSuggestLoading(true);
+    setSuggestError("");
+    const stageNum = Number(stage);
+    const { data, error: rpcError } = await supabase.rpc("suggest_build_for_floor", { p_stage: stageNum });
+    setSuggestLoading(false);
+    if (rpcError) {
+      setSuggestError(rpcError.message);
+      return;
+    }
+    setSuggestion(data);
+  };
   const [requestSent, setRequestSent] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);
   const [requestError, setRequestError] = useState("");
@@ -155,13 +172,28 @@ export default function Results({ onRequireAuth }) {
           </button>
         )}
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 14px" }}>
         {matching.length > 0
           ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
           : builds.length > 0
           ? "No build matches your exact team"
           : "No builds yet"}
       </p>
+
+      {boss && (
+        <div style={{ marginBottom: 22 }}>
+          <button
+            onClick={handleSuggest}
+            disabled={suggestLoading}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: suggestLoading ? "default" : "pointer" }}
+          >
+            <Sparkles size={13} />
+            {suggestLoading ? "Analyzing clears…" : "Suggest Build"}
+          </button>
+          {suggestError && <p style={{ fontSize: 12, color: DANGER, marginTop: 8 }}>{suggestError}</p>}
+          {suggestion && <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />}
+        </div>
+      )}
 
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
