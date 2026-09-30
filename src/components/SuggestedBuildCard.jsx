@@ -1,11 +1,17 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 
 export default function SuggestedBuildCard({ suggestion, pets, items }) {
-  const { PANEL, PANEL_2, CREAM, MUTED, VIOLET } = useTheme();
+  const { PANEL, PANEL_2, CREAM, MUTED, VIOLET, GOLD } = useTheme();
+  // items_included reflects what actually happened this call — false
+  // either because the free monthly allowance ran out, or (rarely) simply
+  // because no owned items matched anything in the data. free_items_remaining
+  // is null for subscribers (no cap applies to them).
+  const itemsCappedOut = suggestion.free_items_remaining !== null && suggestion.free_items_remaining !== undefined && !suggestion.items_included;
 
   if (suggestion.sample_size === 0) {
     return (
@@ -34,11 +40,22 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
         <Sparkles size={14} color={VIOLET} />
         <p style={{ fontSize: 13, fontWeight: 700, color: VIOLET, margin: 0 }}>Suggested Build (Beta)</p>
       </div>
-      <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 14px" }}>
+      <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 10px" }}>
         Built from {suggestion.sample_size} verified clear{suggestion.sample_size > 1 ? "s" : ""} of this boss, using
         only pets and items you already own. This isn't a real submitted build — it's an algorithmic pick based on
         what's worked for others.
       </p>
+
+      {suggestion.free_items_remaining !== null && suggestion.free_items_remaining !== undefined && (
+        <p style={{ fontSize: 11.5, color: itemsCappedOut ? GOLD : MUTED, margin: "0 0 14px" }}>
+          {itemsCappedOut
+            ? "You've used your 5 item-suggestions for this month, so this build shows pets only. "
+            : `${suggestion.free_items_remaining} of 5 monthly item-suggestions left. `}
+          <Link to="/subscribe" style={{ color: GOLD, fontWeight: 600 }}>
+            Unlimited members get item suggestions every time.
+          </Link>
+        </p>
+      )}
 
       {suggestion.pets.map((slot, i) => {
         const pet = pets.find((p) => p.id === slot.pet_id);
@@ -70,7 +87,7 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
                   </span>
                 ) : null
               )}
-              {!hat && !scarf && accessories.every((a) => !a.item) && (
+              {!itemsCappedOut && !hat && !scarf && accessories.every((a) => !a.item) && (
                 <span style={{ fontSize: 11.5, color: MUTED }}>No matching owned items found</span>
               )}
             </div>
