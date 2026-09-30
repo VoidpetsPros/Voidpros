@@ -36,8 +36,8 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
       </div>
       <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 14px" }}>
         Built from {suggestion.sample_size} verified clear{suggestion.sample_size > 1 ? "s" : ""} of this boss, using
-        only pets and items you already own. This isn't a real submitted build — levels reflect what's typically used
-        by others, not necessarily your own pet's current level.
+        only pets and items you already own. This isn't a real submitted build — it's an algorithmic pick based on
+        what's worked for others.
       </p>
 
       {suggestion.pets.map((slot, i) => {
@@ -50,25 +50,23 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 108 }}>
               <PetAvatar pet={pet} size={28} />
-              <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 500 }}>
-                {pet?.name || "Unknown"} <span style={{ color: MUTED, fontWeight: 400 }}>Lv{slot.pet_level}</span>
-              </span>
+              <span style={{ fontSize: 12.5, color: CREAM, fontWeight: 500 }}>{pet?.name || "Unknown"}</span>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
               {hat && (
                 <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px 2px 2px", borderRadius: 16, background: PANEL_2, color: MUTED }}>
-                  <ItemAvatar item={hat} size={18} /> {hat.name} <span style={{ opacity: 0.75 }}>Lv{slot.hat_level}</span>
+                  <ItemAvatar item={hat} size={18} /> {hat.name}
                 </span>
               )}
               {scarf && (
                 <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px 2px 2px", borderRadius: 16, background: PANEL_2, color: MUTED }}>
-                  <ItemAvatar item={scarf} size={18} /> {scarf.name} <span style={{ opacity: 0.75 }}>Lv{slot.scarf_level}</span>
+                  <ItemAvatar item={scarf} size={18} /> {scarf.name}
                 </span>
               )}
               {accessories.map((a, ai) =>
                 a.item ? (
                   <span key={ai} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11.5, padding: "2px 8px 2px 2px", borderRadius: 16, background: PANEL_2, color: MUTED }}>
-                    <ItemAvatar item={a.item} size={18} /> {a.item.name} <span style={{ opacity: 0.75 }}>Lv{a.level}</span>
+                    <ItemAvatar item={a.item} size={18} /> {a.item.name}
                   </span>
                 ) : null
               )}
