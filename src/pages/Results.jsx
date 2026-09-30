@@ -157,7 +157,7 @@ export default function Results({ onRequireAuth }) {
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           {boss ? (
             <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: bossColor, margin: 0 }}>
-              {boss.name} · {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)}
+              {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)} · {boss.name}
             </p>
           ) : (
             <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
@@ -211,7 +211,7 @@ export default function Results({ onRequireAuth }) {
           </Link>
         </div>
       ) : matching.length === 0 ? (
-        <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
+        <div style={{ background: boss ? `${bossColor}22` : "rgba(124,58,237,0.08)", border: `1px solid ${boss ? `${bossColor}55` : "rgba(124,58,237,0.3)"}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
             No build matches what you have
           </p>

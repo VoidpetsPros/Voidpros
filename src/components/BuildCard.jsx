@@ -107,7 +107,7 @@ export default function BuildCard({ build, pets, items, ownedPets, ownedItemCoun
   return (
     <div
       style={{
-        background: accentColor ? `${accentColor}1A` : PANEL,
+        background: accentColor && !fullMatch ? `${accentColor}1A` : PANEL,
         border: `1px solid ${accentColor ? `${accentColor}55` : LINE}`,
         borderRadius: 12,
         padding: 18,
