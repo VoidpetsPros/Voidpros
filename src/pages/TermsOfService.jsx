@@ -19,7 +19,7 @@ export default function TermsOfService() {
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Terms of Service</p>
-      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/09/2026</p>
+      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/30/2026</p>
 
       <Section title="1. Acceptance of these terms">
         <p>
@@ -148,7 +148,36 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="9. Subscriptions, billing, and free trials">
+      <Section title="9. Achievements and cosmetics">
+        <p style={{ marginBottom: 10 }}>
+          You can earn achievements, and the cosmetics they unlock, based on your Completions,
+          Challenges, floor searches, and other account activity we track for this purpose.
+          Achievements and cosmetics are a promotional feature of the service, have no cash value,
+          cannot be transferred, sold, or exchanged, and are not refundable or redeemable in any
+          form. A cosmetic you equip is displayed publicly next to your username, including on
+          builds and comments.
+        </p>
+        <p>
+          We may add, remove, modify, or rebalance achievements, thresholds, or cosmetics at any
+          time, including after you've already unlocked or equipped one. If we determine an
+          achievement was unlocked through fraudulent or manipulated activity, or through any
+          violation of Section 5, we may revoke it and unequip the associated cosmetic.
+        </p>
+      </Section>
+
+      <Section title="10. Suggested builds">
+        <p>
+          The "Suggested Build" feature generates a possible team algorithmically, based on
+          patterns in other players' verified submissions and the pets and items you've told us
+          you own. A suggested build is not a verified submission, is not reviewed by us or any
+          other player, and is not a guarantee that it will work for you, that you own the pets or
+          items at an adequate level, or that the underlying game hasn't changed since the data it
+          was built from was submitted. Use any suggested build at your own judgment and at your
+          own risk, as described further in Section 14.
+        </p>
+      </Section>
+
+      <Section title="11. Subscriptions, billing, and free trials">
         <p style={{ marginBottom: 10 }}>
           Our paid subscription ("Unlimited") is billed on a recurring monthly basis through
           Stripe, our third-party payment processor, at the price displayed at checkout. Your
@@ -176,16 +205,22 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="10. Cancellation">
+      <Section title="12. Cancellation">
+        <p style={{ marginBottom: 10 }}>
+          What happens when you cancel depends on whether you've started paying yet. If you cancel
+          while still in a free trial, your Unlimited access ends immediately — you do not keep
+          trial access for the remainder of the original trial period. If you cancel after your
+          trial has converted to a paid subscription, or if you never had a trial, your Unlimited
+          plan benefits continue until the end of the billing period you already paid for, after
+          which your account reverts to the Free plan and will not be charged again.
+        </p>
         <p>
-          When you cancel, your Unlimited plan benefits continue until the end of the billing
-          period you already paid for, after which your account reverts to the Free plan and will
-          not be charged again. We do not prorate or refund any unused portion of a billing
-          period when you cancel partway through it, except where required by law.
+          We do not prorate or refund any unused portion of a billing period when you cancel
+          partway through it, except where required by law.
         </p>
       </Section>
 
-      <Section title="11. Refund policy">
+      <Section title="13. Refund policy">
         <p style={{ marginBottom: 10 }}>
           <strong style={{ color: CREAM }}>All subscription charges are final.</strong> Because
           Unlimited includes an immediate, ongoing benefit (item visibility, unlimited requests,
@@ -217,7 +252,45 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="12. No affiliation, no guarantees about game accuracy">
+      <Section title="14. Affiliate program">
+        <p style={{ marginBottom: 10 }}>
+          Any account in good standing may join our affiliate program and receive a personal
+          referral link. If someone creates an account using your link and later subscribes to
+          Unlimited, you may earn a commission of 20% of the subscription price they pay, for up
+          to 3 total billing periods of their subscription — whether or not those periods are
+          consecutive. We calculate and pay commissions based on what the referred subscriber
+          actually pays us; commissions are not owed on amounts refunded, charged back, or on
+          periods where the referred subscriber isn't actually charged (for example, a free
+          trial).
+        </p>
+        <p style={{ marginBottom: 10 }}>
+          We may change the commission rate, the number of eligible periods, or any other term of
+          the affiliate program at any time, for new referrals going forward. Participation in the
+          program does not guarantee that anyone will sign up through your link or that any
+          commission will be earned, and joining is not an offer of employment, partnership, or
+          any agency relationship between you and us.
+        </p>
+        <p style={{ marginBottom: 10 }}>
+          To receive a payout, you must connect a bank account through our third-party payment
+          processor's (Stripe) account-verification flow, which may require you to provide Stripe
+          with personal identifying information directly. We never see or store your banking
+          details — that information is held entirely by Stripe, subject to Stripe's own terms and
+          privacy practices, which you agree to separately when you connect an account. We may
+          also allow commissions owed to be paid manually, outside of Stripe, at our discretion.
+        </p>
+        <p style={{ marginBottom: 10 }}>
+          You're solely responsible for determining and paying any taxes owed on commissions you
+          earn, and for complying with any tax reporting obligations that apply to you.
+        </p>
+        <p>
+          Referring your own alternate account, or otherwise manufacturing referrals through fake
+          or duplicate accounts, is a violation of Section 5. We may withhold or reverse any
+          commission earned this way, deactivate your referral link, and remove you from the
+          program, in addition to any other action available to us under these terms.
+        </p>
+      </Section>
+
+      <Section title="15. No affiliation, no guarantees about game accuracy">
         <p>
           Builds and strategies on this site are submitted by other players and reviewed by our
           team, but we can't guarantee they'll work for you, that the underlying game won't change
@@ -226,7 +299,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="13. Our intellectual property">
+      <Section title="16. Our intellectual property">
         <p>
           Aside from Your Content and the underlying game content referenced in Section 3, the
           voidpros name, logo, site design, layout, and underlying software are owned by us or
@@ -236,7 +309,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="14. Copyright complaints">
+      <Section title="17. Copyright complaints">
         <p>
           If you believe content on voidpros infringes your copyright, contact us at
           voidpetsranking@gmail.com with (a) a description of the copyrighted work you believe was
@@ -247,7 +320,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="15. Disclaimer of warranties">
+      <Section title="18. Disclaimer of warranties">
         <p>
           The service is provided "as is" and "as available," without warranties of any kind,
           whether express, implied, or statutory, including but not limited to implied warranties
@@ -257,7 +330,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="16. Limitation of liability">
+      <Section title="19. Limitation of liability">
         <p style={{ marginBottom: 10 }}>
           To the fullest extent permitted by law, we and our officers, employees, and contractors
           will not be liable for any indirect, incidental, special, consequential, exemplary, or
@@ -272,7 +345,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="17. Indemnification">
+      <Section title="20. Indemnification">
         <p>
           You agree to defend, indemnify, and hold us harmless from any claims, damages,
           liabilities, costs, and expenses (including reasonable attorneys' fees) arising out of
@@ -280,7 +353,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="18. Termination">
+      <Section title="21. Termination">
         <p style={{ marginBottom: 10 }}>
           We may suspend or terminate your access to the service at any time, with or without
           notice, for violating these terms or for any other reason at our discretion, including
@@ -289,11 +362,11 @@ export default function TermsOfService() {
         </p>
         <p>
           Sections of these terms that by their nature should survive termination — including, at
-          minimum, Sections 6, 11, 13, 15, 16, 17, 19, and 20 — will survive.
+          minimum, Sections 6, 13, 14, 16, 18, 19, 20, 22, and 23 — will survive.
         </p>
       </Section>
 
-      <Section title="19. Governing law and disputes">
+      <Section title="22. Governing law and disputes">
         <p style={{ marginBottom: 10 }}>
           These terms are governed by the laws of the State of Florida, United States of America,
           without regard to its conflict-of-law principles. If a dispute arises, we encourage you
@@ -306,7 +379,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="20. General provisions">
+      <Section title="23. General provisions">
         <p style={{ marginBottom: 10 }}>
           <strong style={{ color: CREAM }}>Severability.</strong> If any provision of these terms
           is found unenforceable, the remaining provisions will remain in full effect, and the
@@ -330,7 +403,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="21. Changes to these terms">
+      <Section title="24. Changes to these terms">
         <p>
           We may update these terms from time to time. If we make material changes, we'll update
           the "Last updated" date at the top of this page, and in some cases may provide additional
@@ -339,7 +412,7 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="22. Contact">
+      <Section title="25. Contact">
         <p>Questions about these terms? Reach us at voidpetsranking@gmail.com.</p>
       </Section>
 

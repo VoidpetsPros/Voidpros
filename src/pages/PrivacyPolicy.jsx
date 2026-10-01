@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
     <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
       <BackButton />
       <p style={{ fontFamily: "Georgia, serif", fontSize: 26, color: CREAM, margin: "0 0 6px" }}>Privacy Policy</p>
-      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/09/2026</p>
+      <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 32px" }}>Last updated: 09/30/2026</p>
 
       <Section title="1. Who we are">
         <p>
@@ -46,6 +46,9 @@ export default function PrivacyPolicy() {
         <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>User-generated content:</strong> build submissions, screenshots you upload, notes, comments, votes, and challenge requests and attempts.</p>
         <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Payment information:</strong> if you subscribe, payments are processed entirely by Stripe. We never receive or store your full card number — only a token confirming that you're subscribed, along with limited billing metadata like the last four digits of your card, for support and fraud-prevention purposes.</p>
         <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Sign-in data from Google:</strong> if you choose to sign in with Google, Google shares your name, email address, and profile picture with us for the purpose of creating and logging into your account.</p>
+        <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Achievements and cosmetics:</strong> which achievements you've unlocked and which cosmetic you have equipped, which is displayed publicly next to your username.</p>
+        <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Suggested build usage:</strong> how many floor searches you've made and how many item-inclusive build suggestions you've used, in order to apply free-plan usage limits and determine suggested teams from your collection.</p>
+        <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Affiliate program data:</strong> if you join the affiliate program, your referral code, who signed up through your link, and your commission and payout history. If you connect a bank account to receive payouts, that connection is made directly with Stripe through Stripe's own onboarding flow — we receive only whether setup is complete, never your banking details themselves.</p>
         <p style={{ marginBottom: 10 }}><strong style={{ color: CREAM }}>Cookies and local storage:</strong> we use cookies and browser local storage that are strictly necessary to keep you signed in and to remember basic preferences (like light/dark theme). We do not currently use third-party advertising or cross-site tracking cookies.</p>
         <p><strong style={{ color: CREAM }}>Basic usage and technical data:</strong> standard technical logs such as timestamps, error logs, IP address, and browser/device information, used to operate, secure, and troubleshoot the service.</p>
       </Section>
@@ -75,7 +78,7 @@ export default function PrivacyPolicy() {
 
       <Section title="6. How we share information">
         <p style={{ marginBottom: 10 }}>We share information only in the following circumstances:</p>
-        <p style={{ marginBottom: 6 }}>• <strong style={{ color: CREAM }}>Service providers</strong> who help us operate voidpros — currently Supabase (database, authentication, and file storage), Stripe (payment processing), and, if you choose to sign in that way, Google (authentication).</p>
+        <p style={{ marginBottom: 6 }}>• <strong style={{ color: CREAM }}>Service providers</strong> who help us operate voidpros — currently Supabase (database, authentication, and file storage), Stripe (payment processing, and, for affiliates, bank account verification and payouts through Stripe Connect), and, if you choose to sign in that way, Google (authentication). If you're an affiliate who connects a bank account, your banking and identity-verification details are provided directly to Stripe and held by Stripe — we never receive or store them.</p>
         <p style={{ marginBottom: 6 }}>• <strong style={{ color: CREAM }}>Legal reasons</strong> — if we believe disclosure is required by law, subpoena, or other legal process, or is necessary to protect the rights, property, or safety of voidpros, our users, or the public.</p>
         <p style={{ marginBottom: 6 }}>• <strong style={{ color: CREAM }}>Business transfers</strong> — if voidpros is involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction, subject to this policy or a successor policy.</p>
         <p>We do not sell your personal information, and we do not share it with third parties for their own independent marketing purposes.</p>
@@ -84,8 +87,9 @@ export default function PrivacyPolicy() {
       <Section title="7. What's public on voidpros">
         <p style={{ marginBottom: 10 }}>
           voidpros is a public community site by design. Your username, verified submissions,
-          leaderboard rank, comments, and votes are visible to other users and, in the case of
-          floor search results and leaderboards, to visitors who haven't signed in.
+          leaderboard rank, comments, votes, and any cosmetic you have equipped are visible to
+          other users and, in the case of floor search results and leaderboards, to visitors who
+          haven't signed in.
         </p>
         <p>
           Choosing to post a submission anonymously hides your username from other users on public
