@@ -40,3 +40,8 @@ export async function cancelSubscription() {
 export async function resumeSubscription() {
   return callBillingEndpoint("/api/resume-subscription");
 }
+
+export async function startAffiliateConnectOnboarding() {
+  const { url } = await callBillingEndpoint("/api/affiliate-connect-onboarding");
+  window.location.href = url;
+}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Landmark } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { supabase } from "../lib/supabaseClient";
+import { startAffiliateConnectOnboarding } from "../lib/billing";
 import BackButton from "../components/BackButton";
 
 function formatCents(cents) {
@@ -16,6 +17,7 @@ export default function Affiliate({ onRequireAuth }) {
   const [error, setError] = useState("");
   const [joining, setJoining] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
 
   const load = async () => {
     const { data, error: fetchError } = await supabase.rpc("get_my_affiliate_stats");
@@ -57,6 +59,17 @@ export default function Affiliate({ onRequireAuth }) {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleConnectBank = async () => {
+    setConnectLoading(true);
+    setError("");
+    try {
+      await startAffiliateConnectOnboarding();
+    } catch (err) {
+      setError(err.message || "Couldn't start bank account setup");
+      setConnectLoading(false);
+    }
   };
 
   return (
@@ -111,6 +124,31 @@ export default function Affiliate({ onRequireAuth }) {
                 {copied ? "Copied" : "Copy"}
               </button>
             </div>
+          </div>
+
+          <div style={{ background: PANEL, border: `1px solid ${stats.connect_onboarded ? "rgba(34,197,94,0.4)" : LINE}`, borderRadius: 14, padding: 20, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Landmark size={18} color={stats.connect_onboarded ? "#22C55E" : MUTED} />
+              <div>
+                <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 2px" }}>
+                  {stats.connect_onboarded ? "Bank account connected" : "Bank account not connected"}
+                </p>
+                <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
+                  {stats.connect_onboarded
+                    ? "Payouts go straight to your bank via Stripe."
+                    : "Connect your bank so payouts can be sent automatically."}
+                </p>
+              </div>
+            </div>
+            {!stats.connect_onboarded && (
+              <button
+                onClick={handleConnectBank}
+                disabled={connectLoading}
+                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: connectLoading ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+              >
+                {connectLoading ? "Opening…" : stats.has_connect_account ? "Finish Setup" : "Connect Bank Account"}
+              </button>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>

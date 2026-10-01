@@ -1282,6 +1282,27 @@ function AffiliatePayouts() {
     load();
   };
 
+  const handlePayViaStripe = async (affiliateUserId, pendingCents) => {
+    if (!window.confirm(`Send ${formatCents(pendingCents)} to this affiliate's connected bank account via Stripe?`)) return;
+    setBusyId(affiliateUserId);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const res = await fetch("/api/payout-affiliate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ affiliate_user_id: affiliateUserId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Payout failed");
+      load();
+    } catch (err) {
+      alert(err.message);
+    }
+    setBusyId(null);
+  };
+
   if (error) return <p style={{ fontSize: 12.5, color: DANGER }}>{error}</p>;
   if (!payouts) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
   if (payouts.length === 0) return <p style={{ color: MUTED, fontSize: 14 }}>No pending payouts.</p>;
@@ -1289,20 +1310,32 @@ function AffiliatePayouts() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {payouts.map((p) => (
-        <div key={p.affiliate_user_id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 14 }}>
+        <div key={p.affiliate_user_id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 14, flexWrap: "wrap", gap: 10 }}>
           <div>
             <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 3px" }}>{p.username}</p>
             <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
               {formatCents(p.pending_cents)} pending · {formatCents(p.paid_cents)} paid to date
+              {p.connect_onboarded ? " · Bank connected" : " · No bank connected"}
             </p>
           </div>
-          <button
-            onClick={() => handleMarkPaid(p.affiliate_user_id)}
-            disabled={busyId === p.affiliate_user_id}
-            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: busyId === p.affiliate_user_id ? "default" : "pointer", flexShrink: 0 }}
-          >
-            {busyId === p.affiliate_user_id ? "…" : "Mark Paid"}
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            {p.connect_onboarded && (
+              <button
+                onClick={() => handlePayViaStripe(p.affiliate_user_id, p.pending_cents)}
+                disabled={busyId === p.affiliate_user_id}
+                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: busyId === p.affiliate_user_id ? "default" : "pointer", flexShrink: 0, whiteSpace: "nowrap" }}
+              >
+                {busyId === p.affiliate_user_id ? "…" : "Pay via Stripe"}
+              </button>
+            )}
+            <button
+              onClick={() => handleMarkPaid(p.affiliate_user_id)}
+              disabled={busyId === p.affiliate_user_id}
+              style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: busyId === p.affiliate_user_id ? "default" : "pointer", flexShrink: 0, whiteSpace: "nowrap" }}
+            >
+              {busyId === p.affiliate_user_id ? "…" : "Mark Paid Manually"}
+            </button>
+          </div>
         </div>
       ))}
     </div>
