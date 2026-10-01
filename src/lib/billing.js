@@ -11,7 +11,14 @@ async function callBillingEndpoint(path) {
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Something went wrong");
+  if (!res.ok) {
+    const err = new Error(data.error || "Something went wrong");
+    // Some endpoints (e.g. affiliate bank setup) attach a direct link to
+    // fix a specific known issue — callers can check for this and act on
+    // it instead of just showing the error text.
+    if (data.action_url) err.action_url = data.action_url;
+    throw err;
+  }
   return data;
 }
 

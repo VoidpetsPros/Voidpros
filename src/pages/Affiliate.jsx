@@ -66,7 +66,15 @@ export default function Affiliate({ onRequireAuth }) {
     setError("");
     try {
       await startAffiliateConnectOnboarding();
+      // startAffiliateConnectOnboarding redirects via window.location on
+      // success, so execution past this point only happens on failure.
     } catch (err) {
+      if (err.action_url) {
+        // A one-time Stripe account setup step, not something fixable per
+        // affiliate — send straight there instead of showing raw error text.
+        window.location.href = err.action_url;
+        return;
+      }
       setError(err.message || "Couldn't start bank account setup");
       setConnectLoading(false);
     }

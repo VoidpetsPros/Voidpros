@@ -54,6 +54,19 @@ export default async function handler(req, res) {
     return res.status(200).json({ url: accountLink.url });
   } catch (err) {
     console.error("affiliate-connect-onboarding failed:", err);
+
+    // This specific Stripe error means the PLATFORM's own Connect setup
+    // (not the affiliate's) is incomplete — a one-time admin step, not
+    // something fixable per-affiliate. Send the admin straight to the
+    // page that fixes it instead of making them decode a raw error.
+    const needsPlatformProfile = (err.message || "").toLowerCase().includes("platform profile");
+    if (needsPlatformProfile) {
+      return res.status(400).json({
+        error: "Your Stripe platform profile needs to be completed before bank connections can be created.",
+        action_url: "https://dashboard.stripe.com/connect/accounts/overview",
+      });
+    }
+
     return res.status(500).json({ error: err.message || "Failed to start bank account setup" });
   }
 }

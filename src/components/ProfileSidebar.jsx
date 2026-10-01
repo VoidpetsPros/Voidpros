@@ -208,12 +208,12 @@ export default function ProfileSidebar({ onClose }) {
             </div>
 
             <button onClick={goToAchievements} style={navButtonStyle}>
-              <Trophy size={16} color={GOLD} />
+              <Trophy size={16} color={MUTED} />
               Achievements
             </button>
 
             <button onClick={goToSubscribe} style={navButtonStyle}>
-              <CreditCard size={16} color={GOLD} />
+              <CreditCard size={16} color={MUTED} />
               Subscription
             </button>
 
@@ -223,7 +223,7 @@ export default function ProfileSidebar({ onClose }) {
             </button>
 
             <button onClick={goToCommunity} style={navButtonStyle}>
-              <Users size={16} color={GOLD} />
+              <Users size={16} color={MUTED} />
               Community
               {hasNewActivity && (
                 <span
@@ -252,7 +252,7 @@ export default function ProfileSidebar({ onClose }) {
             </button>
 
             <button onClick={goToAffiliate} style={navButtonStyle}>
-              <DollarSign size={16} color={GOLD} />
+              <DollarSign size={16} color={MUTED} />
               Affiliate Program
             </button>
 
