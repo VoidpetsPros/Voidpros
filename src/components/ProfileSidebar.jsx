@@ -212,6 +212,16 @@ export default function ProfileSidebar({ onClose }) {
               Achievements
             </button>
 
+            <button onClick={goToSubscribe} style={navButtonStyle}>
+              <CreditCard size={16} color={GOLD} />
+              Subscription
+            </button>
+
+            <button onClick={goToSettings} style={navButtonStyle}>
+              <SettingsIcon size={16} color={MUTED} />
+              Settings
+            </button>
+
             <button onClick={goToCommunity} style={navButtonStyle}>
               <Users size={16} color={GOLD} />
               Community
@@ -231,14 +241,9 @@ export default function ProfileSidebar({ onClose }) {
               )}
             </button>
 
-            <button onClick={goToSubscribe} style={navButtonStyle}>
-              <CreditCard size={16} color={GOLD} />
-              Subscription
-            </button>
-
-            <button onClick={goToSettings} style={navButtonStyle}>
-              <SettingsIcon size={16} color={MUTED} />
-              Settings
+            <button onClick={() => setShowTheme(true)} style={navButtonStyle}>
+              <Sun size={16} color={MUTED} />
+              Theme
             </button>
 
             <button onClick={goToFeedback} style={navButtonStyle}>
@@ -246,24 +251,19 @@ export default function ProfileSidebar({ onClose }) {
               Feedback
             </button>
 
-            <button onClick={() => setShowTheme(true)} style={navButtonStyle}>
-              <Sun size={16} color={MUTED} />
-              Theme
-            </button>
-
             <button onClick={goToAffiliate} style={navButtonStyle}>
               <DollarSign size={16} color={GOLD} />
               Affiliate Program
             </button>
 
-            <button onClick={goToPrivacy} style={navButtonStyle}>
-              <Shield size={16} color={MUTED} />
-              Privacy Policy
-            </button>
-
             <button onClick={goToTerms} style={navButtonStyle}>
               <FileText size={16} color={MUTED} />
               Terms of Service
+            </button>
+
+            <button onClick={goToPrivacy} style={navButtonStyle}>
+              <Shield size={16} color={MUTED} />
+              Privacy Policy
             </button>
 
             {profile?.is_admin && (
