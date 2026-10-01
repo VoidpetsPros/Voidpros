@@ -33,25 +33,35 @@ export default async function handler(req, res) {
 
     let accountId = affiliate.stripe_connect_account_id;
 
+    // Identical for every affiliate — supplying it ourselves means
+    // Stripe's hosted form never needs to ask each person for a website
+    // or a description of "their business." business_type: "individual"
+    // routes to personal verification (name, address, SSN, bank account)
+    // instead of business registration (EIN, formation documents).
+    const sharedAccountFields = {
+      business_type: "individual",
+      business_profile: {
+        url: process.env.SITE_URL,
+        product_description: "Affiliate referral commission payouts for Voidpros",
+      },
+    };
+
     if (!accountId) {
       const account = await stripe.accounts.create({
         type: "express",
         email: userData.user.email,
         capabilities: { transfers: { requested: true } },
-        // Affiliates are individuals, not registered businesses — setting
-        // this explicitly skips Stripe's "is this a business or an
-        // individual" question and routes straight to the simpler
-        // personal-verification path (name, address, bank account)
-        // instead of the business-registration one (EIN, business
-        // documents, etc.). This is as simple as Stripe's onboarding can
-        // get — US financial regulations require this level of identity
-        // verification for anyone receiving payouts, regardless of
-        // processor, so it can't be simplified away further.
-        business_type: "individual",
         metadata: { supabase_user_id: userData.user.id },
+        ...sharedAccountFields,
       });
       accountId = account.id;
       await supabaseAdmin.from("affiliates").update({ stripe_connect_account_id: accountId }).eq("user_id", userData.user.id);
+    } else {
+      // Also apply to an already-existing account (e.g. created during
+      // earlier testing, before these fields existed) — without this,
+      // reusing an old account would skip straight past account creation
+      // and keep asking the affiliate for info we could have supplied.
+      await stripe.accounts.update(accountId, sharedAccountFields);
     }
 
     const accountLink = await stripe.accountLinks.create({
