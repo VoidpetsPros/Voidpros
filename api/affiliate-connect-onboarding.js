@@ -38,6 +38,16 @@ export default async function handler(req, res) {
         type: "express",
         email: userData.user.email,
         capabilities: { transfers: { requested: true } },
+        // Affiliates are individuals, not registered businesses — setting
+        // this explicitly skips Stripe's "is this a business or an
+        // individual" question and routes straight to the simpler
+        // personal-verification path (name, address, bank account)
+        // instead of the business-registration one (EIN, business
+        // documents, etc.). This is as simple as Stripe's onboarding can
+        // get — US financial regulations require this level of identity
+        // verification for anyone receiving payouts, regardless of
+        // processor, so it can't be simplified away further.
+        business_type: "individual",
         metadata: { supabase_user_id: userData.user.id },
       });
       accountId = account.id;
