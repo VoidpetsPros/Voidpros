@@ -36,7 +36,7 @@ export default function Home({ onRequireAuth }) {
       {/* Hero */}
       <div style={{ padding: "48px 28px 8px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
         <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 32, lineHeight: 1.25, letterSpacing: -0.4, color: CREAM, margin: "0 0 14px" }}>
-          Find Your Soulution Now
+          Find Your Solution
         </h1>
         <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 8px" }}>
           Match your existing collection on Voidpets, then search the floor you're stuck on for solutions matching your build & items.
