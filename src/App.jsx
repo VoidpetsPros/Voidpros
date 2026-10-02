@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { User, ChevronDown } from "lucide-react";
+import { User, ChevronDown, Trophy } from "lucide-react";
 import logoMark from "./assets/logo.svg";
 import { supabase } from "./lib/supabaseClient";
 import { useAuth } from "./hooks/AuthContext";
@@ -296,21 +296,41 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 10, justifySelf: "end", minWidth: 0 }}>
           {isAuthed ? (
             <>
-              <Link
-                to="/leaderboards"
-                style={{
-                  fontSize: 12.5,
-                  fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
-                  color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
-                  background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
-                  textDecoration: "none",
-                  padding: "7px 12px",
-                  borderRadius: 7,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Leaderboards
-              </Link>
+              {isMobile ? (
+                <Link
+                  to="/leaderboards"
+                  aria-label="Leaderboards"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: location.pathname === "/leaderboards" ? "#FFFFFF" : "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: 999,
+                    width: 36,
+                    height: 36,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Trophy size={16} color={location.pathname === "/leaderboards" ? GOLD_DIM : "#FFFFFF"} />
+                </Link>
+              ) : (
+                <Link
+                  to="/leaderboards"
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
+                    color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                    background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
+                    textDecoration: "none",
+                    padding: "7px 12px",
+                    borderRadius: 7,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Leaderboards
+                </Link>
+              )}
               <button
                 onClick={() => setShowProfile(true)}
                 aria-label="Profile"
