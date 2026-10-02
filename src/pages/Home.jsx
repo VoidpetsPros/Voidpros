@@ -46,53 +46,65 @@ export default function Home({ onRequireAuth }) {
       {/* Two-step guide: this is the actual point of the page — get your
           collection set up, then search. The buttons live right inside the
           steps that explain them. */}
-      <div style={{ maxWidth: 720, margin: "32px auto 0", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding, position: "relative" }}>
-          {!isMobile && (
-            <>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  1
-                </div>
-                <Layers size={17} color={GOLD} />
-              </div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Build your collection</p>
-              <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
-                Mark every pet and item you actually own.
-              </p>
-            </>
-          )}
+      {isMobile ? (
+        // Mobile: just the two actions, full width, no card chrome — a
+        // bordered card wrapping a single button was creating a visible
+        // "ring" around Collection and a stray edge around Floor Search.
+        <div style={{ maxWidth: 720, margin: "32px auto 0", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <button
             onClick={goCollection}
-            style={{ width: "100%", background: PANEL, color: CREAM, border: `1.5px solid ${GOLD}`, borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
+            style={{ background: PANEL, color: GOLD, border: "none", borderRadius: 12, padding: "20px 0", fontSize: 15.5, fontWeight: 700, cursor: "pointer" }}
           >
             Go to Collection
           </button>
-        </div>
-
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding }}>
-          {!isMobile && (
-            <>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  2
-                </div>
-                <Search size={17} color={GOLD} />
-              </div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Search a floor</p>
-              <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
-                Search a floor and we'll only show you solutions matching what you have.
-              </p>
-            </>
-          )}
           <button
             onClick={goSearch}
-            style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 12, padding: "20px 0", fontSize: 15.5, fontWeight: 700, cursor: "pointer" }}
           >
             Go to Floor Search
           </button>
         </div>
-      </div>
+      ) : (
+        <div style={{ maxWidth: 720, margin: "32px auto 0", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding, position: "relative" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                1
+              </div>
+              <Layers size={17} color={GOLD} />
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Build your collection</p>
+            <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
+              Mark every pet and item you actually own.
+            </p>
+            <button
+              onClick={goCollection}
+              style={{ width: "100%", marginTop: "auto", background: PANEL, color: CREAM, border: `1.5px solid ${GOLD}`, borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
+            >
+              Go to Collection
+            </button>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                2
+              </div>
+              <Search size={17} color={GOLD} />
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 700, color: CREAM, margin: "0 0 6px" }}>Search a floor</p>
+            <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.55, margin: "0 0 18px" }}>
+              Search a floor and we'll only show you solutions matching what you have.
+            </p>
+            <button
+              onClick={goSearch}
+              style={{ width: "100%", marginTop: "auto", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
+            >
+              Go to Floor Search
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Ways to submit — ties directly into the Submissions menu, and
           into the Leaderboards that now track them instead of karma. */}
