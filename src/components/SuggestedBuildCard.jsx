@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import PetAvatar from "./PetAvatar";
 import ItemAvatar from "./ItemAvatar";
@@ -41,19 +40,12 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
         <p style={{ fontSize: 13, fontWeight: 700, color: VIOLET, margin: 0 }}>Suggested Build (Beta)</p>
       </div>
       <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 10px" }}>
-        Built from {suggestion.sample_size} verified clear{suggestion.sample_size > 1 ? "s" : ""} of this boss, using
-        only pets and items you already own. This isn't a real submitted build — it's an algorithmic pick based on
-        what's worked for others.
+        Built from {suggestion.sample_size} verified clear{suggestion.sample_size > 1 ? "s" : ""} of this boss.
       </p>
 
       {suggestion.free_items_remaining !== null && suggestion.free_items_remaining !== undefined && (
         <p style={{ fontSize: 11.5, color: itemsCappedOut ? GOLD : MUTED, margin: "0 0 14px" }}>
-          {itemsCappedOut
-            ? "You've used your 5 item-suggestions for this month, so this build shows pets only. "
-            : `${suggestion.free_items_remaining} of 5 monthly item-suggestions left. `}
-          <Link to="/subscribe" style={{ color: GOLD, fontWeight: 600 }}>
-            Unlimited members get item suggestions every time.
-          </Link>
+          {suggestion.free_items_remaining}/5 Item Searches Left For Unpaid Users
         </p>
       )}
 
