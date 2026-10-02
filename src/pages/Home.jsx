@@ -39,7 +39,7 @@ export default function Home({ onRequireAuth }) {
           Find Your Solution
         </h1>
         <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: "0 0 8px" }}>
-          Match your existing collection on Voidpets, then search the floor you're stuck on for solutions matching your build & items.
+          Match your existing collection on Voidpets, then search the floor you're stuck on for solutions.
         </p>
       </div>
 
