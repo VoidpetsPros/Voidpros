@@ -8,6 +8,7 @@ import ItemAvatar from "../components/ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 import { RARITY_COLORS } from "../lib/theme";
+import useIsMobile from "../hooks/useIsMobile";
 
 const RARITY_ORDER = ["Common", "Rare", "Epic", "Legendary", "Uber"];
 
@@ -18,6 +19,7 @@ export default function Collection({ onRequireAuth }) {
   const { ownedPets, ownedItems, loading: collectionLoading, togglePet, setItemCount, bulkSetPets, bulkSetItemCounts } = useCollection(user?.id);
   const [tab, setTab] = useState("pets");
   const [query, setQuery] = useState("");
+  const isMobile = useIsMobile();
 
   if (catalogLoading || collectionLoading) {
     return (
@@ -203,10 +205,10 @@ export default function Collection({ onRequireAuth }) {
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 }}>
           {tab === "pets"
             ? filtered.map((pet) => (
-                <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => handlePetToggle(pet.id)} />
+                <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => handlePetToggle(pet.id)} compact={isMobile} />
               ))
             : filtered.map((item) => (
                 <ItemTile
@@ -214,6 +216,7 @@ export default function Collection({ onRequireAuth }) {
                   item={item}
                   owned={(ownedItems[item.id] || 0) > 0}
                   onToggle={() => handleItemToggle(item.id)}
+                  compact={isMobile}
                 />
               ))}
           {filtered.length === 0 && <p style={{ color: MUTED, fontSize: 13 }}>No matches.</p>}
@@ -223,7 +226,7 @@ export default function Collection({ onRequireAuth }) {
   );
 }
 
-function PetTile({ pet, owned, onToggle }) {
+function PetTile({ pet, owned, onToggle, compact = false }) {
   const { PANEL, LINE, GOLD, CREAM } = useTheme();
   return (
     <button
@@ -232,8 +235,8 @@ function PetTile({ pet, owned, onToggle }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 6,
-        padding: "10px 6px",
+        gap: compact ? 4 : 6,
+        padding: compact ? "7px 3px" : "10px 6px",
         borderRadius: 12,
         border: `1.5px solid ${owned ? GOLD : LINE}`,
         background: PANEL,
@@ -247,13 +250,13 @@ function PetTile({ pet, owned, onToggle }) {
           <Check size={10} color="#FFFFFF" strokeWidth={3} />
         </div>
       )}
-      <PetAvatar pet={pet} size={48} />
-      <span style={{ fontSize: 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{pet.name}</span>
+      <PetAvatar pet={pet} size={compact ? 34 : 48} />
+      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400, lineHeight: 1.25 }}>{pet.name}</span>
     </button>
   );
 }
 
-function ItemTile({ item, owned, onToggle }) {
+function ItemTile({ item, owned, onToggle, compact = false }) {
   const { PANEL, LINE, GOLD, CREAM } = useTheme();
   return (
     <button
@@ -262,8 +265,8 @@ function ItemTile({ item, owned, onToggle }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 6,
-        padding: "10px 6px",
+        gap: compact ? 4 : 6,
+        padding: compact ? "7px 3px" : "10px 6px",
         borderRadius: 12,
         border: `1.5px solid ${owned ? GOLD : LINE}`,
         background: PANEL,
@@ -277,8 +280,8 @@ function ItemTile({ item, owned, onToggle }) {
           <Check size={10} color="#FFFFFF" strokeWidth={3} />
         </div>
       )}
-      <ItemAvatar item={item} size={44} />
-      <span style={{ fontSize: 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400 }}>{item.name}</span>
+      <ItemAvatar item={item} size={compact ? 32 : 44} />
+      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400, lineHeight: 1.25 }}>{item.name}</span>
     </button>
   );
 }

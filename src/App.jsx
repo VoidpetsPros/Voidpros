@@ -99,7 +99,16 @@ export default function App() {
   }
 
   return (
-    <div style={{ ...VOID_BACKGROUND, minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div
+      style={{
+        ...VOID_BACKGROUND,
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
       <header
         style={{
           display: "grid",
@@ -107,6 +116,7 @@ export default function App() {
           alignItems: "center",
           gap: 20,
           padding: "14px 24px",
+          paddingTop: "calc(14px + env(safe-area-inset-top, 0px))",
           background: GOLD_DIM,
         }}
       >
@@ -280,6 +290,41 @@ export default function App() {
                   Leaderboards
                 </Link>
               )}
+              {isMobile && (
+                <button
+                  onClick={() => setShowMobileMenu((v) => !v)}
+                  aria-label="Menu"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: 8,
+                    width: 36,
+                    height: 36,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    position: "relative",
+                  }}
+                >
+                  {showMobileMenu ? <X size={17} color="#FFFFFF" /> : <Menu size={17} color="#FFFFFF" />}
+                  {hasNewChallenges && !showMobileMenu && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -2,
+                        right: -2,
+                        width: 9,
+                        height: 9,
+                        borderRadius: "50%",
+                        background: "#dc2626",
+                        border: `1.5px solid ${GOLD_DIM}`,
+                      }}
+                    />
+                  )}
+                </button>
+              )}
               <button
                 onClick={() => setShowProfile(true)}
                 aria-label="Profile"
@@ -321,41 +366,6 @@ export default function App() {
                   />
                 )}
               </button>
-              {isMobile && (
-                <button
-                  onClick={() => setShowMobileMenu((v) => !v)}
-                  aria-label="Menu"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(255,255,255,0.14)",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: 8,
-                    width: 36,
-                    height: 36,
-                    cursor: "pointer",
-                    flexShrink: 0,
-                    position: "relative",
-                  }}
-                >
-                  {showMobileMenu ? <X size={17} color="#FFFFFF" /> : <Menu size={17} color="#FFFFFF" />}
-                  {hasNewChallenges && !showMobileMenu && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: -2,
-                        right: -2,
-                        width: 9,
-                        height: 9,
-                        borderRadius: "50%",
-                        background: "#dc2626",
-                        border: `1.5px solid ${GOLD_DIM}`,
-                      }}
-                    />
-                  )}
-                </button>
-              )}
             </>
           ) : (
             <button

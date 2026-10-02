@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Layers, Search, ArrowRight, Trophy, Swords } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
+import useIsMobile from "../hooks/useIsMobile";
 
 const SUBMISSION_WAYS = [
   {
@@ -23,6 +24,9 @@ export default function Home({ onRequireAuth }) {
   const { isAuthed } = useAuth();
   const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const cardPadding = isMobile ? 14 : 22;
+  const buttonFontSize = isMobile ? 12.5 : 14;
 
   const goCollection = () => navigate("/collection");
   const goSearch = () => navigate("/search");
@@ -42,8 +46,8 @@ export default function Home({ onRequireAuth }) {
       {/* Two-step guide: this is the actual point of the page — get your
           collection set up, then search. The buttons live right inside the
           steps that explain them. */}
-      <div style={{ maxWidth: 720, margin: "32px auto 0", padding: "0 24px", display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 260px", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 22, position: "relative" }}>
+      <div style={{ maxWidth: 720, margin: "32px auto 0", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding, position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               1
@@ -56,13 +60,13 @@ export default function Home({ onRequireAuth }) {
           </p>
           <button
             onClick={goCollection}
-            style={{ width: "100%", background: PANEL, color: CREAM, border: `1.5px solid ${GOLD}`, borderRadius: 10, padding: "12px 0", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+            style={{ width: "100%", background: PANEL, color: CREAM, border: `1.5px solid ${GOLD}`, borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
           >
             Go to Collection
           </button>
         </div>
 
-        <div style={{ flex: "1 1 260px", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: 22 }}>
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 14, padding: cardPadding }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 26, height: 26, borderRadius: 999, background: GOLD, color: "#FFFFFF", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               2
@@ -75,7 +79,7 @@ export default function Home({ onRequireAuth }) {
           </p>
           <button
             onClick={goSearch}
-            style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+            style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 10, padding: "12px 0", fontSize: buttonFontSize, fontWeight: 600, cursor: "pointer" }}
           >
             Go to Floor Search
           </button>
