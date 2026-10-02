@@ -1255,6 +1255,123 @@ function formatCents(cents) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+// Grant/revoke comp Unlimited access for beta testers and similar cases —
+// no real Stripe subscription involved. Grants expire on their own via a
+// daily scheduled job (api/cron-expire-comp-grants.js), so there's
+// nothing to remember to revoke manually.
+function BetaAccess() {
+  const [users, setUsers] = useState(null);
+  const [error, setError] = useState("");
+  const [username, setUsername] = useState("");
+  const [days, setDays] = useState("30");
+  const [granting, setGranting] = useState(false);
+  const [busyId, setBusyId] = useState(null);
+
+  const load = async () => {
+    const { data, error: fetchError } = await supabase.rpc("get_comp_unlimited_users");
+    if (fetchError) setError(fetchError.message);
+    else setUsers(data || []);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleGrant = async () => {
+    if (!username.trim()) return;
+    setGranting(true);
+    setError("");
+    const { error: rpcError } = await supabase.rpc("admin_grant_comp_unlimited", {
+      p_username: username.trim(),
+      p_days: parseInt(days, 10) || 30,
+    });
+    setGranting(false);
+    if (rpcError) {
+      setError(rpcError.message);
+      return;
+    }
+    setUsername("");
+    load();
+  };
+
+  const handleRevoke = async (userId) => {
+    if (!window.confirm("Revoke this user's comp Unlimited access right now?")) return;
+    setBusyId(userId);
+    const { error: rpcError } = await supabase.rpc("admin_revoke_comp_unlimited", { p_user_id: userId });
+    setBusyId(null);
+    if (rpcError) {
+      alert(rpcError.message);
+      return;
+    }
+    load();
+  };
+
+  return (
+    <div>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 20 }}>
+        <p style={{ fontSize: 12, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>
+          Grant comp Unlimited
+        </p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            style={{ flex: "1 1 160px", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 12px", color: CREAM, fontSize: 13, outline: "none" }}
+          />
+          <input
+            type="number"
+            min="1"
+            value={days}
+            onChange={(e) => setDays(e.target.value)}
+            placeholder="Days"
+            style={{ width: 90, boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 12px", color: CREAM, fontSize: 13, outline: "none" }}
+          />
+          <button
+            onClick={handleGrant}
+            disabled={granting || !username.trim()}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: granting ? "default" : "pointer", whiteSpace: "nowrap" }}
+          >
+            {granting ? "…" : "Grant"}
+          </button>
+        </div>
+        <p style={{ fontSize: 11, color: MUTED, margin: "8px 0 0" }}>
+          Only works for accounts with no real subscription already attached. Access expires automatically after the
+          number of days given.
+        </p>
+        {error && <p style={{ fontSize: 12, color: DANGER, margin: "8px 0 0" }}>{error}</p>}
+      </div>
+
+      <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 10px" }}>
+        Currently comped
+      </p>
+      {!users ? (
+        <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
+      ) : users.length === 0 ? (
+        <p style={{ color: MUTED, fontSize: 14 }}>No active comp grants.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {users.map((u) => (
+            <div key={u.user_id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: PANEL, border: `1px solid ${LINE}`, borderRadius: 10, padding: "10px 14px" }}>
+              <div>
+                <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 2px" }}>{u.username}</p>
+                <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>Expires {new Date(u.comp_unlimited_until).toLocaleDateString()}</p>
+              </div>
+              <button
+                onClick={() => handleRevoke(u.user_id)}
+                disabled={busyId === u.user_id}
+                style={{ background: "none", border: `1px solid ${DANGER}`, color: DANGER, borderRadius: 8, padding: "7px 12px", fontSize: 12, fontWeight: 600, cursor: busyId === u.user_id ? "default" : "pointer" }}
+              >
+                {busyId === u.user_id ? "…" : "Revoke"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AffiliatePayouts() {
   const [payouts, setPayouts] = useState(null);
   const [error, setError] = useState("");
@@ -1623,6 +1740,7 @@ export default function Admin() {
     { id: "images", label: "Catalog" },
     { id: "cosmetics", label: "Cosmetics" },
     { id: "affiliates", label: "Affiliates" },
+    { id: "beta", label: "Beta Access" },
     { id: "feedback", label: "Feedback" },
   ];
 
@@ -1655,6 +1773,7 @@ export default function Admin() {
       {tab === "images" && <CatalogImages pets={pets} items={items} />}
       {tab === "cosmetics" && <AchievementCosmetics />}
       {tab === "affiliates" && <AffiliatePayouts />}
+      {tab === "beta" && <BetaAccess />}
       {tab === "feedback" && <AdminFeedback />}
 
       {tab === "queue" && (
