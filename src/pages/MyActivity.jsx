@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Users } from "lucide-react";
+
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
@@ -10,7 +10,7 @@ import BackButton from "../components/BackButton";
 
 export default function MyActivity({ onRequireAuth }) {
   const { isAuthed, user, loading: authLoading, markActivitySeen } = useAuth();
-  const { PANEL, CREAM, MUTED, GOLD, VIOLET } = useTheme();
+  const { PANEL, CREAM, MUTED, VIOLET } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
   const { builds, loading: activityLoading, error } = useMyActivity(user?.id);
@@ -38,12 +38,9 @@ export default function MyActivity({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <BackButton />
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(124,58,237,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Users size={17} color={GOLD} />
-        </div>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>Community</p>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 4 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Community</p>
       </div>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 24px" }}>
         Builds you've submitted or left a comment on, most recent first.

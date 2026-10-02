@@ -143,18 +143,13 @@ export default function Achievements({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <BackButton />
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
-        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>
           Achievements
         </h1>
         <CosmeticAvatar url={profile?.equipped_achievement?.image_url} size={28} />
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px" }}>
-        Earn cosmetics by submitting Completions and Challenges, and by searching floors. Equip one to show it next to
-        your name on builds and comments.
-      </p>
 
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 22, width: "fit-content" }}>
         {[

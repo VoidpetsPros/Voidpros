@@ -82,11 +82,12 @@ export default function Affiliate({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <BackButton />
-
-      <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 6px" }}>
-        Affiliate Program
-      </h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>
+          Affiliate Program
+        </h1>
+      </div>
       <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
         Earn 20% of the subscription price for every month someone you refer stays subscribed to Unlimited, up to 3
         months per person.

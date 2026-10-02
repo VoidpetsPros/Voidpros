@@ -122,11 +122,12 @@ export default function Settings({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto" }}>
-      <BackButton />
-
-      <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 20px" }}>
-        Settings
-      </h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>
+          Settings
+        </h1>
+      </div>
 
       <Row label="E-Mail Address" value={user?.email} />
 
