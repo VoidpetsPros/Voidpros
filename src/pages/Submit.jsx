@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Send, Trophy } from "lucide-react";
+import { Search, Send } from "lucide-react";
 import BackButton from "../components/BackButton";
 import { useAuth } from "../hooks/AuthContext";
 import { supabase } from "../lib/supabaseClient";
@@ -103,17 +103,10 @@ export default function Submit({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 80px", maxWidth: 560, margin: "0 auto" }}>
-      <BackButton />
-
-      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Submit your build</p>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
-        <Trophy size={12} color={GOLD} />
-        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Completion · counts toward Leaderboards</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Submit your build</p>
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
-        Just a shot of your full team — item screenshots are optional. Once it's
-        approved, it'll count toward the Leaderboards.
-      </p>
 
       <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
         Which floor <span style={{ color: DANGER }}>*</span>
