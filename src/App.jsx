@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { User, ChevronDown, Menu, X } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import logoMark from "./assets/logo.svg";
 import { supabase } from "./lib/supabaseClient";
 import { useAuth } from "./hooks/AuthContext";
@@ -44,7 +44,6 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const isMobile = useIsMobile();
   // Separate, wider breakpoint than isMobile: below this width the nav
   // pills + counter no longer comfortably fit on one header row, so the
@@ -111,22 +110,28 @@ export default function App() {
     >
       <header
         style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr)",
-          alignItems: "center",
-          gap: 20,
-          padding: "14px 24px",
-          paddingTop: "calc(14px + env(safe-area-inset-top, 0px))",
           background: GOLD_DIM,
+          paddingTop: "calc(14px + env(safe-area-inset-top, 0px))",
         }}
       >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr)",
+            alignItems: "center",
+            gap: 20,
+            padding: "0 24px 14px",
+          }}
+        >
         <div style={{ display: "flex", alignItems: "center", gap: 20, minWidth: 0 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
-          <img src={logoMark} alt="Voidpros" style={{ width: 32, height: 32, borderRadius: 8, display: "block" }} />
-          <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#FFFFFF" }}>
-            voidpros
-          </span>
-        </Link>
+        {!isMobile && (
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
+            <img src={logoMark} alt="Voidpros" style={{ width: 32, height: 32, borderRadius: 8, display: "block" }} />
+            <span style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#FFFFFF" }}>
+              voidpros
+            </span>
+          </Link>
+        )}
 
         {isAuthed && !isMobile && (
           <nav
@@ -253,78 +258,59 @@ export default function App() {
         )}
         </div>
 
-        <span
-          style={{
-            fontWeight: 800,
-            fontSize: 13.5,
-            color: "#FFFFFF",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "block",
-            maxWidth: "100%",
-            justifySelf: "center",
-            textAlign: "center",
-          }}
-        >
-          {verifiedCount !== null && !isNarrowHeader ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
-        </span>
+        {isMobile ? (
+          <Link
+            to="/"
+            style={{
+              justifySelf: "center",
+              textDecoration: "none",
+              fontFamily: "system-ui, sans-serif",
+              fontWeight: 700,
+              fontSize: 18,
+              letterSpacing: -0.3,
+              color: "#FFFFFF",
+              whiteSpace: "nowrap",
+            }}
+          >
+            voidpros
+          </Link>
+        ) : (
+          <span
+            style={{
+              fontWeight: 800,
+              fontSize: 13.5,
+              color: "#FFFFFF",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+              maxWidth: "100%",
+              justifySelf: "center",
+              textAlign: "center",
+            }}
+          >
+            {verifiedCount !== null && !isNarrowHeader ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
+          </span>
+        )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, justifySelf: "end", minWidth: 0 }}>
           {isAuthed ? (
             <>
-              {!isMobile && (
-                <Link
-                  to="/leaderboards"
-                  style={{
-                    fontSize: 12.5,
-                    fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
-                    color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
-                    background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
-                    textDecoration: "none",
-                    padding: "7px 12px",
-                    borderRadius: 7,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Leaderboards
-                </Link>
-              )}
-              {isMobile && (
-                <button
-                  onClick={() => setShowMobileMenu((v) => !v)}
-                  aria-label="Menu"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(255,255,255,0.14)",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: 8,
-                    width: 36,
-                    height: 36,
-                    cursor: "pointer",
-                    flexShrink: 0,
-                    position: "relative",
-                  }}
-                >
-                  {showMobileMenu ? <X size={17} color="#FFFFFF" /> : <Menu size={17} color="#FFFFFF" />}
-                  {hasNewChallenges && !showMobileMenu && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: -2,
-                        right: -2,
-                        width: 9,
-                        height: 9,
-                        borderRadius: "50%",
-                        background: "#dc2626",
-                        border: `1.5px solid ${GOLD_DIM}`,
-                      }}
-                    />
-                  )}
-                </button>
-              )}
+              <Link
+                to="/leaderboards"
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
+                  color: location.pathname === "/leaderboards" ? GOLD_DIM : "rgba(255,255,255,0.85)",
+                  background: location.pathname === "/leaderboards" ? "#FFFFFF" : "transparent",
+                  textDecoration: "none",
+                  padding: "7px 12px",
+                  borderRadius: 7,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Leaderboards
+              </Link>
               <button
                 onClick={() => setShowProfile(true)}
                 aria-label="Profile"
@@ -376,6 +362,97 @@ export default function App() {
             </button>
           )}
         </div>
+        </div>
+
+        {isMobile && isAuthed && (
+          <div style={{ padding: "0 24px 14px", position: "relative" }}>
+            <button
+              onClick={() => setShowSubmissions((v) => !v)}
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#FFFFFF",
+                padding: "8px 14px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Submit a Build <ChevronDown size={13} />
+              {hasNewChallenges && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "#dc2626",
+                    border: `1.5px solid ${GOLD_DIM}`,
+                  }}
+                />
+              )}
+            </button>
+            {showSubmissions && (
+              <>
+                <div onClick={() => setShowSubmissions(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 24,
+                    width: 270,
+                    maxWidth: "calc(100vw - 48px)",
+                    background: PANEL,
+                    border: `1px solid ${LINE}`,
+                    borderRadius: 12,
+                    boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
+                    zIndex: 70,
+                    overflow: "hidden",
+                  }}
+                >
+                  {SUBMISSION_OPTIONS.map((opt, i) => (
+                    <Link
+                      key={opt.to}
+                      to={opt.to}
+                      onClick={() => setShowSubmissions(false)}
+                      style={{
+                        position: "relative",
+                        display: "block",
+                        padding: "13px 15px",
+                        textDecoration: "none",
+                        borderBottom: i < SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
+                      }}
+                    >
+                      <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
+                      <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
+                      {opt.to === "/fulfill" && hasNewChallenges && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 14,
+                            right: 14,
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: "#dc2626",
+                          }}
+                        />
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </header>
 
       {verifiedCount !== null && isNarrowHeader && (
@@ -384,81 +461,6 @@ export default function App() {
             Community Has Submitted {verifiedCount.toLocaleString()} Builds
           </span>
         </div>
-      )}
-
-      {isMobile && showMobileMenu && (
-        <>
-          <div onClick={() => setShowMobileMenu(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
-          <div
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 70,
-              background: PANEL,
-              borderBottom: `1px solid ${LINE}`,
-              boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
-            }}
-          >
-            {SUBMISSION_OPTIONS.map((opt) => (
-              <Link
-                key={opt.to}
-                to={opt.to}
-                onClick={() => setShowMobileMenu(false)}
-                style={{
-                  position: "relative",
-                  display: "block",
-                  padding: "13px 20px",
-                  textDecoration: "none",
-                  borderBottom: `1px solid ${LINE}`,
-                }}
-              >
-                <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
-                <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
-                {opt.to === "/fulfill" && hasNewChallenges && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 14,
-                      right: 20,
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: "#dc2626",
-                    }}
-                  />
-                )}
-              </Link>
-            ))}
-            <Link
-              to="/my-requests"
-              onClick={() => setShowMobileMenu(false)}
-              style={{
-                display: "block",
-                padding: "13px 20px",
-                fontSize: 13.5,
-                fontWeight: location.pathname === "/my-requests" ? 600 : 500,
-                color: location.pathname === "/my-requests" ? GOLD : CREAM,
-                textDecoration: "none",
-              }}
-            >
-              My Requests
-            </Link>
-            <Link
-              to="/leaderboards"
-              onClick={() => setShowMobileMenu(false)}
-              style={{
-                display: "block",
-                padding: "13px 20px",
-                fontSize: 13.5,
-                fontWeight: location.pathname === "/leaderboards" ? 600 : 500,
-                color: location.pathname === "/leaderboards" ? GOLD : CREAM,
-                textDecoration: "none",
-              }}
-            >
-              Leaderboards
-            </Link>
-          </div>
-        </>
       )}
 
       {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
