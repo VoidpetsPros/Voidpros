@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Swords, Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useRequests } from "../hooks/useRequests";
@@ -38,16 +38,10 @@ export default function FulfillRequests() {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <BackButton />
-      <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 24, color: CREAM, margin: "0 0 8px" }}>Challenges</p>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: 999, padding: "4px 11px", marginBottom: 14 }}>
-        <Swords size={12} color={GOLD} />
-        <span style={{ fontSize: 11.5, fontWeight: 600, color: GOLD }}>Challenge · counts toward Leaderboards</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Challenges</p>
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.6, margin: "0 0 18px" }}>
-        Other players are stuck with a specific set of pets and items — sometimes not
-        even enough for a full team. Use only what they have to earn the reward.
-      </p>
 
       <div style={{ position: "relative", marginBottom: 22 }}>
         <Search size={15} color={MUTED} style={{ position: "absolute", left: 12, top: 12 }} />
