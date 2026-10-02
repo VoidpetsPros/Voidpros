@@ -92,7 +92,7 @@ export default function Home({ onRequireAuth }) {
       )}
 
       {isAuthed && (
-        <div style={{ maxWidth: 720, margin: "64px auto 0", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <div style={{ maxWidth: 720, margin: "220px auto 0", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: 0 }}>
             Submit a build
           </p>
