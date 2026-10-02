@@ -29,9 +29,6 @@ export default function Subscription({ onRequireAuth }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const isMobile = useIsMobile();
-  const cardPadding = isMobile ? 18 : 24;
-  const perkFontSize = isMobile ? 13 : 13;
-  const priceFontSize = isMobile ? 24 : 28;
 
   const eligible = !profile?.trial_used;
 
@@ -59,18 +56,18 @@ export default function Subscription({ onRequireAuth }) {
         </h1>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: isMobile ? 10 : 16, alignItems: "stretch" }}>
-        {/* Free */}
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: cardPadding, display: "flex", flexDirection: "column" }}>
-          <p style={{ fontSize: isMobile ? 12 : 13, color: MUTED, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Free</p>
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: priceFontSize, color: CREAM, margin: "0 0 4px" }}>$0</p>
-          <p style={{ fontSize: isMobile ? 12 : 12.5, color: MUTED, margin: "0 0 20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, alignItems: "stretch" }}>
+        {/* Free — shown second on mobile, so Unlimited leads */}
+        <div style={{ order: isMobile ? 2 : 1, background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
+          <p style={{ fontSize: 13, color: MUTED, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Free</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 28, color: CREAM, margin: "0 0 4px" }}>$0</p>
+          <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 20px" }}>
             Pets only — items stay hidden
           </p>
 
           <button
             disabled
-            style={{ width: "100%", background: PANEL_2, color: MUTED, border: `1px solid ${LINE}`, borderRadius: 9, padding: "11px 0", fontSize: isMobile ? 13 : 13.5, fontWeight: 600, marginBottom: 22, cursor: "default" }}
+            style={{ width: "100%", background: PANEL_2, color: MUTED, border: `1px solid ${LINE}`, borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, marginBottom: 22, cursor: "default" }}
           >
             {profile?.is_subscribed ? "Included" : "Current plan"}
           </button>
@@ -79,27 +76,27 @@ export default function Subscription({ onRequireAuth }) {
             {FREE_PERKS.map((perk) => (
               <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
                 <Check size={15} color={MUTED} style={{ flexShrink: 0, marginTop: 2 }} />
-                <span style={{ fontSize: perkFontSize, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
+                <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Unlimited */}
-        <div style={{ background: "rgba(124,58,237,0.08)", border: `1.5px solid ${GOLD}`, borderRadius: 16, padding: cardPadding, display: "flex", flexDirection: "column" }}>
-          <p style={{ fontSize: isMobile ? 12 : 13, color: GOLD, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Unlimited</p>
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: priceFontSize, color: CREAM, margin: "0 0 4px" }}>
+        {/* Unlimited — shown first on mobile */}
+        <div style={{ order: isMobile ? 1 : 2, background: "rgba(124,58,237,0.08)", border: `1.5px solid ${GOLD}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
+          <p style={{ fontSize: 13, color: GOLD, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>Unlimited</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 28, color: CREAM, margin: "0 0 4px" }}>
             {eligible ? "7 days free" : "$6.00"}
             {!eligible && <span style={{ fontSize: 15, fontWeight: 500, color: MUTED }}> /mo</span>}
           </p>
-          <p style={{ fontSize: isMobile ? 12 : 12.5, color: MUTED, margin: "0 0 20px" }}>
+          <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 20px" }}>
             {eligible ? "then $6.00/month. Cancel anytime." : "Cancel anytime."}
           </p>
 
           {profile?.is_subscribed ? (
             <button
               disabled
-              style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: isMobile ? 13 : 13.5, fontWeight: 600, marginBottom: 22, cursor: "default" }}
+              style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, marginBottom: 22, cursor: "default" }}
             >
               Current plan
             </button>
@@ -108,7 +105,7 @@ export default function Subscription({ onRequireAuth }) {
               <button
                 onClick={handleUpgrade}
                 disabled={loading}
-                style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: isMobile ? 13 : 13.5, fontWeight: 600, cursor: loading ? "default" : "pointer" }}
+                style={{ width: "100%", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "11px 0", fontSize: 13.5, fontWeight: 600, cursor: loading ? "default" : "pointer" }}
               >
                 {loading ? "Redirecting…" : eligible ? "Start Free Trial" : "Subscribe"}
               </button>
@@ -123,7 +120,7 @@ export default function Subscription({ onRequireAuth }) {
             {UNLIMITED_PERKS.map((perk) => (
               <div key={perk} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
                 <Check size={15} color={GOLD} style={{ flexShrink: 0, marginTop: 2 }} />
-                <span style={{ fontSize: perkFontSize, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
+                <span style={{ fontSize: 13, color: CREAM, lineHeight: 1.5 }}>{perk}</span>
               </div>
             ))}
           </div>
