@@ -133,6 +133,96 @@ export default function App() {
           </Link>
         )}
 
+        {isMobile && isAuthed && (
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowSubmissions((v) => !v)}
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                gap: 3,
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#FFFFFF",
+                padding: "7px 10px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Submit <ChevronDown size={12} />
+              {hasNewChallenges && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 3,
+                    right: 3,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "#dc2626",
+                    border: `1.5px solid ${GOLD_DIM}`,
+                  }}
+                />
+              )}
+            </button>
+            {showSubmissions && (
+              <>
+                <div onClick={() => setShowSubmissions(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
+                    width: 270,
+                    maxWidth: "calc(100vw - 48px)",
+                    background: PANEL,
+                    border: `1px solid ${LINE}`,
+                    borderRadius: 12,
+                    boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
+                    zIndex: 70,
+                    overflow: "hidden",
+                  }}
+                >
+                  {SUBMISSION_OPTIONS.map((opt, i) => (
+                    <Link
+                      key={opt.to}
+                      to={opt.to}
+                      onClick={() => setShowSubmissions(false)}
+                      style={{
+                        position: "relative",
+                        display: "block",
+                        padding: "13px 15px",
+                        textDecoration: "none",
+                        borderBottom: i < SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
+                      }}
+                    >
+                      <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
+                      <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
+                      {opt.to === "/fulfill" && hasNewChallenges && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 14,
+                            right: 14,
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: "#dc2626",
+                          }}
+                        />
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {isAuthed && !isMobile && (
           <nav
             style={{
@@ -384,95 +474,6 @@ export default function App() {
         </div>
         </div>
 
-        {isMobile && isAuthed && (
-          <div style={{ padding: "0 24px 14px", position: "relative" }}>
-            <button
-              onClick={() => setShowSubmissions((v) => !v)}
-              style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                background: "rgba(255,255,255,0.14)",
-                border: "1px solid rgba(255,255,255,0.22)",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#FFFFFF",
-                padding: "8px 14px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Submit a Build <ChevronDown size={13} />
-              {hasNewChallenges && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: 4,
-                    right: 4,
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: "#dc2626",
-                    border: `1.5px solid ${GOLD_DIM}`,
-                  }}
-                />
-              )}
-            </button>
-            {showSubmissions && (
-              <>
-                <div onClick={() => setShowSubmissions(false)} style={{ position: "fixed", inset: 0, zIndex: 69 }} />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    left: 24,
-                    width: 270,
-                    maxWidth: "calc(100vw - 48px)",
-                    background: PANEL,
-                    border: `1px solid ${LINE}`,
-                    borderRadius: 12,
-                    boxShadow: "0 12px 28px -10px rgba(0,0,0,0.35)",
-                    zIndex: 70,
-                    overflow: "hidden",
-                  }}
-                >
-                  {SUBMISSION_OPTIONS.map((opt, i) => (
-                    <Link
-                      key={opt.to}
-                      to={opt.to}
-                      onClick={() => setShowSubmissions(false)}
-                      style={{
-                        position: "relative",
-                        display: "block",
-                        padding: "13px 15px",
-                        textDecoration: "none",
-                        borderBottom: i < SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
-                      }}
-                    >
-                      <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>
-                      <p style={{ margin: 0, fontSize: 11.5, color: MUTED, lineHeight: 1.45 }}>{opt.subtext}</p>
-                      {opt.to === "/fulfill" && hasNewChallenges && (
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: 14,
-                            right: 14,
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            background: "#dc2626",
-                          }}
-                        />
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
       </header>
 
       {verifiedCount !== null && isNarrowHeader && (
