@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { User, ChevronDown, Trophy } from "lucide-react";
 import logoMark from "./assets/logo.svg";
-import { supabase } from "./lib/supabaseClient";
 import { useAuth } from "./hooks/AuthContext";
 import useIsMobile from "./hooks/useIsMobile";
 import AuthModal from "./components/AuthModal";
@@ -48,7 +47,6 @@ export default function App() {
   // Separate, wider breakpoint than isMobile: below this width the nav
   // pills + counter no longer comfortably fit on one header row, so the
   // counter moves to its own line below the header instead of squeezing in.
-  const isNarrowHeader = useIsMobile(900);
   const location = useLocation();
 
   // Capture a referral link (?ref=CODE) the moment it's seen, from any
@@ -65,28 +63,6 @@ export default function App() {
       const cleanSearch = params.toString();
       window.history.replaceState({}, "", window.location.pathname + (cleanSearch ? `?${cleanSearch}` : ""));
     }
-  }, []);
-  const [verifiedCount, setVerifiedCount] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchVerifiedCount() {
-      const { count, error } = await supabase
-        .from("builds")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "verified");
-
-      if (!error && isMounted) {
-        setVerifiedCount(count);
-      }
-    }
-
-    fetchVerifiedCount();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   if (loading) {
@@ -379,7 +355,6 @@ export default function App() {
               textAlign: "center",
             }}
           >
-            {verifiedCount !== null && !isNarrowHeader ? `Community Has Submitted ${verifiedCount.toLocaleString()} Builds` : ""}
           </span>
         )}
 
@@ -475,14 +450,6 @@ export default function App() {
         </div>
 
       </header>
-
-      {verifiedCount !== null && isNarrowHeader && (
-        <div style={{ padding: "10px 24px", textAlign: "center" }}>
-          <span style={{ fontWeight: 800, fontSize: 13.5, color: "#000000" }}>
-            Community Has Submitted {verifiedCount.toLocaleString()} Builds
-          </span>
-        </div>
-      )}
 
       {showProfile && <ProfileSidebar onClose={() => setShowProfile(false)} />}
       {isAuthed && profile && !profile.tutorial_completed && <OnboardingTutorial />}

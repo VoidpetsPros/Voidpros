@@ -4,12 +4,14 @@ import { Layers, Search } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import useIsMobile from "../hooks/useIsMobile";
+import useVerifiedBuildCount from "../hooks/useVerifiedBuildCount";
 
 export default function Home({ onRequireAuth }) {
   const { isAuthed } = useAuth();
   const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const verifiedCount = useVerifiedBuildCount();
   const cardPadding = isMobile ? 14 : 22;
   const buttonFontSize = isMobile ? 12.5 : 14;
 
@@ -91,17 +93,25 @@ export default function Home({ onRequireAuth }) {
         </div>
       )}
 
-      {isAuthed && (
-        <div style={{ maxWidth: 720, margin: "320px auto 0", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: 0 }}>
-            Submit a build
+      <div style={{ maxWidth: 720, margin: "320px auto 0", padding: "0 24px", textAlign: "center" }}>
+        {verifiedCount !== null && (
+          <p style={{ fontWeight: 800, fontSize: 13.5, color: CREAM, margin: "0 0 10px" }}>
+            Community Has Submitted {verifiedCount.toLocaleString()} Builds
           </p>
-          <span style={{ color: MUTED }}>·</span>
-          <Link to="/leaderboards" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, textDecoration: "none" }}>
-            See Leaderboards
-          </Link>
-        </div>
-      )}
+        )}
+
+        {isAuthed && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: 0 }}>
+              Submit a build
+            </p>
+            <span style={{ color: MUTED }}>·</span>
+            <Link to="/leaderboards" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, textDecoration: "none" }}>
+              See Leaderboards
+            </Link>
+          </div>
+        )}
+      </div>
 
       <div style={{ paddingBottom: 48 }} />
     </div>

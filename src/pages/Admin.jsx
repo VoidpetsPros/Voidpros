@@ -14,6 +14,7 @@ import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
 import BackButton from "../components/BackButton";
+import useVerifiedBuildCount from "../hooks/useVerifiedBuildCount";
 
 // Off by default — this changes how typing behaves (jumping fields as you
 // type), so admins opt in rather than being surprised by it. Persisted so
@@ -1711,6 +1712,7 @@ function AdminFeedback() {
 }
 
 export default function Admin() {
+  const verifiedCount = useVerifiedBuildCount();
   const { profile, loading: authLoading } = useAuth();
   const { pets, items, itemsByType, loading: catalogLoading } = useCatalog();
   const { builds, loading: buildsLoading, error: buildsError, refresh } = useAdminBuilds();
@@ -1747,6 +1749,11 @@ export default function Admin() {
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 700, margin: "0 auto" }}>
       <BackButton />
+      {verifiedCount !== null && (
+        <p style={{ fontWeight: 800, fontSize: 13.5, color: CREAM, margin: "0 0 16px" }}>
+          Community Has Submitted {verifiedCount.toLocaleString()} Builds
+        </p>
+      )}
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 22, width: "fit-content", flexWrap: "wrap" }}>
         {TABS.map((t) => (
           <button
