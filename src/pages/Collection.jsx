@@ -115,18 +115,6 @@ export default function Collection({ onRequireAuth }) {
             }}
           >
             {t.label}
-            <span
-              style={{
-                fontSize: 10.5,
-                fontWeight: 600,
-                color: tab === t.id ? GOLD : MUTED,
-                background: tab === t.id ? "rgba(124,58,237,0.1)" : "transparent",
-                borderRadius: 999,
-                padding: tab === t.id ? "1px 6px" : 0,
-              }}
-            >
-              {t.list.filter((o) => ownedCountFor(o.id, t.id === "pets")).length}/{t.list.length}
-            </span>
           </button>
         ))}
       </div>
@@ -153,16 +141,18 @@ export default function Collection({ onRequireAuth }) {
                   alignItems: "center",
                   gap: 6,
                   fontSize: 12,
-                  padding: "6px 12px",
+                  fontWeight: fullyOwned ? 700 : 500,
+                  padding: "7px 14px",
                   borderRadius: 999,
-                  border: `1px solid ${fullyOwned ? RARITY_COLORS[rarity] : LINE}`,
-                  background: fullyOwned ? `${RARITY_COLORS[rarity]}22` : PANEL_2,
-                  color: fullyOwned ? RARITY_COLORS[rarity] : MUTED,
+                  border: "none",
+                  background: fullyOwned ? RARITY_COLORS[rarity] : PANEL_2,
+                  color: fullyOwned ? "#FFFFFF" : MUTED,
+                  boxShadow: fullyOwned ? `0 3px 10px -3px ${RARITY_COLORS[rarity]}99` : "none",
                   cursor: "pointer",
+                  transition: "background 0.15s ease, box-shadow 0.15s ease",
                 }}
               >
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: RARITY_COLORS[rarity], flexShrink: 0 }} />
-                {fullyOwned ? <Check size={12} /> : null}
+                {fullyOwned ? <Check size={12} strokeWidth={3} /> : null}
                 {fullyOwned ? `All ${rarity}` : `Select all ${rarity}`}
               </button>
             );
