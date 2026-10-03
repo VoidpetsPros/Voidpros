@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { supabase } from "../lib/supabaseClient";
 import BackButton from "../components/BackButton";
+import useIsMobile from "../hooks/useIsMobile";
 
 // Shown until real search data exists (or if the fetch fails) — once floors
 // have actual search history, FALLBACK_POPULAR_FLOORS is never used.
@@ -14,6 +15,8 @@ export default function Search({ onRequireAuth }) {
   const [floor, setFloor] = useState("");
   const [popularFloors, setPopularFloors] = useState(FALLBACK_POPULAR_FLOORS);
   const { isAuthed } = useAuth();
+  const isMobile = useIsMobile();
+  const visiblePopularFloors = isMobile ? popularFloors.slice(0, 4) : popularFloors;
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
   const navigate = useNavigate();
 
@@ -72,9 +75,9 @@ export default function Search({ onRequireAuth }) {
           />
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 20 }}>
-          <span style={{ fontSize: 12, color: MUTED, marginRight: 2 }}>Popular:</span>
-          {popularFloors.map((f) => (
+        <div style={{ display: "flex", flexWrap: isMobile ? "nowrap" : "wrap", alignItems: "center", gap: 6, marginBottom: 20, overflow: isMobile ? "hidden" : "visible" }}>
+          <span style={{ fontSize: 12, color: MUTED, marginRight: 2, flexShrink: 0 }}>Popular:</span>
+          {visiblePopularFloors.map((f) => (
             <button
               key={f}
               onClick={() => goToResults(f)}
