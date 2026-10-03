@@ -267,11 +267,11 @@ export default function Results({ onRequireAuth }) {
                 <Link to="/fulfill" style={{ color: VIOLET }}>Fulfill requests</Link> tab for progress.
               </p>
             </div>
-          ) : profile?.is_subscribed ? (
+          ) : profile?.is_subscribed || isMobile ? (
             <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 13, color: CREAM }}>Want another player to build one for you instead?</span>
               <button
-                onClick={handleSubmitRequest}
+                onClick={profile?.is_subscribed ? handleSubmitRequest : () => navigate("/subscribe")}
                 disabled={requestSubmitting}
                 style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
               >
