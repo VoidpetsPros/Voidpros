@@ -169,9 +169,9 @@ export default function Results({ onRequireAuth }) {
           {builds.some((b) => b.items_visible === false && b.has_items) && (
             <button
               onClick={() => navigate("/subscribe")}
-              style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
             >
-              <Lock size={12} /> Unlock Item View
+              <Lock size={13} /> Unlock Item View
             </button>
           )}
 
@@ -212,12 +212,8 @@ export default function Results({ onRequireAuth }) {
         </div>
       ) : matching.length === 0 ? (
         <div style={{ background: boss ? `${bossColor}22` : "rgba(124,58,237,0.08)", border: `2px solid ${boss ? `${bossColor}70` : "rgba(124,58,237,0.3)"}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 8px" }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 16px" }}>
             No build matches what you have
-          </p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 16px", lineHeight: 1.6 }}>
-            Other builds exist for floor {stage}, but none of them only use pets and
-            items from your <Link to="/collection" style={{ color: VIOLET }}>collection</Link>.
           </p>
           <button
             onClick={() => setShowAlternatives((v) => !v)}
