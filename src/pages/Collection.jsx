@@ -47,7 +47,6 @@ export default function Collection({ onRequireAuth }) {
     setItemCount(itemId, ownedItems[itemId] > 0 ? 0 : 1);
   };
 
-  const ownedCountFor = (id, isPetsTab) => (isPetsTab ? ownedPets.includes(id) : (ownedItems[id] || 0) > 0);
 
   const TABS = [
     { id: "pets", label: "Pets", list: pets },
@@ -57,7 +56,6 @@ export default function Collection({ onRequireAuth }) {
   ];
 
   const currentOptions = tab === "pets" ? pets : itemsByType[tab];
-  const ownedCount = currentOptions.filter((o) => ownedCountFor(o.id, tab === "pets")).length;
 
 
   // Only show a "select all X" button for rarities that actually exist in
@@ -95,40 +93,29 @@ export default function Collection({ onRequireAuth }) {
         <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Collection</p>
       </div>
 
-      <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 18, flexWrap: "wrap" }}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            style={{
-              border: "none",
-              background: tab === t.id ? PANEL : "transparent",
-              color: tab === t.id ? CREAM : MUTED,
-              fontSize: 12.5,
-              fontWeight: tab === t.id ? 600 : 500,
-              padding: "8px 13px",
-              borderRadius: 8,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
-          <p style={{ fontSize: 12.5, color: MUTED, margin: 0 }}>
-            <span style={{ color: CREAM, fontWeight: 600 }}>{ownedCount}</span> of {currentOptions.length} owned
-          </p>
-          <div style={{ height: 5, width: 100, borderRadius: 999, background: PANEL_2, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${currentOptions.length ? (ownedCount / currentOptions.length) * 100 : 0}%`, background: GOLD, borderRadius: 999 }} />
-          </div>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, overflow: "hidden" }}>
+        <div style={{ display: "flex", gap: 4, background: PANEL_2, padding: 4, flexWrap: "wrap" }}>
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              style={{
+                border: "none",
+                background: tab === t.id ? PANEL : "transparent",
+                color: tab === t.id ? CREAM : MUTED,
+                fontSize: 12.5,
+                fontWeight: tab === t.id ? 600 : 500,
+                padding: "8px 13px",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
+        <div style={{ padding: 18 }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
           {rarityOptions.map((rarity) => {
             const fullyOwned = isRarityFullyOwned(rarity);
@@ -174,6 +161,7 @@ export default function Collection({ onRequireAuth }) {
                   compact={isMobile}
                 />
               ))}
+        </div>
         </div>
       </div>
     </div>
