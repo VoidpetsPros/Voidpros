@@ -273,9 +273,9 @@ export default function Results({ onRequireAuth }) {
               <button
                 onClick={profile?.is_subscribed ? handleSubmitRequest : () => navigate("/subscribe")}
                 disabled={requestSubmitting}
-                style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 7, padding: "7px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
               >
-                {requestSubmitting ? "Posting…" : "Submit a request"}
+                <Plus size={13} /> {requestSubmitting ? "Posting…" : "Submit a request"}
               </button>
             </div>
           ) : (
@@ -298,7 +298,7 @@ export default function Results({ onRequireAuth }) {
           <span style={{ fontSize: 13, color: CREAM }}>Beat this floor with something else?</span>
           <Link
             to="/submit"
-            style={{ background: GOLD, border: "none", color: "#FFFFFF", fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 7, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
+            style={{ background: GOLD, border: "none", color: "#FFFFFF", fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 7, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus size={13} /> Submit your build
           </Link>
