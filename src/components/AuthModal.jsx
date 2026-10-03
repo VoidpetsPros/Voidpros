@@ -194,7 +194,7 @@ export default function AuthModal({ onClose, headline, subhead }) {
         ) : (
         <>
         <p style={{ fontFamily: "Georgia, serif", fontSize: 21, color: CREAM, margin: "12px 0 4px" }}>
-          {headline || (mode === "signup" ? "Save your team, get 3 free lookups" : "Welcome back")}
+          {headline || (mode === "signup" ? "Save your team, search any floor for free" : "Welcome back")}
         </p>
         <p style={{ fontSize: 13, color: MUTED, margin: "0 0 20px", lineHeight: 1.55 }}>
           {subhead ||
