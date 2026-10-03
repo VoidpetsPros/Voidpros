@@ -523,7 +523,78 @@ function QuickSubmitBuild({ pets, itemsByType }) {
 }
 
 // Search a floor, delete any of its builds or their comments outright.
-function ManageBuilds() {
+// Inline correction form for a build that was submitted wrong — wrong
+// floor, wrong pet, missing level, etc. Edits in place rather than
+// delete-and-resubmit, so the build keeps its votes, comments, and
+// leaderboard credit.
+function EditBuildForm({ buildId, editData, setEditData, pets, itemsByType, error, onSave, onCancel }) {
+  const [saving, setSaving] = useState(false);
+
+  const updateSlot = (i, newSlot) =>
+    setEditData((prev) => ({ ...prev, team: prev.team.map((s, idx) => (idx === i ? newSlot : s)) }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave();
+    setSaving(false);
+  };
+
+  return (
+    <div>
+      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 8px" }}>Floor number</p>
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={editData.stage}
+        onChange={(e) => setEditData((prev) => ({ ...prev, stage: e.target.value }))}
+        style={{ width: 160, boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "10px 12px", color: CREAM, fontSize: 14, outline: "none", marginBottom: 16 }}
+      />
+
+      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Team</p>
+      {editData.team.map((slot, i) => (
+        <PetSlotEditor
+          key={i}
+          index={i}
+          slot={slot}
+          onChange={(s) => updateSlot(i, s)}
+          petOptions={pets}
+          hatOptions={itemsByType.hat}
+          scarfOptions={itemsByType.scarf}
+          accessoryOptions={itemsByType.accessory}
+        />
+      ))}
+
+      <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "16px 0 6px" }}>Note (optional)</p>
+      <textarea
+        value={editData.note}
+        onChange={(e) => setEditData((prev) => ({ ...prev, note: e.target.value }))}
+        rows={2}
+        style={{ width: "100%", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "10px 12px", color: CREAM, fontSize: 13, outline: "none", marginBottom: 14, resize: "vertical", fontFamily: "inherit" }}
+      />
+
+      {error && <p style={{ fontSize: 12.5, color: DANGER, margin: "0 0 12px" }}>{error}</p>}
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: saving ? "default" : "pointer" }}
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </button>
+        <button
+          onClick={onCancel}
+          style={{ background: "none", border: `1px solid ${LINE}`, color: CREAM, borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ManageBuilds({ pets, itemsByType }) {
   const [stageQuery, setStageQuery] = useState("");
   const [builds, setBuilds] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -532,6 +603,94 @@ function ManageBuilds() {
   const [comments, setComments] = useState({});
   const [expandedTeamId, setExpandedTeamId] = useState(null);
   const [teams, setTeams] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState(null); // { stage, note, team } | null
+  const [editLoadError, setEditLoadError] = useState("");
+
+  // Separate from loadTeam's display-only query — this needs the raw pet/
+  // item ids (not just joined display objects) so PetSlotEditor can be
+  // pre-filled and edited.
+  const startEdit = async (build) => {
+    if (editingId === build.id) {
+      setEditingId(null);
+      setEditData(null);
+      return;
+    }
+    setEditingId(build.id);
+    setEditData(null);
+    setEditLoadError("");
+    const { data, error: fetchError } = await supabase
+      .from("build_team_slots")
+      .select(
+        "slot_index, pet_id, pet_level, hat_id, hat_level, scarf_id, scarf_level, accessory1_id, accessory1_level, accessory2_id, accessory2_level"
+      )
+      .eq("build_id", build.id)
+      .order("slot_index");
+    if (fetchError) {
+      setEditLoadError(fetchError.message);
+      return;
+    }
+    const team = [emptySlot(), emptySlot(), emptySlot(), emptySlot()];
+    (data || []).forEach((row, i) => {
+      if (i > 3) return;
+      team[i] = {
+        petId: row.pet_id,
+        petLevel: row.pet_level != null ? String(row.pet_level) : "",
+        hat: { id: row.hat_id, level: row.hat_level != null ? String(row.hat_level) : "" },
+        scarf: { id: row.scarf_id, level: row.scarf_level != null ? String(row.scarf_level) : "" },
+        accessories: [
+          { id: row.accessory1_id, level: row.accessory1_level != null ? String(row.accessory1_level) : "" },
+          { id: row.accessory2_id, level: row.accessory2_level != null ? String(row.accessory2_level) : "" },
+        ],
+      };
+    });
+    setEditData({ stage: String(build.stage), note: build.note || "", team });
+  };
+
+  const handleSaveEdit = async (buildId) => {
+    const usedSlots = editData.team.filter((s) => s.petId);
+    if (usedSlots.length === 0) {
+      setEditLoadError("Enter at least one pet.");
+      return false;
+    }
+    const stageNum = parseInt(editData.stage, 10);
+    if (!stageNum || stageNum < 1) {
+      setEditLoadError("Enter a valid floor number.");
+      return false;
+    }
+    const teamPayload = usedSlots.map((s, i) => ({
+      slot_index: i,
+      pet_id: s.petId,
+      pet_level: s.petLevel,
+      hat_id: s.hat.id || "",
+      hat_level: s.hat.level || "",
+      scarf_id: s.scarf.id || "",
+      scarf_level: s.scarf.level || "",
+      accessory1_id: s.accessories[0].id || "",
+      accessory1_level: s.accessories[0].level || "",
+      accessory2_id: s.accessories[1].id || "",
+      accessory2_level: s.accessories[1].level || "",
+    }));
+    const { error: rpcError } = await supabase.rpc("admin_edit_build", {
+      p_build_id: buildId,
+      p_stage: stageNum,
+      p_team: teamPayload,
+      p_note: editData.note,
+    });
+    if (rpcError) {
+      setEditLoadError(rpcError.message);
+      return false;
+    }
+    setBuilds((prev) => prev.map((b) => (b.id === buildId ? { ...b, stage: stageNum, note: editData.note } : b)));
+    setTeams((prev) => {
+      const next = { ...prev };
+      delete next[buildId]; // stale — reload next time "Show team" is opened
+      return next;
+    });
+    setEditingId(null);
+    setEditData(null);
+    return true;
+  };
 
   const handleSearch = async () => {
     const stageNum = parseInt(stageQuery, 10);
@@ -667,6 +826,12 @@ function ManageBuilds() {
                   >
                     {expandedId === b.id ? "Hide comments" : "View comments"}
                   </button>
+                  <button
+                    onClick={() => startEdit(b)}
+                    style={{ background: "none", border: "none", color: GOLD, fontSize: 12, cursor: "pointer", padding: 0, textDecoration: "underline" }}
+                  >
+                    {editingId === b.id ? "Cancel edit" : "Edit"}
+                  </button>
                 </div>
               </div>
               <button
@@ -677,6 +842,32 @@ function ManageBuilds() {
                 <Trash2 size={14} />
               </button>
             </div>
+
+            {editingId === b.id && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LINE}` }}>
+                {!editData ? (
+                  editLoadError ? (
+                    <p style={{ fontSize: 12.5, color: DANGER }}>{editLoadError}</p>
+                  ) : (
+                    <p style={{ fontSize: 12.5, color: MUTED }}>Loading…</p>
+                  )
+                ) : (
+                  <EditBuildForm
+                    buildId={b.id}
+                    editData={editData}
+                    setEditData={setEditData}
+                    pets={pets}
+                    itemsByType={itemsByType}
+                    error={editLoadError}
+                    onSave={() => handleSaveEdit(b.id)}
+                    onCancel={() => {
+                      setEditingId(null);
+                      setEditData(null);
+                    }}
+                  />
+                )}
+              </div>
+            )}
 
             {expandedTeamId === b.id && (
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LINE}` }}>
@@ -1776,7 +1967,7 @@ export default function Admin() {
       </div>
 
       {tab === "quick" && <QuickSubmitBuild pets={pets} itemsByType={itemsByType} />}
-      {tab === "manage" && <ManageBuilds />}
+      {tab === "manage" && <ManageBuilds pets={pets} itemsByType={itemsByType} />}
       {tab === "images" && <CatalogImages pets={pets} items={items} />}
       {tab === "cosmetics" && <AchievementCosmetics />}
       {tab === "affiliates" && <AffiliatePayouts />}
