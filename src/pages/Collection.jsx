@@ -116,9 +116,16 @@ export default function Collection({ onRequireAuth }) {
         </div>
 
         <div style={{ padding: 18 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-          {rarityOptions.map((rarity) => {
+        <div
+          style={
+            isMobile
+              ? { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }
+              : { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }
+          }
+        >
+          {rarityOptions.map((rarity, i) => {
             const fullyOwned = isRarityFullyOwned(rarity);
+            const isTrailingOdd = isMobile && rarityOptions.length % 2 === 1 && i === rarityOptions.length - 1;
             return (
               <button
                 key={rarity}
@@ -126,6 +133,7 @@ export default function Collection({ onRequireAuth }) {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: 6,
                   fontSize: 12,
                   fontWeight: fullyOwned ? 700 : 500,
@@ -137,6 +145,7 @@ export default function Collection({ onRequireAuth }) {
                   boxShadow: fullyOwned ? `0 3px 10px -3px ${RARITY_COLORS[rarity]}99` : "none",
                   cursor: "pointer",
                   transition: "background 0.15s ease, box-shadow 0.15s ease",
+                  gridColumn: isTrailingOdd ? "1 / -1" : undefined,
                 }}
               >
                 {fullyOwned ? <Check size={12} strokeWidth={3} /> : null}
@@ -193,7 +202,7 @@ function PetTile({ pet, owned, onToggle, compact = false }) {
         </div>
       )}
       <PetAvatar pet={pet} size={compact ? 34 : 48} />
-      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400, lineHeight: 1.25 }}>{pet.name}</span>
+      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: 600, lineHeight: 1.25 }}>{pet.name}</span>
     </button>
   );
 }
@@ -223,7 +232,7 @@ function ItemTile({ item, owned, onToggle, compact = false }) {
         </div>
       )}
       <ItemAvatar item={item} size={compact ? 32 : 44} />
-      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: owned ? 600 : 400, lineHeight: 1.25 }}>{item.name}</span>
+      <span style={{ fontSize: compact ? 10 : 11.5, color: CREAM, textAlign: "center", fontWeight: 600, lineHeight: 1.25 }}>{item.name}</span>
     </button>
   );
 }
