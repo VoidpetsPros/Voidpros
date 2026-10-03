@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Plus, Lock, Sparkles } from "lucide-react";
 import { getBossForFloor, ELEMENT_COLORS } from "../lib/bossFloors";
 import BackButton from "../components/BackButton";
+import useIsMobile from "../hooks/useIsMobile";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
@@ -19,6 +20,7 @@ export default function Results({ onRequireAuth }) {
   const boss = getBossForFloor(stage);
   const bossColor = boss ? ELEMENT_COLORS[boss.element] : null;
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { isAuthed, user, profile } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
@@ -162,39 +164,36 @@ export default function Results({ onRequireAuth }) {
         )}
       </div>
 
-      {builds.some((b) => b.items_visible === false && b.has_items) && (
-        <div style={{ marginBottom: 14 }}>
-          <button
-            onClick={() => navigate("/subscribe")}
-            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-          >
-            <Lock size={12} /> Unlock Item View
-          </button>
+      {(builds.some((b) => b.items_visible === false && b.has_items) || boss) && (
+        <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flexWrap: "wrap", alignItems: isMobile ? "center" : "stretch", gap: isMobile ? 10 : 14, marginBottom: 14 }}>
+          {builds.some((b) => b.items_visible === false && b.has_items) && (
+            <button
+              onClick={() => navigate("/subscribe")}
+              style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              <Lock size={12} /> Unlock Item View
+            </button>
+          )}
+
+          {boss && (
+            <button
+              onClick={handleSuggest}
+              disabled={suggestLoading}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: suggestLoading ? "default" : "pointer" }}
+            >
+              <Sparkles size={13} />
+              {suggestLoading ? "Analyzing clears…" : "Suggest Build"}
+            </button>
+          )}
         </div>
       )}
 
-      {boss && (
+      {boss && suggestError && <p style={{ fontSize: 12, color: DANGER, margin: "0 0 14px" }}>{suggestError}</p>}
+      {boss && suggestion && (
         <div style={{ marginBottom: 14 }}>
-          <button
-            onClick={handleSuggest}
-            disabled={suggestLoading}
-            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: suggestLoading ? "default" : "pointer" }}
-          >
-            <Sparkles size={13} />
-            {suggestLoading ? "Analyzing clears…" : "Suggest Build"}
-          </button>
-          {suggestError && <p style={{ fontSize: 12, color: DANGER, marginTop: 8 }}>{suggestError}</p>}
-          {suggestion && <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />}
+          <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />
         </div>
       )}
-
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
-        {matching.length > 0
-          ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
-          : builds.length > 0
-          ? "No build matches your exact team"
-          : "No builds yet"}
-      </p>
 
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
