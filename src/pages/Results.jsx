@@ -151,37 +151,30 @@ export default function Results({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <BackButton />
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 4 }}>
+        <BackButton style={{ marginBottom: 0 }} />
+        {boss ? (
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: bossColor, margin: 0 }}>
+            {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)} {boss.name}
+          </p>
+        ) : (
+          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
+        )}
+      </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 4 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          {boss ? (
-            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: bossColor, margin: 0 }}>
-              {boss.element.charAt(0).toUpperCase() + boss.element.slice(1)} · {boss.name}
-            </p>
-          ) : (
-            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>Floor {stage}</p>
-          )}
-        </div>
-        {builds.some((b) => b.items_visible === false && b.has_items) && (
+      {builds.some((b) => b.items_visible === false && b.has_items) && (
+        <div style={{ marginBottom: 14 }}>
           <button
             onClick={() => navigate("/subscribe")}
-            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 7, padding: "6px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
           >
             <Lock size={12} /> Unlock Item View
           </button>
-        )}
-      </div>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 14px" }}>
-        {matching.length > 0
-          ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
-          : builds.length > 0
-          ? "No build matches your exact team"
-          : "No builds yet"}
-      </p>
+        </div>
+      )}
 
       {boss && (
-        <div style={{ marginBottom: 22 }}>
+        <div style={{ marginBottom: 14 }}>
           <button
             onClick={handleSuggest}
             disabled={suggestLoading}
@@ -194,6 +187,14 @@ export default function Results({ onRequireAuth }) {
           {suggestion && <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />}
         </div>
       )}
+
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
+        {matching.length > 0
+          ? `${matching.length} build${matching.length > 1 ? "s" : ""} that only use what you have`
+          : builds.length > 0
+          ? "No build matches your exact team"
+          : "No builds yet"}
+      </p>
 
       {builds.length === 0 ? (
         <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 12, padding: "32px 24px", textAlign: "center" }}>
