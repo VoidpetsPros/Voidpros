@@ -156,7 +156,7 @@ export default function Collection({ onRequireAuth }) {
         </div>
 
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(70px, 1fr))" : "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 }}>
           {tab === "pets"
             ? currentOptions.map((pet) => (
                 <PetTile key={pet.id} pet={pet} owned={ownedPets.includes(pet.id)} onToggle={() => handlePetToggle(pet.id)} compact={isMobile} />
