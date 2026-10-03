@@ -153,7 +153,7 @@ export default function Results({ onRequireAuth }) {
 
   return (
     <div style={{ padding: "24px 24px 60px", maxWidth: 640, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
         <BackButton style={{ marginBottom: 0 }} />
         {boss ? (
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: bossColor, margin: 0 }}>
@@ -211,7 +211,7 @@ export default function Results({ onRequireAuth }) {
           </Link>
         </div>
       ) : matching.length === 0 ? (
-        <div style={{ background: boss ? `${bossColor}22` : "rgba(124,58,237,0.08)", border: `2px solid ${boss ? `${bossColor}70` : "rgba(124,58,237,0.3)"}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: 20 }}>
+        <div style={{ background: boss ? `${bossColor}22` : "rgba(124,58,237,0.08)", border: `2px solid ${boss ? `${bossColor}70` : "rgba(124,58,237,0.3)"}`, borderRadius: 12, padding: "32px 24px", textAlign: "center", marginBottom: showAlternatives ? 20 : 260 }}>
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 18, color: CREAM, margin: "0 0 16px" }}>
             No build matches what you have
           </p>
