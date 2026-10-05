@@ -42,13 +42,24 @@ export default async function handler(req, res) {
         const userId = session.metadata?.supabase_user_id;
         const isTrial = session.metadata?.is_trial === "true";
         if (userId) {
-          await supabaseAdmin.rpc("admin_set_subscription_status", {
+          const { error: rpcError } = await supabaseAdmin.rpc("admin_set_subscription_status", {
             p_user_id: userId,
             p_customer_id: session.customer,
             p_subscription_id: session.subscription,
             p_is_subscribed: true,
             p_grant_trial: isTrial,
           });
+          // The Supabase client doesn't throw on a failed RPC — it returns
+          // an error field that has to be checked explicitly. Without this,
+          // a failure here (bad params, a Postgres exception, anything)
+          // would silently leave is_subscribed unset while this handler
+          // still reports 200 to Stripe, so the real payment goes through
+          // but nobody ever finds out the database write never happened.
+          // Throwing surfaces it in logs and tells Stripe to retry.
+          if (rpcError) {
+            console.error("admin_set_subscription_status failed for checkout.session.completed:", rpcError, "userId:", userId);
+            throw rpcError;
+          }
         }
         break;
       }
@@ -69,7 +80,7 @@ export default async function handler(req, res) {
           const currentPeriodEnd = subscription.current_period_end
             ? new Date(subscription.current_period_end * 1000).toISOString()
             : null;
-          await supabaseAdmin.rpc("admin_set_subscription_status", {
+          const { error: rpcError } = await supabaseAdmin.rpc("admin_set_subscription_status", {
             p_user_id: profile.id,
             p_customer_id: subscription.customer,
             p_subscription_id: subscription.id,
@@ -77,6 +88,10 @@ export default async function handler(req, res) {
             p_cancel_at_period_end: subscription.cancel_at_period_end || false,
             p_current_period_end: currentPeriodEnd,
           });
+          if (rpcError) {
+            console.error("admin_set_subscription_status failed for subscription update:", rpcError, "customer:", subscription.customer);
+            throw rpcError;
+          }
         }
         break;
       }
@@ -89,11 +104,18 @@ export default async function handler(req, res) {
       case "invoice.paid": {
         const invoice = event.data.object;
         if (invoice.customer) {
-          await supabaseAdmin.rpc("credit_affiliate_commission", {
+          const { error: rpcError } = await supabaseAdmin.rpc("credit_affiliate_commission", {
             p_customer_id: invoice.customer,
             p_invoice_id: invoice.id,
             p_amount_cents: invoice.amount_paid,
           });
+          // Logged, not thrown — a missed commission credit shouldn't make
+          // Stripe retry the whole event (which also re-runs subscription
+          // status logic elsewhere); it just needs to be visible so it can
+          // be credited manually if it happens.
+          if (rpcError) {
+            console.error("credit_affiliate_commission failed:", rpcError, "customer:", invoice.customer, "invoice:", invoice.id);
+          }
         }
         break;
       }
