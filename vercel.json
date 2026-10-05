@@ -3,6 +3,6 @@
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/cron-expire-comp-grants", "schedule": "0 0 * * *" }
+    { "path": "/api/cron-daily-cleanup", "schedule": "0 0 * * *" }
   ]
 }
