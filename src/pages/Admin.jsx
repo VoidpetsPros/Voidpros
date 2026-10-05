@@ -1888,7 +1888,7 @@ const FEEDBACK_FOLDERS = [
   { id: "criticism", label: "Criticism" },
 ];
 
-function AdminFeedback() {
+function AdminFeedback({ onTriaged }) {
   const { feedback, loading, error } = useAdminFeedback();
   const [items, setItems] = useState([]);
   const [folder, setFolder] = useState(null);
@@ -1907,6 +1907,7 @@ function AdminFeedback() {
       return;
     }
     setItems((prev) => prev.map((f) => (f.id === id ? { ...f, category } : f)));
+    onTriaged?.();
   };
 
   const handleSolved = async (id) => {
@@ -1918,6 +1919,7 @@ function AdminFeedback() {
       return;
     }
     setItems((prev) => prev.filter((f) => f.id !== id));
+    onTriaged?.();
   };
 
   if (loading) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
@@ -2017,7 +2019,7 @@ function AdminFeedback() {
 export default function Admin() {
   const verifiedCount = useVerifiedBuildCount();
   const { mode } = useTheme();
-  const { profile, loading: authLoading } = useAuth();
+  const { profile, hasNewFeedback, refreshProfile, loading: authLoading } = useAuth();
   const { pets, items, itemsByType, loading: catalogLoading } = useCatalog();
   const { builds, loading: buildsLoading, error: buildsError, refresh } = useAdminBuilds();
   const { fulfillments, loading: fulfillmentsLoading, error: fulfillmentsError, refresh: refreshFulfillments } = useAdminFulfillments();
@@ -2064,6 +2066,7 @@ export default function Admin() {
             key={t.id}
             onClick={() => setTab(t.id)}
             style={{
+              position: "relative",
               border: "none",
               background: tab === t.id ? PANEL : "transparent",
               color: tab === t.id ? CREAM : MUTED,
@@ -2075,6 +2078,19 @@ export default function Admin() {
             }}
           >
             {t.label}
+            {t.id === "feedback" && hasNewFeedback && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: "#dc2626",
+                }}
+              />
+            )}
           </button>
         ))}
       </div>
@@ -2085,7 +2101,7 @@ export default function Admin() {
       {tab === "cosmetics" && <AchievementCosmetics />}
       {tab === "affiliates" && <AffiliatePayouts />}
       {tab === "beta" && <BetaAccess />}
-      {tab === "feedback" && <AdminFeedback />}
+      {tab === "feedback" && <AdminFeedback onTriaged={refreshProfile} />}
 
       {tab === "queue" && (
         <>

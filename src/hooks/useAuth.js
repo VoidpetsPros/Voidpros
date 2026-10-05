@@ -11,12 +11,14 @@ export function useAuthState() {
   const [loading, setLoading] = useState(true);
   const [hasNewActivity, setHasNewActivity] = useState(false);
   const [hasNewChallenges, setHasNewChallenges] = useState(false);
+  const [hasNewFeedback, setHasNewFeedback] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
       setProfile(null);
       setHasNewActivity(false);
       setHasNewChallenges(false);
+      setHasNewFeedback(false);
       return;
     }
     const { data, error } = await supabase
@@ -31,6 +33,8 @@ export function useAuthState() {
     setProfile(data);
     checkActivity(userId);
     checkChallenges(userId);
+    if (data.is_admin) checkFeedback();
+    else setHasNewFeedback(false);
 
     // If a referral link was visited earlier this session (or before an
     // email-confirmation redirect), attach it now that there's a real
@@ -63,6 +67,17 @@ export function useAuthState() {
       return;
     }
     setHasNewChallenges(!!data);
+  }, []);
+
+  // Admin-only — stays lit until every piece of feedback is sorted into a
+  // folder or marked Solved.
+  const checkFeedback = useCallback(async () => {
+    const { data, error } = await supabase.rpc("has_uncategorized_feedback");
+    if (error) {
+      console.error("has_uncategorized_feedback check failed:", error.message);
+      return;
+    }
+    setHasNewFeedback(!!data);
   }, []);
 
   useEffect(() => {
@@ -149,6 +164,7 @@ export function useAuthState() {
     isAuthed: !!session,
     hasNewActivity,
     hasNewChallenges,
+    hasNewFeedback,
     signUp,
     signIn,
     resendConfirmation,

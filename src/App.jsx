@@ -35,7 +35,7 @@ const SUBMISSION_OPTIONS = [
 ];
 
 export default function App() {
-  const { isAuthed, profile, hasNewActivity, hasNewChallenges, loading } = useAuth();
+  const { isAuthed, profile, hasNewActivity, hasNewChallenges, hasNewFeedback, loading } = useAuth();
   const { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } = useTheme();
   // Plain, calm background — no glow orbs, no grid overlay. A dark theme
   // should read as a clean tool, not a Web3 landing page.
@@ -422,7 +422,7 @@ export default function App() {
                 ) : (
                   <User size={16} color="#FFFFFF" />
                 )}
-                {hasNewActivity && (
+                {(hasNewActivity || hasNewFeedback) && (
                   <span
                     style={{
                       position: "absolute",

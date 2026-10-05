@@ -68,7 +68,7 @@ function ThemePopup({ onClose }) {
 }
 
 export default function ProfileSidebar({ onClose }) {
-  const { profile, signOut, hasNewActivity, markActivitySeen } = useAuth();
+  const { profile, signOut, hasNewActivity, hasNewFeedback, markActivitySeen } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -283,10 +283,24 @@ export default function ProfileSidebar({ onClose }) {
             {profile?.is_admin && (
               <button
                 onClick={goToAdmin}
-                style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${DANGER}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: DANGER, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box" }}
+                style={{ position: "relative", display: "flex", alignItems: "center", gap: 10, background: "none", border: `1px solid ${DANGER}`, borderRadius: 10, padding: "12px 14px", fontSize: 13.5, color: DANGER, cursor: "pointer", textAlign: "left", width: "100%", boxSizing: "border-box" }}
               >
                 <ShieldCheck size={16} color={DANGER} />
                 Admin tools
+                {hasNewFeedback && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 10,
+                      width: 9,
+                      height: 9,
+                      borderRadius: "50%",
+                      background: "#dc2626",
+                      border: `2px solid ${PANEL_2}`,
+                    }}
+                  />
+                )}
               </button>
             )}
           </div>
