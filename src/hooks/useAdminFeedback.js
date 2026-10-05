@@ -11,7 +11,7 @@ export function useAdminFeedback() {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from("feedback")
-      .select("id, message, created_at, user:profiles!user_id(username)")
+      .select("id, message, category, created_at, user:profiles!user_id(username)")
       .order("created_at", { ascending: false });
 
     if (fetchError) {

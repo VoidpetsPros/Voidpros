@@ -1881,24 +1881,135 @@ function CatalogImages({ pets, items }) {
   );
 }
 
+const FEEDBACK_FOLDERS = [
+  { id: null, label: "Uncategorized" },
+  { id: "bug", label: "Bugs" },
+  { id: "idea", label: "Feedback/Ideas" },
+  { id: "criticism", label: "Criticism" },
+];
+
 function AdminFeedback() {
   const { feedback, loading, error } = useAdminFeedback();
+  const [items, setItems] = useState([]);
+  const [folder, setFolder] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+
+  useEffect(() => {
+    setItems(feedback);
+  }, [feedback]);
+
+  const handleCategorize = async (id, category) => {
+    setBusyId(id);
+    const { error: rpcError } = await supabase.rpc("admin_categorize_feedback", { p_feedback_id: id, p_category: category });
+    setBusyId(null);
+    if (rpcError) {
+      alert(rpcError.message);
+      return;
+    }
+    setItems((prev) => prev.map((f) => (f.id === id ? { ...f, category } : f)));
+  };
+
+  const handleSolved = async (id) => {
+    setBusyId(id);
+    const { error: rpcError } = await supabase.rpc("admin_delete_feedback", { p_feedback_id: id });
+    setBusyId(null);
+    if (rpcError) {
+      alert(rpcError.message);
+      return;
+    }
+    setItems((prev) => prev.filter((f) => f.id !== id));
+  };
 
   if (loading) return <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>;
   if (error) return <p style={{ color: DANGER, fontSize: 13.5 }}>{error}</p>;
-  if (feedback.length === 0) return <p style={{ color: MUTED, fontSize: 13.5 }}>No feedback yet.</p>;
+
+  const visible = items.filter((f) => f.category === folder);
+
+  const actionButtonStyle = {
+    border: `1px solid ${LINE}`,
+    background: "none",
+    color: MUTED,
+    borderRadius: 6,
+    width: 26,
+    height: 26,
+    fontSize: 11.5,
+    fontWeight: 700,
+    cursor: "pointer",
+    flexShrink: 0,
+  };
 
   return (
-    <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px" }}>
-      {feedback.map((f, i) => (
-        <div key={f.id} style={{ padding: "14px 0", borderBottom: i < feedback.length - 1 ? `1px solid ${LINE}` : "none" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6, gap: 10 }}>
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>{f.user?.username || "a player"}</span>
-            <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{new Date(f.created_at).toLocaleString()}</span>
-          </div>
-          <p style={{ fontSize: 13, color: CREAM, margin: 0, lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{f.message}</p>
+    <div>
+      <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 18, flexWrap: "wrap", width: "fit-content" }}>
+        {FEEDBACK_FOLDERS.map((f) => (
+          <button
+            key={f.label}
+            onClick={() => setFolder(f.id)}
+            style={{
+              border: "none",
+              background: folder === f.id ? PANEL : "transparent",
+              color: folder === f.id ? CREAM : MUTED,
+              fontSize: 12.5,
+              fontWeight: folder === f.id ? 600 : 500,
+              padding: "8px 13px",
+              borderRadius: 8,
+              cursor: "pointer",
+            }}
+          >
+            {f.label} <span style={{ color: MUTED, fontWeight: 500 }}>({items.filter((x) => x.category === f.id).length})</span>
+          </button>
+        ))}
+      </div>
+
+      {visible.length === 0 ? (
+        <p style={{ color: MUTED, fontSize: 13.5 }}>Nothing in this folder.</p>
+      ) : (
+        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "0 16px" }}>
+          {visible.map((f, i) => (
+            <div key={f.id} style={{ padding: "14px 0", borderBottom: i < visible.length - 1 ? `1px solid ${LINE}` : "none" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6, gap: 10 }}>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: CREAM }}>{f.user?.username || "a player"}</span>
+                <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{new Date(f.created_at).toLocaleString()}</span>
+              </div>
+              <p style={{ fontSize: 13, color: CREAM, margin: "0 0 10px", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{f.message}</p>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <button
+                  onClick={() => handleCategorize(f.id, "bug")}
+                  disabled={busyId === f.id}
+                  title="Sort into Bugs"
+                  style={{ ...actionButtonStyle, color: f.category === "bug" ? "#FFFFFF" : MUTED, background: f.category === "bug" ? DANGER : "none", border: f.category === "bug" ? "none" : `1px solid ${LINE}` }}
+                >
+                  B
+                </button>
+                <button
+                  onClick={() => handleCategorize(f.id, "idea")}
+                  disabled={busyId === f.id}
+                  title="Sort into Feedback/Ideas"
+                  style={{ ...actionButtonStyle, color: f.category === "idea" ? "#FFFFFF" : MUTED, background: f.category === "idea" ? GOLD : "none", border: f.category === "idea" ? "none" : `1px solid ${LINE}` }}
+                >
+                  F
+                </button>
+                <button
+                  onClick={() => handleCategorize(f.id, "criticism")}
+                  disabled={busyId === f.id}
+                  title="Sort into Criticism"
+                  style={{ ...actionButtonStyle, color: f.category === "criticism" ? "#FFFFFF" : MUTED, background: f.category === "criticism" ? MUTED : "none", border: f.category === "criticism" ? "none" : `1px solid ${LINE}` }}
+                >
+                  C
+                </button>
+                <button
+                  onClick={() => handleSolved(f.id)}
+                  disabled={busyId === f.id}
+                  title="Mark solved (deletes this)"
+                  style={{ border: "none", background: "none", color: GOLD, fontSize: 11.5, fontWeight: 600, cursor: "pointer", padding: "0 0 0 6px", textDecoration: "underline" }}
+                >
+                  {busyId === f.id ? "…" : "Solved"}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
