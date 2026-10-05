@@ -13,6 +13,7 @@ import PetSlotEditor, { emptySlot } from "../components/PetSlotEditor";
 import PetAvatar from "../components/PetAvatar";
 import ItemAvatar from "../components/ItemAvatar";
 import { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } from "../lib/theme";
+import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 import useVerifiedBuildCount from "../hooks/useVerifiedBuildCount";
 
@@ -1904,6 +1905,7 @@ function AdminFeedback() {
 
 export default function Admin() {
   const verifiedCount = useVerifiedBuildCount();
+  const { mode } = useTheme();
   const { profile, loading: authLoading } = useAuth();
   const { pets, items, itemsByType, loading: catalogLoading } = useCatalog();
   const { builds, loading: buildsLoading, error: buildsError, refresh } = useAdminBuilds();
@@ -1941,7 +1943,7 @@ export default function Admin() {
     <div style={{ padding: "24px 24px 60px", maxWidth: 700, margin: "0 auto" }}>
       <BackButton />
       {verifiedCount !== null && (
-        <p style={{ fontWeight: 800, fontSize: 13.5, color: CREAM, margin: "0 0 16px" }}>
+        <p style={{ fontWeight: 800, fontSize: 13.5, color: mode === "dark" ? "#FFFFFF" : CREAM, margin: "0 0 16px" }}>
           Community Has Submitted {verifiedCount.toLocaleString()} Builds
         </p>
       )}
