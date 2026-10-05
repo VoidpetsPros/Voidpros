@@ -31,6 +31,24 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No subscription found for this account" });
     }
 
+    const subscription = await stripe.subscriptions.retrieve(profile.stripe_subscription_id);
+
+    // A fully-canceled subscription can't be un-canceled — Stripe only
+    // allows updating cancellation_details/metadata on it. Also sync our
+    // own record down to match, same as cancel-subscription.js does for
+    // this same stale-id scenario.
+    if (subscription.status === "canceled" || subscription.status === "incomplete_expired") {
+      await supabaseAdmin.rpc("admin_set_subscription_status", {
+        p_user_id: userData.user.id,
+        p_customer_id: subscription.customer,
+        p_subscription_id: subscription.id,
+        p_is_subscribed: false,
+        p_cancel_at_period_end: false,
+        p_current_period_end: null,
+      });
+      return res.status(400).json({ error: "This subscription has already ended — you'll need to subscribe again to get Unlimited back." });
+    }
+
     const updated = await stripe.subscriptions.update(profile.stripe_subscription_id, {
       cancel_at_period_end: false,
     });

@@ -33,6 +33,25 @@ export default async function handler(req, res) {
 
     const subscription = await stripe.subscriptions.retrieve(profile.stripe_subscription_id);
 
+    // Stripe only allows updating cancellation_details/metadata on a
+    // subscription that's already fully canceled — any other field
+    // (including cancel_at_period_end) is rejected. This happens when our
+    // stored subscription id has gone stale (an old test, a duplicate
+    // from a past webhook bug, etc.) and no longer reflects an active
+    // subscription on Stripe's side. Rather than erroring, just sync our
+    // own record down to match reality — there's nothing left to cancel.
+    if (subscription.status === "canceled" || subscription.status === "incomplete_expired") {
+      await supabaseAdmin.rpc("admin_set_subscription_status", {
+        p_user_id: userData.user.id,
+        p_customer_id: subscription.customer,
+        p_subscription_id: subscription.id,
+        p_is_subscribed: false,
+        p_cancel_at_period_end: false,
+        p_current_period_end: null,
+      });
+      return res.status(200).json({ is_subscribed: false, cancel_at_period_end: false, current_period_end: null });
+    }
+
     let updated;
     let isSubscribed;
     let cancelAtPeriodEnd;
