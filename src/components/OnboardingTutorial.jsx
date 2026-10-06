@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Sparkles, Users, Search, Trophy, Home } from "lucide-react";
+import { X, Sparkles, Users, Search, Trophy, Award, Home } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 
@@ -29,14 +29,21 @@ const STEPS = [
   {
     icon: Trophy,
     title: "Climb the Leaderboards",
-    body: "Every verified Completion and Challenge counts toward the Leaderboards — check them out anytime from the header. Top 3 in each category every month win a free month of Unlimited.",
+    body: "Every verified Completion and Challenge counts toward the Leaderboards — check them out anytime from the header.",
     cta: "Take Me To Leaderboards",
     to: "/leaderboards",
   },
   {
+    icon: Award,
+    title: "Achievements, cosmetics & credits",
+    body: "Completions, Challenges, and Searches all unlock Achievement tiers. Each one you hit earns a cosmetic to show off next to your name — and a credit you can spend later to unlock a paywalled feature for free, like item view on a search, posting a request, or a full Suggested Build.",
+    cta: "Go to Achievements",
+    to: "/achievements",
+  },
+  {
     icon: Home,
     title: "You're all set",
-    body: "That's the tour — Collection, Search, and the Leaderboards. Jump back in whenever you're ready.",
+    body: "That's the tour — Collection, Search, Leaderboards, and Achievements. Jump back in whenever you're ready.",
     cta: "Take Me Home",
     to: "/",
   },
