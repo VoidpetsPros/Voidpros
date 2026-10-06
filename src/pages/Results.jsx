@@ -223,7 +223,7 @@ export default function Results({ onRequireAuth }) {
       {boss && suggestion && (
         <div style={{ marginBottom: 14 }}>
           <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />
-          {!suggestion.items_included && suggestion.free_items_remaining === 0 && myCredits?.suggested_build_credits > 0 && (
+          {!suggestion.items_included && myCredits?.suggested_build_credits > 0 && (
             <button
               onClick={() => handleSuggest(true)}
               disabled={suggestLoading}

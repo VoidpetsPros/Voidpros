@@ -6,11 +6,12 @@ import { useTheme } from "../hooks/ThemeContext";
 
 export default function SuggestedBuildCard({ suggestion, pets, items }) {
   const { PANEL, PANEL_2, CREAM, MUTED, VIOLET } = useTheme();
-  // items_included reflects what actually happened this call — false
-  // either because the free monthly allowance ran out, or (rarely) simply
-  // because no owned items matched anything in the data. free_items_remaining
-  // is null for subscribers (no cap applies to them).
-  const itemsCappedOut = suggestion.free_items_remaining !== null && suggestion.free_items_remaining !== undefined && !suggestion.items_included;
+  // When items_included is false, no pet got items at all (not
+  // subscribed and no credit spent, or genuinely nothing matched) — the
+  // per-pet "no matching owned items" message would be redundant in that
+  // case, so it's suppressed and shown only when items were included
+  // overall but happened to miss for one specific pet.
+  const itemsNotAttempted = !suggestion.items_included;
 
   if (suggestion.sample_size === 0) {
     return (
@@ -73,7 +74,7 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
                   </span>
                 ) : null
               )}
-              {!itemsCappedOut && !hat && !scarf && accessories.every((a) => !a.item) && (
+              {!itemsNotAttempted && !hat && !scarf && accessories.every((a) => !a.item) && (
                 <span style={{ fontSize: 11.5, color: MUTED }}>No matching owned items found</span>
               )}
             </div>

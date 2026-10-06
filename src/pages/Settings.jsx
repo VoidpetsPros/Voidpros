@@ -230,17 +230,12 @@ export default function Settings({ onRequireAuth }) {
           {[
             { label: "Item Search Credits", value: myCredits?.item_search_credits },
             { label: "Request Credits", value: myCredits?.request_credits },
-            {
-              label: "Suggested Build Credits",
-              value: myCredits?.suggested_build_credits,
-              suffix: profile?.is_subscribed ? null : ` (+ ${myCredits?.free_suggestions_remaining ?? 5}/5 free this month)`,
-            },
+            { label: "Suggested Build Credits", value: myCredits?.suggested_build_credits },
           ].map((c) => (
             <div key={c.label} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
               <span style={{ color: MUTED }}>{c.label}</span>
               <span style={{ color: profile?.is_subscribed ? GOLD : CREAM, fontWeight: 600 }}>
                 {profile?.is_subscribed ? "Unlimited" : c.value ?? 0}
-                {c.suffix && <span style={{ color: MUTED, fontWeight: 500 }}>{c.suffix}</span>}
               </span>
             </div>
           ))}
