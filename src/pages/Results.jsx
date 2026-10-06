@@ -185,25 +185,13 @@ export default function Results({ onRequireAuth }) {
 
       {(builds.some((b) => b.items_visible === false && b.has_items) || boss) && (
         <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flexWrap: "wrap", alignItems: isMobile ? "center" : "stretch", gap: isMobile ? 10 : 14, marginBottom: 14 }}>
-          {builds.some((b) => b.items_visible === false && b.has_items) && (
-            <>
-              <button
-                onClick={() => navigate("/subscribe")}
-                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-              >
-                <Lock size={13} /> Unlock Item View
-              </button>
-              {myCredits?.item_search_credits > 0 && (
-                <button
-                  onClick={handleUseItemCredit}
-                  disabled={unlockingWithCredit}
-                  style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: unlockingWithCredit ? "default" : "pointer" }}
-                >
-                  <Sparkles size={13} />
-                  {unlockingWithCredit ? "Unlocking…" : `Use Item Search Credit (${myCredits.item_search_credits})`}
-                </button>
-              )}
-            </>
+          {builds.some((b) => b.items_visible === false && b.has_items) && !(myCredits?.item_search_credits > 0) && (
+            <button
+              onClick={() => navigate("/subscribe")}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+            >
+              <Lock size={13} /> Unlock Item View
+            </button>
           )}
 
           {boss && !suggestion && (
@@ -214,6 +202,17 @@ export default function Results({ onRequireAuth }) {
             >
               <Sparkles size={13} />
               {suggestLoading ? "Analyzing clears…" : "Suggest Build"}
+            </button>
+          )}
+
+          {builds.some((b) => b.items_visible === false && b.has_items) && myCredits?.item_search_credits > 0 && (
+            <button
+              onClick={handleUseItemCredit}
+              disabled={unlockingWithCredit}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: unlockingWithCredit ? "default" : "pointer" }}
+            >
+              <Sparkles size={13} />
+              {unlockingWithCredit ? "Unlocking…" : `Use Item Search Credit (${myCredits.item_search_credits})`}
             </button>
           )}
         </div>
