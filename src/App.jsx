@@ -443,7 +443,7 @@ export default function App() {
               onClick={() => setShowAuth(true)}
               style={{ background: "#FFFFFF", border: "none", color: GOLD_DIM, fontWeight: 600, fontSize: 12.5, padding: "9px 16px", borderRadius: 8, cursor: "pointer" }}
             >
-              Sign in / create account
+              Sign In
             </button>
           )}
         </div>
