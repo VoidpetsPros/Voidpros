@@ -36,7 +36,7 @@ const STEPS = [
   {
     icon: Award,
     title: "Achievements, cosmetics & credits",
-    body: "Completions, Challenges, and Searches all unlock Achievement tiers. Each one you hit earns a cosmetic to show off next to your name — and a credit you can spend later to unlock a paywalled feature for free, like item view on a search, posting a request, or a full Suggested Build.",
+    body: "Submitting builds and searching unlock achievements. Each one gets you a cosmetic and credits you can use to unlock features.",
     cta: "Go to Achievements",
     to: "/achievements",
   },
