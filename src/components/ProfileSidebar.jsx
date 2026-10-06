@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Check, Trophy, DollarSign, ClipboardList } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Monitor, Check, Trophy, DollarSign, ClipboardList } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import useIsMobile from "../hooks/useIsMobile";
 import CosmeticAvatar from "./CosmeticAvatar";
 
 function ThemePopup({ onClose }) {
-  const { mode, setMode, PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
+  const { themePreference, setMode, PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
 
   const options = [
     { id: "light", label: "Light", icon: Sun },
     { id: "dark", label: "Dark", icon: Moon },
+    { id: "system", label: "System", icon: Monitor },
   ];
 
   return (
@@ -32,7 +33,7 @@ function ThemePopup({ onClose }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {options.map((opt) => {
             const Icon = opt.icon;
-            const active = mode === opt.id;
+            const active = themePreference === opt.id;
             return (
               <button
                 key={opt.id}
