@@ -206,7 +206,7 @@ export default function Results({ onRequireAuth }) {
             </>
           )}
 
-          {boss && (
+          {boss && !suggestion && (
             <button
               onClick={() => handleSuggest(false)}
               disabled={suggestLoading}

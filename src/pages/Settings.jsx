@@ -239,6 +239,12 @@ export default function Settings({ onRequireAuth }) {
               </span>
             </div>
           ))}
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+            <span style={{ color: MUTED }}>Free Suggested Builds This Month</span>
+            <span style={{ color: profile?.is_subscribed ? GOLD : CREAM, fontWeight: 600 }}>
+              {profile?.is_subscribed ? "Unlimited" : `${myCredits?.free_suggestions_remaining ?? 5}/5`}
+            </span>
+          </div>
         </div>
       </Row>
 

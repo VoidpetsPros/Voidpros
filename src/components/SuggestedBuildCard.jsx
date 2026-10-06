@@ -5,7 +5,7 @@ import ItemAvatar from "./ItemAvatar";
 import { useTheme } from "../hooks/ThemeContext";
 
 export default function SuggestedBuildCard({ suggestion, pets, items }) {
-  const { PANEL, PANEL_2, CREAM, MUTED, VIOLET, GOLD } = useTheme();
+  const { PANEL, PANEL_2, CREAM, MUTED, VIOLET } = useTheme();
   // items_included reflects what actually happened this call — false
   // either because the free monthly allowance ran out, or (rarely) simply
   // because no owned items matched anything in the data. free_items_remaining
@@ -42,12 +42,6 @@ export default function SuggestedBuildCard({ suggestion, pets, items }) {
       <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 10px" }}>
         Built from {suggestion.sample_size} verified clear{suggestion.sample_size > 1 ? "s" : ""} of this boss.
       </p>
-
-      {suggestion.free_items_remaining !== null && suggestion.free_items_remaining !== undefined && (
-        <p style={{ fontSize: 11.5, color: itemsCappedOut ? GOLD : MUTED, margin: "0 0 14px" }}>
-          {suggestion.free_items_remaining}/5 Item Searches Left For Unpaid Users
-        </p>
-      )}
 
       {suggestion.pets.map((slot, i) => {
         const pet = pets.find((p) => p.id === slot.pet_id);
