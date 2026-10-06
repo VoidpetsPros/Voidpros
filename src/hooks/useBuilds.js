@@ -13,7 +13,7 @@ export function useBuilds(stage, userId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (useItemCredit = false) => {
     if (!stage) {
       setBuilds([]);
       setLoading(false);
@@ -24,6 +24,7 @@ export function useBuilds(stage, userId) {
 
     const { data, error: fetchError } = await supabase.rpc("get_search_results", {
       p_stage: Number(stage),
+      p_use_item_credit: useItemCredit,
     });
 
     if (fetchError) {

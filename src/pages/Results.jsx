@@ -25,7 +25,7 @@ export default function Results({ onRequireAuth }) {
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, VIOLET, DANGER } = useTheme();
   const { pets, items, loading: catalogLoading } = useCatalog();
   const { ownedPets, ownedItems, loading: collectionLoading } = useCollection(user?.id);
-  const { builds: rawBuilds, loading: buildsLoading, error: buildsError, applyVoteLocally } = useBuilds(stage, user?.id);
+  const { builds: rawBuilds, loading: buildsLoading, error: buildsError, applyVoteLocally, refresh: refreshBuilds } = useBuilds(stage, user?.id);
   // Builds without team data yet are awaiting admin review — not usable in
   // search until that's added, so they're excluded here entirely rather
   // than showing up as a phantom "match" or empty alternative.
@@ -35,21 +35,40 @@ export default function Results({ onRequireAuth }) {
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [suggestError, setSuggestError] = useState("");
 
-  const handleSuggest = async () => {
+  const handleSuggest = async (useCredit = false) => {
     setSuggestLoading(true);
     setSuggestError("");
     const stageNum = Number(stage);
-    const { data, error: rpcError } = await supabase.rpc("suggest_build_for_floor", { p_stage: stageNum });
+    const { data, error: rpcError } = await supabase.rpc("suggest_build_for_floor", { p_stage: stageNum, p_use_credit: useCredit });
     setSuggestLoading(false);
     if (rpcError) {
       setSuggestError(rpcError.message);
       return;
     }
     setSuggestion(data);
+    if (useCredit) {
+      setMyCredits((prev) => (prev ? { ...prev, suggested_build_credits: Math.max(0, prev.suggested_build_credits - 1) } : prev));
+    }
   };
   const [requestSent, setRequestSent] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);
   const [requestError, setRequestError] = useState("");
+  const [myCredits, setMyCredits] = useState(null);
+  const [unlockingWithCredit, setUnlockingWithCredit] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthed || profile?.is_subscribed) return;
+    supabase.rpc("get_my_credits").then(({ data, error }) => {
+      if (!error) setMyCredits(data);
+    });
+  }, [isAuthed, profile?.is_subscribed]);
+
+  const handleUseItemCredit = async () => {
+    setUnlockingWithCredit(true);
+    await refreshBuilds(true);
+    setUnlockingWithCredit(false);
+    setMyCredits((prev) => (prev ? { ...prev, item_search_credits: Math.max(0, prev.item_search_credits - 1) } : prev));
+  };
 
   useEffect(() => {
     if (!isAuthed) onRequireAuth();
@@ -167,17 +186,29 @@ export default function Results({ onRequireAuth }) {
       {(builds.some((b) => b.items_visible === false && b.has_items) || boss) && (
         <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", flexWrap: "wrap", alignItems: isMobile ? "center" : "stretch", gap: isMobile ? 10 : 14, marginBottom: 14 }}>
           {builds.some((b) => b.items_visible === false && b.has_items) && (
-            <button
-              onClick={() => navigate("/subscribe")}
-              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-            >
-              <Lock size={13} /> Unlock Item View
-            </button>
+            <>
+              <button
+                onClick={() => navigate("/subscribe")}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${GOLD}`, color: GOLD, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+              >
+                <Lock size={13} /> Unlock Item View
+              </button>
+              {myCredits?.item_search_credits > 0 && (
+                <button
+                  onClick={handleUseItemCredit}
+                  disabled={unlockingWithCredit}
+                  style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: unlockingWithCredit ? "default" : "pointer" }}
+                >
+                  <Sparkles size={13} />
+                  {unlockingWithCredit ? "Unlocking…" : `Use Item Search Credit (${myCredits.item_search_credits})`}
+                </button>
+              )}
+            </>
           )}
 
           {boss && (
             <button
-              onClick={handleSuggest}
+              onClick={() => handleSuggest(false)}
               disabled={suggestLoading}
               style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: suggestLoading ? "default" : "pointer" }}
             >
@@ -192,6 +223,16 @@ export default function Results({ onRequireAuth }) {
       {boss && suggestion && (
         <div style={{ marginBottom: 14 }}>
           <SuggestedBuildCard suggestion={suggestion} pets={pets} items={items} />
+          {!suggestion.items_included && suggestion.free_items_remaining === 0 && myCredits?.suggested_build_credits > 0 && (
+            <button
+              onClick={() => handleSuggest(true)}
+              disabled={suggestLoading}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${VIOLET}`, color: VIOLET, borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: suggestLoading ? "default" : "pointer", marginTop: 10 }}
+            >
+              <Sparkles size={13} />
+              {suggestLoading ? "Unlocking…" : `Use Suggested Build Credit (${myCredits.suggested_build_credits})`}
+            </button>
+          )}
         </div>
       )}
 
@@ -267,15 +308,29 @@ export default function Results({ onRequireAuth }) {
                 <Link to="/fulfill" style={{ color: VIOLET }}>Fulfill requests</Link> tab for progress.
               </p>
             </div>
-          ) : profile?.is_subscribed || isMobile ? (
+          ) : profile?.is_subscribed || myCredits?.request_credits > 0 || isMobile ? (
             <div style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: 10, padding: "12px 16px", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 13, color: CREAM }}>Want another player to build one for you instead?</span>
               <button
-                onClick={profile?.is_subscribed ? handleSubmitRequest : () => navigate("/subscribe")}
+                onClick={
+                  profile?.is_subscribed || myCredits?.request_credits > 0
+                    ? async () => {
+                        await handleSubmitRequest();
+                        if (!profile?.is_subscribed) {
+                          setMyCredits((prev) => (prev ? { ...prev, request_credits: Math.max(0, prev.request_credits - 1) } : prev));
+                        }
+                      }
+                    : () => navigate("/subscribe")
+                }
                 disabled={requestSubmitting}
                 style={{ display: "flex", alignItems: "center", gap: 6, background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 7, padding: "7px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
               >
-                <Plus size={13} /> {requestSubmitting ? "Posting…" : "Submit a request"}
+                <Plus size={13} />
+                {requestSubmitting
+                  ? "Posting…"
+                  : !profile?.is_subscribed && myCredits?.request_credits > 0
+                  ? `Submit a request (${myCredits.request_credits} credit)`
+                  : "Submit a request"}
               </button>
             </div>
           ) : (
