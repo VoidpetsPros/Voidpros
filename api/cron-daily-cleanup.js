@@ -35,5 +35,14 @@ export default async function handler(req, res) {
     results.delete_stale_challenges_error = err.message || "failed";
   }
 
+  try {
+    const { data, error } = await supabaseAdmin.rpc("grant_monthly_credits");
+    if (error) throw error;
+    results.granted_monthly_credits_to = data;
+  } catch (err) {
+    console.error("cron-daily-cleanup: grant_monthly_credits failed:", err);
+    results.grant_monthly_credits_error = err.message || "failed";
+  }
+
   return res.status(200).json(results);
 }
