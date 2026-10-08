@@ -22,8 +22,8 @@ async function getValidCustomerId(storedId) {
 // switching between monthly/yearly (or changing either price later)
 // never requires any manual setup in the Stripe Dashboard.
 const PLANS = {
-  monthly: { name: "Voidpros Unlimited — Monthly", amount_cents: 600, interval: "month" },
-  yearly: { name: "Voidpros Unlimited — Yearly", amount_cents: 4900, interval: "year" },
+  monthly: { name: "Voidpros Unlimited — Monthly", amount_cents: 600, interval: "month", trial_days: 7 },
+  yearly: { name: "Voidpros Unlimited — Yearly", amount_cents: 4900, interval: "year", trial_days: 14 },
 };
 
 export default async function handler(req, res) {
@@ -90,7 +90,7 @@ export default async function handler(req, res) {
           quantity: 1,
         },
       ],
-      subscription_data: { trial_period_days: 7 },
+      subscription_data: { trial_period_days: plan.trial_days },
       success_url: `${process.env.SITE_URL}/billing/success`,
       cancel_url: `${process.env.SITE_URL}/billing/cancelled`,
       metadata: { supabase_user_id: user.id, is_trial: "true" },

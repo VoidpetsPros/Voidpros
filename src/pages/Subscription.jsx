@@ -32,6 +32,7 @@ export default function Subscription({ onRequireAuth }) {
   const [billingPeriod, setBillingPeriod] = useState("yearly");
 
   const eligible = !profile?.trial_used;
+  const trialDays = billingPeriod === "yearly" ? 14 : 7;
 
   const handleUpgrade = async () => {
     if (!isAuthed) {
@@ -121,7 +122,7 @@ export default function Subscription({ onRequireAuth }) {
             </div>
           )}
           <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 28, color: CREAM, margin: "0 0 4px" }}>
-            {eligible ? "7 days free" : billingPeriod === "yearly" ? "$49.00" : "$6.00"}
+            {eligible ? `${trialDays} days free` : billingPeriod === "yearly" ? "$49.00" : "$6.00"}
             {!eligible && <span style={{ fontSize: 15, fontWeight: 500, color: MUTED }}> {billingPeriod === "yearly" ? "/yr" : "/mo"}</span>}
           </p>
           <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 20px" }}>
@@ -151,7 +152,7 @@ export default function Subscription({ onRequireAuth }) {
                 {loading ? "Redirecting…" : eligible ? "Start Free Trial" : "Subscribe"}
               </button>
               <p style={{ fontSize: 11, color: MUTED, margin: "8px 0 20px", textAlign: "center" }}>
-                {eligible ? "Card required. Cancel before day 7 and you won't be charged." : billingPeriod === "yearly" ? "Billed annually." : "Billed monthly."}
+                {eligible ? `Card required. Cancel before day ${trialDays} and you won't be charged.` : billingPeriod === "yearly" ? "Billed annually." : "Billed monthly."}
               </p>
               {error && <p style={{ fontSize: 12, color: DANGER, margin: "0 0 12px", textAlign: "center" }}>{error}</p>}
             </>
