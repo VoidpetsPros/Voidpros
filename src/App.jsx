@@ -21,6 +21,7 @@ import MyActivity from "./pages/MyActivity";
 import MyRequests from "./pages/MyRequests";
 import Leaderboards from "./pages/Leaderboards";
 import Achievements from "./pages/Achievements";
+import Credits from "./pages/Credits";
 import Affiliate from "./pages/Affiliate";
 import Feedback from "./pages/Feedback";
 import BillingSuccess from "./pages/BillingSuccess";
@@ -460,6 +461,7 @@ export default function App() {
           <Route path="/subscribe" element={<Subscription onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/settings" element={<Settings onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/achievements" element={<Achievements onRequireAuth={() => setShowAuth(true)} />} />
+          <Route path="/credits" element={<Credits onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/affiliate" element={<Affiliate onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/collection" element={<Collection onRequireAuth={() => setShowAuth(true)} />} />
           <Route path="/search" element={<Search onRequireAuth={() => setShowAuth(true)} />} />

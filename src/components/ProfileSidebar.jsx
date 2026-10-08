@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Monitor, Check, Trophy, DollarSign, ClipboardList } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Monitor, Check, Trophy, DollarSign, ClipboardList, Coins } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import useIsMobile from "../hooks/useIsMobile";
@@ -117,6 +117,11 @@ export default function ProfileSidebar({ onClose }) {
     onClose();
   };
 
+  const goToCredits = () => {
+    navigate("/credits");
+    onClose();
+  };
+
   const goToAffiliate = () => {
     navigate("/affiliate");
     onClose();
@@ -218,6 +223,11 @@ export default function ProfileSidebar({ onClose }) {
             <button onClick={goToAchievements} style={navButtonStyle}>
               <Trophy size={16} color={MUTED} />
               Achievements
+            </button>
+
+            <button onClick={goToCredits} style={navButtonStyle}>
+              <Coins size={16} color={MUTED} />
+              Credits
             </button>
 
             <button onClick={goToSubscribe} style={navButtonStyle}>

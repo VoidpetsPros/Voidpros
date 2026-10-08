@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
@@ -34,14 +34,6 @@ export default function Settings({ onRequireAuth }) {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState("");
   const [levelsPrefSaving, setLevelsPrefSaving] = useState(false);
-  const [myCredits, setMyCredits] = useState(null);
-
-  useEffect(() => {
-    if (!isAuthed) return;
-    supabase.rpc("get_my_credits").then(({ data, error }) => {
-      if (!error) setMyCredits(data);
-    });
-  }, [isAuthed]);
 
   if (!isAuthed) {
     onRequireAuth();
@@ -223,23 +215,6 @@ export default function Settings({ onRequireAuth }) {
         }
       >
         {cancelError && <p style={{ fontSize: 12, color: DANGER, margin: "6px 0 0" }}>{cancelError}</p>}
-      </Row>
-
-      <Row label="Credits">
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
-          {[
-            { label: "Item Search Credits", value: myCredits?.item_search_credits },
-            { label: "Request Credits", value: myCredits?.request_credits },
-            { label: "Suggested Build Credits", value: myCredits?.suggested_build_credits },
-          ].map((c) => (
-            <div key={c.label} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-              <span style={{ color: MUTED }}>{c.label}</span>
-              <span style={{ color: profile?.is_subscribed ? GOLD : CREAM, fontWeight: 600 }}>
-                {profile?.is_subscribed ? "Unlimited" : c.value ?? 0}
-              </span>
-            </div>
-          ))}
-        </div>
       </Row>
 
       <Row
