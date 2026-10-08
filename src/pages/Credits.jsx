@@ -134,7 +134,7 @@ export default function Credits({ onRequireAuth }) {
         ))}
       </div>
       <p style={{ fontSize: 12, color: MUTED, margin: "0 0 28px" }}>
-        Credits reset to 3 every month, unless they've been purchased.
+        Credits reset to 3 every month. Excludes unlimited users and purchased credits.
       </p>
 
       <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 12px" }}>
