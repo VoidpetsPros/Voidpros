@@ -40,6 +40,22 @@ export default async function handler(req, res) {
       case "checkout.session.completed": {
         const session = event.data.object;
         const userId = session.metadata?.supabase_user_id;
+        const bundleType = session.metadata?.bundle_type;
+
+        if (userId && bundleType) {
+          // One-time credit bundle purchase, not a subscription — credit
+          // the matching balance instead of touching is_subscribed.
+          const { error: rpcError } = await supabaseAdmin.rpc("credit_purchased_bundle", {
+            p_user_id: userId,
+            p_bundle_type: bundleType,
+          });
+          if (rpcError) {
+            console.error("credit_purchased_bundle failed:", rpcError, "userId:", userId, "bundleType:", bundleType);
+            throw rpcError;
+          }
+          break;
+        }
+
         const isTrial = session.metadata?.is_trial === "true";
         if (userId) {
           const { error: rpcError } = await supabaseAdmin.rpc("admin_set_subscription_status", {

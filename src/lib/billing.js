@@ -1,6 +1,6 @@
 import { supabase } from "./supabaseClient";
 
-async function callBillingEndpoint(path) {
+async function callBillingEndpoint(path, body) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -8,7 +8,11 @@ async function callBillingEndpoint(path) {
 
   const res = await fetch(path, {
     method: "POST",
-    headers: { Authorization: `Bearer ${session.access_token}` },
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json();
   if (!res.ok) {
@@ -50,5 +54,10 @@ export async function resumeSubscription() {
 
 export async function startAffiliateConnectOnboarding() {
   const { url } = await callBillingEndpoint("/api/affiliate-connect-onboarding");
+  window.location.href = url;
+}
+
+export async function startCreditCheckout(bundleType) {
+  const { url } = await callBillingEndpoint("/api/create-credit-checkout-session", { bundle_type: bundleType });
   window.location.href = url;
 }
