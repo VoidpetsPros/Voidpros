@@ -26,13 +26,13 @@ async function callBillingEndpoint(path, body) {
   return data;
 }
 
-export async function startCheckout() {
-  const { url } = await callBillingEndpoint("/api/create-checkout-session");
+export async function startCheckout(billingPeriod = "monthly") {
+  const { url } = await callBillingEndpoint("/api/create-checkout-session", { billing_period: billingPeriod });
   window.location.href = url;
 }
 
-export async function startTrialCheckout() {
-  const { url } = await callBillingEndpoint("/api/create-trial-checkout-session");
+export async function startTrialCheckout(billingPeriod = "monthly") {
+  const { url } = await callBillingEndpoint("/api/create-trial-checkout-session", { billing_period: billingPeriod });
   window.location.href = url;
 }
 

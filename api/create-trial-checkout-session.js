@@ -18,6 +18,14 @@ async function getValidCustomerId(storedId) {
   }
 }
 
+// Inline price_data rather than a pre-created Stripe Price object, so
+// switching between monthly/yearly (or changing either price later)
+// never requires any manual setup in the Stripe Dashboard.
+const PLANS = {
+  monthly: { name: "Voidpros Unlimited — Monthly", amount_cents: 600, interval: "month" },
+  yearly: { name: "Voidpros Unlimited — Yearly", amount_cents: 4900, interval: "year" },
+};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -34,6 +42,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "Invalid session" });
   }
   const user = userData.user;
+  const plan = PLANS[req.body?.billing_period] || PLANS.monthly;
 
   try {
     const { data: profile } = await supabaseAdmin
@@ -70,7 +79,17 @@ export default async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: { name: plan.name },
+            unit_amount: plan.amount_cents,
+            recurring: { interval: plan.interval },
+          },
+          quantity: 1,
+        },
+      ],
       subscription_data: { trial_period_days: 7 },
       success_url: `${process.env.SITE_URL}/billing/success`,
       cancel_url: `${process.env.SITE_URL}/billing/cancelled`,
