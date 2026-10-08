@@ -1897,6 +1897,51 @@ const PROMO_REWARD_LABELS = {
   credit_all: "Pro — 25 of Every Credit Type",
 };
 
+const TIMEZONES = [
+  { id: "America/New_York", label: "Eastern (ET)" },
+  { id: "America/Chicago", label: "Central (CT)" },
+  { id: "America/Denver", label: "Mountain (MT)" },
+  { id: "America/Los_Angeles", label: "Pacific (PT)" },
+  { id: "UTC", label: "UTC" },
+];
+
+// Converts a datetime-local input's value (plain wall-clock numbers, no
+// zone info) into the correct UTC instant for the given IANA zone —
+// correctly handles DST since it reads the real offset for that exact
+// date, rather than assuming a fixed one (which "EST" alone would get
+// wrong for half the year, when it's actually EDT).
+function zonedInputToUtcIso(localDateTimeStr, timeZone) {
+  const [datePart, timePart] = localDateTimeStr.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = timePart.split(":").map(Number);
+  const utcGuess = Date.UTC(year, month - 1, day, hour, minute);
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const parts = formatter.formatToParts(new Date(utcGuess)).reduce((acc, p) => {
+    acc[p.type] = p.value;
+    return acc;
+  }, {});
+  const asIfUtc = Date.UTC(
+    +parts.year,
+    +parts.month - 1,
+    +parts.day,
+    parts.hour === "24" ? 0 : +parts.hour,
+    +parts.minute,
+    +parts.second
+  );
+  const offset = asIfUtc - utcGuess;
+  return new Date(utcGuess - offset).toISOString();
+}
+
 function toDatetimeLocalValue(date) {
   const pad = (n) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -1979,6 +2024,7 @@ function AdminPromoCodes() {
   const [codeInput, setCodeInput] = useState("");
   const [rewardType, setRewardType] = useState("yearly");
   const [maxRedemptions, setMaxRedemptions] = useState("1");
+  const [timezone, setTimezone] = useState("America/New_York");
   const [startsAt, setStartsAt] = useState(() => toDatetimeLocalValue(new Date()));
   const [expiresAt, setExpiresAt] = useState(() => {
     const d = new Date();
@@ -2005,8 +2051,8 @@ function AdminPromoCodes() {
       p_code: codeInput,
       p_reward_type: rewardType,
       p_max_redemptions: parseInt(maxRedemptions, 10) || 1,
-      p_starts_at: new Date(startsAt).toISOString(),
-      p_expires_at: new Date(expiresAt).toISOString(),
+      p_starts_at: zonedInputToUtcIso(startsAt, timezone),
+      p_expires_at: zonedInputToUtcIso(expiresAt, timezone),
     });
     setCreating(false);
     if (rpcError) {
@@ -2054,6 +2100,16 @@ function AdminPromoCodes() {
           <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: MUTED }}>
             Expires
             <input type="datetime-local" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} style={inputStyle} />
+          </label>
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: MUTED }}>
+            Timezone
+            <select value={timezone} onChange={(e) => setTimezone(e.target.value)} style={inputStyle}>
+              {TIMEZONES.map((tz) => (
+                <option key={tz.id} value={tz.id}>
+                  {tz.label}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <button
