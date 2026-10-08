@@ -225,19 +225,24 @@ export default function ProfileSidebar({ onClose }) {
               Achievements
             </button>
 
-            <button onClick={goToCredits} style={navButtonStyle}>
-              <Coins size={16} color={MUTED} />
-              Credits
-            </button>
-
             <button onClick={goToSubscribe} style={navButtonStyle}>
               <CreditCard size={16} color={MUTED} />
               Subscription
             </button>
 
+            <button onClick={goToCredits} style={navButtonStyle}>
+              <Coins size={16} color={MUTED} />
+              Credits
+            </button>
+
             <button onClick={goToSettings} style={navButtonStyle}>
               <SettingsIcon size={16} color={MUTED} />
               Settings
+            </button>
+
+            <button onClick={() => setShowTheme(true)} style={navButtonStyle}>
+              <Sun size={16} color={MUTED} />
+              Theme
             </button>
 
             {isMobile && (
@@ -264,11 +269,6 @@ export default function ProfileSidebar({ onClose }) {
                   }}
                 />
               )}
-            </button>
-
-            <button onClick={() => setShowTheme(true)} style={navButtonStyle}>
-              <Sun size={16} color={MUTED} />
-              Theme
             </button>
 
             <button onClick={goToFeedback} style={navButtonStyle}>
