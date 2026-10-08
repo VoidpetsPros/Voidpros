@@ -116,7 +116,7 @@ export default function Credits({ onRequireAuth }) {
       )}
 
       <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "4px 18px", marginBottom: 28, maxWidth: 560 }}>
-        {rows.map((r, i) => (
+        {rows.map((r) => (
           <div
             key={r.label}
             style={{
@@ -125,7 +125,6 @@ export default function Credits({ onRequireAuth }) {
               justifyContent: "space-between",
               gap: 16,
               padding: "16px 0",
-              borderBottom: i < rows.length - 1 ? `1px solid ${LINE}` : "none",
             }}
           >
             <span style={{ fontSize: 14, color: CREAM, fontWeight: 600 }}>{r.label}</span>
@@ -144,14 +143,37 @@ export default function Credits({ onRequireAuth }) {
           <div
             key={pkg.id}
             style={{
+              position: "relative",
               display: "flex",
               flexDirection: "column",
               background: pkg.id === "all" ? "rgba(124,58,237,0.08)" : PANEL,
               border: `1.5px solid ${pkg.id === "all" ? GOLD : LINE}`,
               borderRadius: 14,
               padding: 16,
+              marginTop: pkg.id === "all" ? 12 : 0,
             }}
           >
+            {pkg.id === "all" && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: -12,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: GOLD,
+                  color: "#FFFFFF",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: 0.3,
+                  textTransform: "uppercase",
+                  padding: "4px 10px",
+                  borderRadius: 999,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Most Popular
+              </span>
+            )}
             <p style={{ fontSize: 12.5, color: pkg.id === "all" ? GOLD : MUTED, fontWeight: 700, letterSpacing: 0.3, textTransform: "uppercase", margin: "0 0 6px" }}>
               {pkg.name}
             </p>
