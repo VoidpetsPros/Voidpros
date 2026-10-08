@@ -115,25 +115,27 @@ export default function Credits({ onRequireAuth }) {
         <p style={{ fontSize: 12.5, color: GOLD, margin: "0 0 14px" }}>Finishing up your purchase…</p>
       )}
 
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "4px 18px", marginBottom: 28, maxWidth: 560 }}>
+      <div style={{ marginBottom: 10 }}>
         {rows.map((r) => (
           <div
             key={r.label}
             style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 16,
-              padding: "16px 0",
+              alignItems: "baseline",
+              gap: 8,
+              padding: "6px 0",
             }}
           >
-            <span style={{ fontSize: 14, color: CREAM, fontWeight: 600 }}>{r.label}</span>
+            <span style={{ fontSize: 14, color: CREAM, fontWeight: 600 }}>{r.label}:</span>
             <span style={{ fontSize: 15, color: profile?.is_subscribed ? GOLD : CREAM, fontWeight: 700 }}>
               {profile?.is_subscribed ? "Unlimited" : r.value ?? 0}
             </span>
           </div>
         ))}
       </div>
+      <p style={{ fontSize: 12, color: MUTED, margin: "0 0 28px" }}>
+        Credits reset to 3 every month, unless they've been purchased.
+      </p>
 
       <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 12px" }}>
         Credit Packages
