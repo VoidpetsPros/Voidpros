@@ -179,6 +179,9 @@ export default function Credits({ onRequireAuth }) {
             <p style={{ fontSize: 12.5, color: pkg.id === "all" ? GOLD : MUTED, fontWeight: 700, letterSpacing: 0.3, textTransform: "uppercase", margin: "0 0 6px" }}>
               {pkg.name}
             </p>
+            {pkg.id === "all" && (
+              <span style={{ fontSize: 12, color: MUTED, textDecoration: "line-through" }}>$14.97</span>
+            )}
             <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 22, color: CREAM, margin: "0 0 12px" }}>
               {pkg.price}
             </p>
