@@ -1913,7 +1913,7 @@ function PromoCodeRow({ code, isExpanded, onToggle }) {
   const handleToggle = async () => {
     onToggle();
     if (!isExpanded && redemptions === null) {
-      const { data, error } = await supabase.rpc("admin_get_promo_code_redemptions", { p_promo_code_id: code.id });
+      const { data, error } = await supabase.rpc("admin_get_promo_code_redemptions", { p_promo_code_id: code.promo_code_id });
       if (!error) setRedemptions(data || []);
     }
   };
@@ -2076,7 +2076,7 @@ function AdminPromoCodes() {
         <p style={{ color: MUTED, fontSize: 13.5 }}>No codes created yet.</p>
       ) : (
         codes.map((c) => (
-          <PromoCodeRow key={c.id} code={c} isExpanded={expandedId === c.id} onToggle={() => setExpandedId(expandedId === c.id ? null : c.id)} />
+          <PromoCodeRow key={c.promo_code_id} code={c} isExpanded={expandedId === c.promo_code_id} onToggle={() => setExpandedId(expandedId === c.promo_code_id ? null : c.promo_code_id)} />
         ))
       )}
     </div>
