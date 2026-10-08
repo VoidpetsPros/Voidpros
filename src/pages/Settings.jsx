@@ -34,6 +34,10 @@ export default function Settings({ onRequireAuth }) {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState("");
   const [levelsPrefSaving, setLevelsPrefSaving] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promoSaving, setPromoSaving] = useState(false);
+  const [promoError, setPromoError] = useState("");
+  const [promoSuccess, setPromoSuccess] = useState("");
 
   if (!isAuthed) {
     onRequireAuth();
@@ -74,6 +78,30 @@ export default function Settings({ onRequireAuth }) {
       alert(err.message || "Couldn't open billing portal");
       setPortalLoading(false);
     }
+  };
+
+  const handleRedeemPromo = async () => {
+    if (!promoInput.trim()) return;
+    setPromoSaving(true);
+    setPromoError("");
+    setPromoSuccess("");
+    const { data, error: rpcError } = await supabase.rpc("redeem_promo_code", { p_code: promoInput.trim() });
+    setPromoSaving(false);
+    if (rpcError) {
+      setPromoError(rpcError.message);
+      return;
+    }
+    const rewardMessages = {
+      yearly: "You've been granted a Yearly Plan!",
+      monthly: "You've been granted a Monthly Plan!",
+      credit_item_search: "25 Item Search Credits added!",
+      credit_request: "25 Request Credits added!",
+      credit_suggested_build: "25 Suggested Build Credits added!",
+      credit_all: "25 of every credit type added!",
+    };
+    setPromoSuccess(rewardMessages[data?.reward_type] || "Code redeemed!");
+    setPromoInput("");
+    refreshProfile();
   };
 
   const handleSignOut = async () => {
@@ -252,6 +280,32 @@ export default function Settings({ onRequireAuth }) {
           </button>
         }
       />
+
+      <Row label="Promo Code">
+        <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+          <input
+            type="text"
+            value={promoInput}
+            onChange={(e) => {
+              setPromoInput(e.target.value);
+              if (promoError) setPromoError("");
+              if (promoSuccess) setPromoSuccess("");
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleRedeemPromo()}
+            placeholder="Enter code"
+            style={{ flex: "1 1 160px", boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 9, padding: "9px 12px", color: CREAM, fontSize: 14, outline: "none" }}
+          />
+          <button
+            onClick={handleRedeemPromo}
+            disabled={promoSaving || !promoInput.trim()}
+            style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: promoSaving ? "default" : "pointer", flexShrink: 0 }}
+          >
+            {promoSaving ? "…" : "Redeem"}
+          </button>
+        </div>
+        {promoError && <p style={{ fontSize: 12.5, color: DANGER, margin: "8px 0 0" }}>{promoError}</p>}
+        {promoSuccess && <p style={{ fontSize: 12.5, color: "#22C55E", margin: "8px 0 0" }}>{promoSuccess}</p>}
+      </Row>
 
       <Row
         label="Sign out"

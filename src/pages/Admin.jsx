@@ -1888,6 +1888,201 @@ const FEEDBACK_FOLDERS = [
   { id: "criticism", label: "Criticism" },
 ];
 
+const PROMO_REWARD_LABELS = {
+  yearly: "Yearly Plan",
+  monthly: "Monthly Plan",
+  credit_item_search: "25 Item Search Credits",
+  credit_request: "25 Request Credits",
+  credit_suggested_build: "25 Suggested Build Credits",
+  credit_all: "Pro — 25 of Every Credit Type",
+};
+
+function toDatetimeLocalValue(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function PromoCodeRow({ code, isExpanded, onToggle }) {
+  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
+  const [redemptions, setRedemptions] = useState(null);
+  const now = new Date();
+  const isUpcoming = new Date(code.starts_at) > now;
+  const isExpired = new Date(code.expires_at) < now;
+  const isFull = code.redemption_count >= code.max_redemptions;
+
+  const handleToggle = async () => {
+    onToggle();
+    if (!isExpanded && redemptions === null) {
+      const { data, error } = await supabase.rpc("admin_get_promo_code_redemptions", { p_promo_code_id: code.id });
+      if (!error) setRedemptions(data || []);
+    }
+  };
+
+  let statusLabel = "Active";
+  let statusColor = "#22C55E";
+  if (isFull) {
+    statusLabel = "Fully claimed";
+    statusColor = MUTED;
+  } else if (isExpired) {
+    statusLabel = "Expired";
+    statusColor = MUTED;
+  } else if (isUpcoming) {
+    statusLabel = "Upcoming";
+    statusColor = GOLD;
+  }
+
+  return (
+    <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 10, padding: 14, marginBottom: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", cursor: "pointer" }} onClick={handleToggle}>
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: CREAM, margin: "0 0 3px", fontFamily: "monospace", letterSpacing: 0.5 }}>{code.code}</p>
+          <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
+            {PROMO_REWARD_LABELS[code.reward_type] || code.reward_type} · {code.redemption_count}/{code.max_redemptions} claimed · by {code.created_by_username}
+          </p>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, color: statusColor }}>{statusLabel}</span>
+      </div>
+      {isExpanded && (
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${LINE}` }}>
+          <p style={{ fontSize: 11, color: MUTED, margin: "0 0 8px" }}>
+            Starts {new Date(code.starts_at).toLocaleString()} · Expires {new Date(code.expires_at).toLocaleString()}
+          </p>
+          <p style={{ fontSize: 11, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: 0.5, margin: "0 0 6px" }}>
+            Claimed by
+          </p>
+          {redemptions === null ? (
+            <p style={{ fontSize: 12, color: MUTED }}>Loading…</p>
+          ) : redemptions.length === 0 ? (
+            <p style={{ fontSize: 12, color: MUTED }}>Nobody yet.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {redemptions.map((r, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                  <span style={{ color: CREAM }}>{r.username}</span>
+                  <span style={{ color: MUTED }}>{new Date(r.redeemed_at).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AdminPromoCodes() {
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
+  const [codes, setCodes] = useState(null);
+  const [error, setError] = useState("");
+  const [expandedId, setExpandedId] = useState(null);
+
+  const [codeInput, setCodeInput] = useState("");
+  const [rewardType, setRewardType] = useState("yearly");
+  const [maxRedemptions, setMaxRedemptions] = useState("1");
+  const [startsAt, setStartsAt] = useState(() => toDatetimeLocalValue(new Date()));
+  const [expiresAt, setExpiresAt] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return toDatetimeLocalValue(d);
+  });
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+
+  const load = async () => {
+    const { data, error: fetchError } = await supabase.rpc("admin_list_promo_codes");
+    if (fetchError) setError(fetchError.message);
+    else setCodes(data || []);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleCreate = async () => {
+    setCreating(true);
+    setCreateError("");
+    const { error: rpcError } = await supabase.rpc("admin_create_promo_code", {
+      p_code: codeInput,
+      p_reward_type: rewardType,
+      p_max_redemptions: parseInt(maxRedemptions, 10) || 1,
+      p_starts_at: new Date(startsAt).toISOString(),
+      p_expires_at: new Date(expiresAt).toISOString(),
+    });
+    setCreating(false);
+    if (rpcError) {
+      setCreateError(rpcError.message);
+      return;
+    }
+    setCodeInput("");
+    load();
+  };
+
+  const inputStyle = { boxSizing: "border-box", background: PANEL_2, border: `1px solid ${LINE}`, borderRadius: 8, padding: "9px 11px", color: CREAM, fontSize: 13, outline: "none" };
+
+  return (
+    <div>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: 16, marginBottom: 20 }}>
+        <p style={{ fontSize: 12, color: MUTED, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Create a code</p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+          <input
+            value={codeInput}
+            onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+            placeholder="CODE"
+            style={{ ...inputStyle, flex: "1 1 140px", fontFamily: "monospace" }}
+          />
+          <select value={rewardType} onChange={(e) => setRewardType(e.target.value)} style={{ ...inputStyle, flex: "1 1 180px" }}>
+            {Object.entries(PROMO_REWARD_LABELS).map(([id, label]) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            min="1"
+            value={maxRedemptions}
+            onChange={(e) => setMaxRedemptions(e.target.value)}
+            placeholder="Max uses"
+            style={{ ...inputStyle, width: 100 }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: MUTED }}>
+            Starts
+            <input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} style={inputStyle} />
+          </label>
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11, color: MUTED }}>
+            Expires
+            <input type="datetime-local" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} style={inputStyle} />
+          </label>
+        </div>
+        <button
+          onClick={handleCreate}
+          disabled={creating || !codeInput.trim()}
+          style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: creating ? "default" : "pointer" }}
+        >
+          {creating ? "Creating…" : "Create Code"}
+        </button>
+        {createError && <p style={{ fontSize: 12, color: DANGER, margin: "8px 0 0" }}>{createError}</p>}
+        <p style={{ fontSize: 10.5, color: MUTED, margin: "8px 0 0" }}>
+          Codes can never be deleted once created — only expiration and redemption limits control how long they work.
+        </p>
+      </div>
+
+      {error && <p style={{ fontSize: 12.5, color: DANGER }}>{error}</p>}
+      {!codes ? (
+        <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
+      ) : codes.length === 0 ? (
+        <p style={{ color: MUTED, fontSize: 13.5 }}>No codes created yet.</p>
+      ) : (
+        codes.map((c) => (
+          <PromoCodeRow key={c.id} code={c} isExpanded={expandedId === c.id} onToggle={() => setExpandedId(expandedId === c.id ? null : c.id)} />
+        ))
+      )}
+    </div>
+  );
+}
+
 function AdminFeedback({ onTriaged }) {
   const { feedback, loading, error } = useAdminFeedback();
   const [items, setItems] = useState([]);
@@ -2049,6 +2244,7 @@ export default function Admin() {
     { id: "cosmetics", label: "Cosmetics" },
     { id: "affiliates", label: "Affiliates" },
     { id: "beta", label: "Beta Access" },
+    { id: "promo", label: "Promo Codes" },
     { id: "feedback", label: "Feedback" },
   ];
 
@@ -2101,6 +2297,7 @@ export default function Admin() {
       {tab === "cosmetics" && <AchievementCosmetics />}
       {tab === "affiliates" && <AffiliatePayouts />}
       {tab === "beta" && <BetaAccess />}
+      {tab === "promo" && <AdminPromoCodes />}
       {tab === "feedback" && <AdminFeedback onTriaged={refreshProfile} />}
 
       {tab === "queue" && (
