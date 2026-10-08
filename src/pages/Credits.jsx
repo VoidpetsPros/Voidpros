@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Check } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import { supabase } from "../lib/supabaseClient";
 import { startCreditCheckout } from "../lib/billing";
 import BackButton from "../components/BackButton";
+import useIsMobile from "../hooks/useIsMobile";
 
-const BUNDLES = [
-  { id: "item_search", label: "25 Item Search Credits", price: "$5" },
-  { id: "request", label: "25 Request Credits", price: "$5" },
-  { id: "suggested_build", label: "25 Suggested Build Credits", price: "$5" },
-  { id: "all", label: "25 of Every Credit Type", price: "$10" },
+const PACKAGES = [
+  {
+    id: "all",
+    name: "Pro",
+    price: "$9.99",
+    includes: ["25 Item Search Credits", "25 Request Credits", "25 Suggested Build Credits"],
+  },
+  {
+    id: "item_search",
+    name: "Explorer",
+    price: "$4.99",
+    includes: ["25 Item Search Credits"],
+  },
+  {
+    id: "suggested_build",
+    name: "Wizard",
+    price: "$4.99",
+    includes: ["25 Suggested Build Credits"],
+  },
+  {
+    id: "request",
+    name: "Support",
+    price: "$4.99",
+    includes: ["25 Request Credits"],
+  },
 ];
 
 export default function Credits({ onRequireAuth }) {
   const { isAuthed, profile } = useAuth();
-  const { PANEL, LINE, CREAM, MUTED, GOLD } = useTheme();
+  const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD } = useTheme();
+  const isMobile = useIsMobile();
   const [myCredits, setMyCredits] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [processingPurchase, setProcessingPurchase] = useState(false);
@@ -62,7 +85,7 @@ export default function Credits({ onRequireAuth }) {
     );
   }
 
-  const handleBuy = async (bundleId) => {
+  const handleClaim = async (bundleId) => {
     setBuyingBundle(bundleId);
     setBuyError("");
     try {
@@ -80,7 +103,7 @@ export default function Credits({ onRequireAuth }) {
   ];
 
   return (
-    <div style={{ padding: "24px 24px 60px", maxWidth: 560, margin: "0 auto" }}>
+    <div style={{ padding: "24px 24px 80px", maxWidth: 820, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
         <BackButton style={{ marginBottom: 0 }} />
         <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 22, color: CREAM, margin: 0 }}>
@@ -92,7 +115,7 @@ export default function Credits({ onRequireAuth }) {
         <p style={{ fontSize: 12.5, color: GOLD, margin: "0 0 14px" }}>Finishing up your purchase…</p>
       )}
 
-      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "4px 18px", marginBottom: 24 }}>
+      <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 12, padding: "4px 18px", marginBottom: 28, maxWidth: 560 }}>
         {rows.map((r, i) => (
           <div
             key={r.label}
@@ -113,39 +136,59 @@ export default function Credits({ onRequireAuth }) {
         ))}
       </div>
 
-      <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 10px" }}>
-        Buy more credits
+      <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 12px" }}>
+        Credit Packages
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {BUNDLES.map((b) => (
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12 }}>
+        {PACKAGES.map((pkg) => (
           <div
-            key={b.id}
+            key={pkg.id}
             style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              background: PANEL,
-              border: `1px solid ${LINE}`,
-              borderRadius: 10,
-              padding: "12px 16px",
+              flexDirection: "column",
+              background: pkg.id === "all" ? "rgba(124,58,237,0.08)" : PANEL,
+              border: `1.5px solid ${pkg.id === "all" ? GOLD : LINE}`,
+              borderRadius: 14,
+              padding: 16,
             }}
           >
-            <div>
-              <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 2px" }}>{b.label}</p>
-              <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>{b.price}</p>
+            <p style={{ fontSize: 12.5, color: pkg.id === "all" ? GOLD : MUTED, fontWeight: 700, letterSpacing: 0.3, textTransform: "uppercase", margin: "0 0 6px" }}>
+              {pkg.name}
+            </p>
+            <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 22, color: CREAM, margin: "0 0 12px" }}>
+              {pkg.price}
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14, flex: 1 }}>
+              {pkg.includes.map((item) => (
+                <div key={item} style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                  <Check size={13} color={pkg.id === "all" ? GOLD : MUTED} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 11.5, color: CREAM, lineHeight: 1.4 }}>{item}</span>
+                </div>
+              ))}
             </div>
+
             <button
-              onClick={() => handleBuy(b.id)}
-              disabled={buyingBundle === b.id}
-              style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "9px 16px", fontSize: 12.5, fontWeight: 600, cursor: buyingBundle === b.id ? "default" : "pointer", flexShrink: 0 }}
+              onClick={() => handleClaim(pkg.id)}
+              disabled={buyingBundle === pkg.id}
+              style={{
+                width: "100%",
+                background: pkg.id === "all" ? GOLD : PANEL_2,
+                color: pkg.id === "all" ? "#FFFFFF" : CREAM,
+                border: pkg.id === "all" ? "none" : `1px solid ${LINE}`,
+                borderRadius: 8,
+                padding: "9px 0",
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: buyingBundle === pkg.id ? "default" : "pointer",
+              }}
             >
-              {buyingBundle === b.id ? "Redirecting…" : "Buy"}
+              {buyingBundle === pkg.id ? "…" : "Claim"}
             </button>
           </div>
         ))}
       </div>
-      {buyError && <p style={{ fontSize: 12, color: "#F87171", margin: "10px 0 0" }}>{buyError}</p>}
+      {buyError && <p style={{ fontSize: 12, color: "#F87171", margin: "12px 0 0" }}>{buyError}</p>}
     </div>
   );
 }

@@ -7,10 +7,10 @@ const supabaseAdmin = createClient(process.env.VITE_SUPABASE_URL, process.env.SU
 // Uses inline price_data rather than pre-created Stripe Price objects —
 // no manual setup needed in the Stripe Dashboard for these.
 const BUNDLES = {
-  item_search: { name: "25 Item Search Credits", amount_cents: 500 },
-  request: { name: "25 Request Credits", amount_cents: 500 },
-  suggested_build: { name: "25 Suggested Build Credits", amount_cents: 500 },
-  all: { name: "25 of Every Credit Type", amount_cents: 1000 },
+  item_search: { name: "Explorer — 25 Item Search Credits", amount_cents: 499 },
+  request: { name: "Support — 25 Request Credits", amount_cents: 499 },
+  suggested_build: { name: "Wizard — 25 Suggested Build Credits", amount_cents: 499 },
+  all: { name: "Pro — 25 of Every Credit Type", amount_cents: 999 },
 };
 
 async function getValidCustomerId(storedId) {
