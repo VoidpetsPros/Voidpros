@@ -35,6 +35,13 @@ const SUBMISSION_OPTIONS = [
   { to: "/fulfill", label: "Challenges", subtext: "Beat a floor with a limited pet & item pool." },
 ];
 
+// Mobile's Submit dropdown also includes Request, since mobile has no
+// separate standalone "My Requests" nav link the way desktop does.
+const MOBILE_SUBMISSION_OPTIONS = [
+  ...SUBMISSION_OPTIONS,
+  { to: "/my-requests", label: "Request", subtext: "Ask another player to build a team for you." },
+];
+
 export default function App() {
   const { isAuthed, profile, hasNewActivity, hasNewChallenges, hasNewFeedback, loading } = useAuth();
   const { INK, PANEL, LINE, CREAM, MUTED, GOLD, GOLD_DIM } = useTheme();
@@ -164,7 +171,7 @@ export default function App() {
                     overflow: "hidden",
                   }}
                 >
-                  {SUBMISSION_OPTIONS.map((opt, i) => (
+                  {MOBILE_SUBMISSION_OPTIONS.map((opt, i) => (
                     <Link
                       key={opt.to}
                       to={opt.to}
@@ -174,7 +181,7 @@ export default function App() {
                         display: "block",
                         padding: "13px 15px",
                         textDecoration: "none",
-                        borderBottom: i < SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
+                        borderBottom: i < MOBILE_SUBMISSION_OPTIONS.length - 1 ? `1px solid ${LINE}` : "none",
                       }}
                     >
                       <p style={{ margin: "0 0 3px", fontSize: 13.5, fontWeight: 600, color: CREAM }}>{opt.label}</p>

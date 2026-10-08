@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { X, Award, Send, Clock } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Send, Clock } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useCatalog } from "../hooks/useCatalog";
 import { useCollection } from "../hooks/useCollection";
 import { useMyRequests, dismissRequest, cancelRequest } from "../hooks/useMyRequests";
 import { supabase } from "../lib/supabaseClient";
 import BuildCard from "../components/BuildCard";
-import TrialCTA from "../components/TrialCTA";
 import { useTheme } from "../hooks/ThemeContext";
 import BackButton from "../components/BackButton";
 
@@ -24,6 +23,14 @@ export default function MyRequests({ onRequireAuth }) {
   const [showRequester, setShowRequester] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const [requestCredits, setRequestCredits] = useState(null);
+
+  useEffect(() => {
+    if (!isAuthed || profile?.is_subscribed) return;
+    supabase.rpc("get_my_credits").then(({ data, error }) => {
+      if (!error) setRequestCredits(data?.request_credits ?? 0);
+    });
+  }, [isAuthed, profile?.is_subscribed]);
 
   const handleDismiss = async (requestId) => {
     setDismissingId(requestId);
@@ -68,6 +75,9 @@ export default function MyRequests({ onRequireAuth }) {
       return;
     }
     setStageInput("");
+    if (!profile?.is_subscribed) {
+      setRequestCredits((prev) => (prev != null ? Math.max(0, prev - 1) : prev));
+    }
     refreshMine();
   };
 
@@ -84,22 +94,6 @@ export default function MyRequests({ onRequireAuth }) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
         <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>
-      </div>
-    );
-  }
-
-  if (!profile?.is_subscribed) {
-    return (
-      <div style={{ padding: "40px 24px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ background: PANEL, border: `1px solid ${LINE}`, borderRadius: 16, padding: "32px 24px" }}>
-          <Award size={22} color={GOLD} style={{ marginBottom: 10 }} />
-          <p style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: -0.4, fontSize: 19, color: CREAM, margin: "0 0 8px" }}>Subscriber feature</p>
-          <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 18px", lineHeight: 1.6 }}>
-            Posting a request for other players to solve — and tracking it here — is part
-            of the paid tier.
-          </p>
-          <TrialCTA />
-        </div>
       </div>
     );
   }
@@ -139,7 +133,11 @@ export default function MyRequests({ onRequireAuth }) {
             disabled={submitting}
             style={{ background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 9, padding: "10px 20px", fontSize: 13.5, fontWeight: 600, cursor: submitting ? "default" : "pointer" }}
           >
-            {submitting ? "Posting…" : "Request"}
+            {submitting
+              ? "Posting…"
+              : !profile?.is_subscribed && requestCredits != null
+              ? `Request (${requestCredits} credit${requestCredits === 1 ? "" : "s"})`
+              : "Request"}
           </button>
         </div>
         <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>

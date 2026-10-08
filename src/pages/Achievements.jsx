@@ -13,6 +13,12 @@ const CATEGORY_LABELS = {
   searches: "Searches",
 };
 
+const CATEGORY_CREDIT_LABELS = {
+  completions: "an Item Search Credit",
+  challenges: "a Request Credit",
+  searches: "a Suggested Build Credit",
+};
+
 function ProgressRow({ achievement }) {
   const { PANEL, PANEL_2, LINE, CREAM, MUTED } = useTheme();
   // achievement is null only if every tier in this category is unlocked —
@@ -182,8 +188,11 @@ export default function Achievements({ onRequireAuth }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {currentTargets.map(({ category, achievement }) => (
             <div key={category}>
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 8px" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: "0 0 4px" }}>
                 {CATEGORY_LABELS[category]}
+              </p>
+              <p style={{ fontSize: 11.5, color: MUTED, margin: "0 0 8px" }}>
+                Each tier unlocked earns you {CATEGORY_CREDIT_LABELS[category]}.
               </p>
               <ProgressRow achievement={achievement} />
             </div>

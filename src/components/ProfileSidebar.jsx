@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Monitor, Check, Trophy, DollarSign, ClipboardList, Coins } from "lucide-react";
+import { X, Users, LogOut, ShieldCheck, MessageSquare, Settings as SettingsIcon, CreditCard, FileText, Shield, Sun, Moon, Monitor, Check, Trophy, DollarSign, Coins } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
-import useIsMobile from "../hooks/useIsMobile";
 import CosmeticAvatar from "./CosmeticAvatar";
 
 function ThemePopup({ onClose }) {
@@ -72,7 +71,6 @@ export default function ProfileSidebar({ onClose }) {
   const { profile, signOut, hasNewActivity, hasNewFeedback, markActivitySeen } = useAuth();
   const { PANEL, PANEL_2, LINE, CREAM, MUTED, GOLD, DANGER } = useTheme();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const [showTheme, setShowTheme] = useState(false);
 
   // Lock the page underneath while this panel is open — otherwise the
@@ -85,11 +83,6 @@ export default function ProfileSidebar({ onClose }) {
       document.body.style.overflow = previousOverflow;
     };
   }, []);
-
-  const goToMyRequests = () => {
-    navigate("/my-requests");
-    onClose();
-  };
 
   const goToCommunity = () => {
     markActivitySeen();
@@ -244,13 +237,6 @@ export default function ProfileSidebar({ onClose }) {
               <Sun size={16} color={MUTED} />
               Theme
             </button>
-
-            {isMobile && (
-              <button onClick={goToMyRequests} style={navButtonStyle}>
-                <ClipboardList size={16} color={MUTED} />
-                My Requests
-              </button>
-            )}
 
             <button onClick={goToCommunity} style={navButtonStyle}>
               <Users size={16} color={MUTED} />
