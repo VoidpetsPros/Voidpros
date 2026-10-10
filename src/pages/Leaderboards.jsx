@@ -104,6 +104,10 @@ export default function Leaderboards() {
         </p>
       </div>
 
+      <p style={{ color: MUTED, fontSize: 13.5, margin: "-8px 0 20px" }}>
+        Top 3 finishers every month get a free month of Unlimited
+      </p>
+
       <div style={{ display: "flex", gap: 4, background: PANEL_2, borderRadius: 10, padding: 4, marginBottom: 20, width: "fit-content" }}>
         {CATEGORIES.map((c) => {
           const Icon = c.icon;
