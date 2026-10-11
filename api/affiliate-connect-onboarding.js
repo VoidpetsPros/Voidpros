@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       const account = await stripe.accounts.create({
         type: "express",
         email: userData.user.email,
-        capabilities: { transfers: { requested: true } },
+        capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
         metadata: { supabase_user_id: userData.user.id },
         ...sharedAccountFields,
       });
