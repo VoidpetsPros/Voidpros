@@ -32,7 +32,7 @@ export default function Home({ onRequireAuth }) {
             alignItems: "center",
             justifyContent: "center",
             gap: 8,
-            background: GOLD,
+            background: "#2A0B4D",
             color: "#FFFFFF",
             textDecoration: "none",
             padding: isMobile ? "6px 12px" : "6px 16px",
@@ -40,7 +40,7 @@ export default function Home({ onRequireAuth }) {
             lineHeight: 1.3,
           }}
         >
-          <span style={{ background: "#FFFFFF", color: GOLD, fontSize: 10, fontWeight: 800, letterSpacing: 0.4, borderRadius: 999, padding: "1px 7px", flexShrink: 0 }}>
+          <span style={{ background: "#FFFFFF", color: "#2A0B4D", fontSize: 10, fontWeight: 800, letterSpacing: 0.4, borderRadius: 999, padding: "1px 7px", flexShrink: 0 }}>
             NEW
           </span>
           <span>
