@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Layers, Search } from "lucide-react";
+import { ArrowRight, Layers, Search } from "lucide-react";
 import { useAuth } from "../hooks/AuthContext";
 import { useTheme } from "../hooks/ThemeContext";
 import useIsMobile from "../hooks/useIsMobile";
 import useVerifiedBuildCount from "../hooks/useVerifiedBuildCount";
 
 export default function Home({ onRequireAuth }) {
-  const { isAuthed } = useAuth();
+  const { isAuthed, profile, loading } = useAuth();
   const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -18,8 +18,38 @@ export default function Home({ onRequireAuth }) {
   const goCollection = () => navigate("/collection");
   const goSearch = () => navigate("/search");
 
+  // Hidden for Unlimited subscribers. While a signed-in user's profile is
+  // still loading we also hide it, so subscribers never see it flash.
+  const showPromo = !(profile?.is_subscribed) && !(isAuthed && (loading || !profile));
+
   return (
     <div>
+      {showPromo && (
+        <Link
+          to="/subscribe"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            background: GOLD,
+            color: "#FFFFFF",
+            textDecoration: "none",
+            padding: isMobile ? "6px 12px" : "6px 16px",
+            fontSize: isMobile ? 11.5 : 12.5,
+            lineHeight: 1.3,
+          }}
+        >
+          <span style={{ background: "#FFFFFF", color: GOLD, fontSize: 10, fontWeight: 800, letterSpacing: 0.4, borderRadius: 999, padding: "1px 7px", flexShrink: 0 }}>
+            NEW
+          </span>
+          <span>
+            <strong style={{ fontWeight: 700 }}>Spooktober Special:</strong> Get Unlimited Use For 14 Days Free
+          </span>
+          <ArrowRight size={14} style={{ flexShrink: 0 }} />
+        </Link>
+      )}
+
       {/* Hero */}
       <div style={{ padding: "48px 28px 8px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
         <h1 style={{ fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 32, lineHeight: 1.25, letterSpacing: -0.4, color: CREAM, margin: "0 0 14px" }}>
