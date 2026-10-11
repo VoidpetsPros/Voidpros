@@ -102,9 +102,9 @@ export default function Home({ onRequireAuth }) {
 
         {isAuthed && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, margin: 0 }}>
+            <Link to="/submit" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: MUTED, textDecoration: "none" }}>
               Submit a build
-            </p>
+            </Link>
             <span style={{ color: MUTED }}>·</span>
             <Link to="/leaderboards" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, textDecoration: "none" }}>
               See Leaderboards
