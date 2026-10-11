@@ -88,10 +88,13 @@ export default function Affiliate({ onRequireAuth }) {
           Affiliate Program
         </h1>
       </div>
-      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
-        Earn 20% of the subscription price for every month someone you refer stays subscribed to Unlimited, up to 3
-        months per person.
-      </p>
+      <div style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px", lineHeight: 1.6 }}>
+        <p style={{ margin: "0 0 6px" }}>Earn 20% of what the people you refer pay:</p>
+        <ul style={{ margin: 0, paddingLeft: 20 }}>
+          <li>Unlimited, monthly or yearly: 20% of each payment, up to 3 payments per person.</li>
+          <li>Credit packs: 20% of every purchase, with no limit.</li>
+        </ul>
+      </div>
 
       {error && <p style={{ fontSize: 12.5, color: "#F87171", marginBottom: 16 }}>{error}</p>}
       {!error && stats === null && <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>}
@@ -187,7 +190,7 @@ export default function Affiliate({ onRequireAuth }) {
                   <div>
                     <p style={{ fontSize: 13.5, fontWeight: 600, color: CREAM, margin: "0 0 2px" }}>{r.username}</p>
                     <p style={{ fontSize: 11.5, color: MUTED, margin: 0 }}>
-                      {r.is_subscribed ? "Subscribed" : "Not subscribed"} · {r.months_commissioned}/3 months commissioned
+                      {r.is_subscribed ? "Subscribed" : "Not subscribed"} · {r.months_commissioned}/3 payments commissioned
                     </p>
                   </div>
                   <span style={{ fontSize: 13.5, fontWeight: 600, color: GOLD }}>{formatCents(r.earned_cents)}</span>

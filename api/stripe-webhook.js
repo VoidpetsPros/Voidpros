@@ -53,6 +53,20 @@ export default async function handler(req, res) {
             console.error("credit_purchased_bundle failed:", rpcError, "userId:", userId, "bundleType:", bundleType);
             throw rpcError;
           }
+
+          // Affiliate commission on the credit sale (20% of what was paid).
+          // Logged, not thrown, so a missed commission never makes Stripe
+          // retry and re-credit the bundle.
+          if (session.customer) {
+            const { error: commissionError } = await supabaseAdmin.rpc("credit_affiliate_credit_commission", {
+              p_customer_id: session.customer,
+              p_session_id: session.id,
+              p_amount_cents: session.amount_total || 0,
+            });
+            if (commissionError) {
+              console.error("credit_affiliate_credit_commission failed:", commissionError, "customer:", session.customer, "session:", session.id);
+            }
+          }
           break;
         }
 
