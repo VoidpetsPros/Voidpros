@@ -8,7 +8,7 @@ import useVerifiedBuildCount from "../hooks/useVerifiedBuildCount";
 
 export default function Home({ onRequireAuth }) {
   const { isAuthed, profile, loading } = useAuth();
-  const { GOLD, MUTED, CREAM, PANEL, LINE } = useTheme();
+  const { GOLD, MUTED, CREAM, PANEL, LINE, mode } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const verifiedCount = useVerifiedBuildCount();
@@ -20,6 +20,10 @@ export default function Home({ onRequireAuth }) {
 
   // Hidden for Unlimited subscribers. While a signed-in user's profile is
   // still loading we also hide it, so subscribers never see it flash.
+  // Banner colors: dark purple with light text in light mode, reversed
+  // (light with dark purple text) in dark mode.
+  const promoBg = mode === "dark" ? "#F2EEFB" : "#2A0B4D";
+  const promoText = mode === "dark" ? "#2A0B4D" : "#FFFFFF";
   const showPromo = !(profile?.is_subscribed) && !(isAuthed && (loading || !profile));
 
   return (
@@ -32,15 +36,15 @@ export default function Home({ onRequireAuth }) {
             alignItems: "center",
             justifyContent: "center",
             gap: 8,
-            background: "#2A0B4D",
-            color: "#FFFFFF",
+            background: promoBg,
+            color: promoText,
             textDecoration: "none",
             padding: isMobile ? "6px 12px" : "6px 16px",
             fontSize: isMobile ? 11.5 : 12.5,
             lineHeight: 1.3,
           }}
         >
-          <span style={{ background: "#FFFFFF", color: "#2A0B4D", fontSize: 10, fontWeight: 800, letterSpacing: 0.4, borderRadius: 999, padding: "1px 7px", flexShrink: 0 }}>
+          <span style={{ background: promoText, color: promoBg, fontSize: 10, fontWeight: 800, letterSpacing: 0.4, borderRadius: 999, padding: "1px 7px", flexShrink: 0 }}>
             NEW
           </span>
           <span>
