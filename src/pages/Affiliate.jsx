@@ -88,13 +88,9 @@ export default function Affiliate({ onRequireAuth }) {
           Affiliate Program
         </h1>
       </div>
-      <div style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px", lineHeight: 1.6 }}>
-        <p style={{ margin: "0 0 6px" }}>Earn 20% of what the people you refer pay:</p>
-        <ul style={{ margin: 0, paddingLeft: 20 }}>
-          <li>Unlimited, monthly or yearly: 20% of each payment, up to 3 payments per person.</li>
-          <li>Credit packs: 20% of every purchase, with no limit.</li>
-        </ul>
-      </div>
+      <p style={{ fontSize: 13.5, color: MUTED, margin: "0 0 22px" }}>
+        Get 20% Of Subscription Price Every Month Someone Is Subscribed. Yearly & Credits Are 20%
+      </p>
 
       {error && <p style={{ fontSize: 12.5, color: "#F87171", marginBottom: 16 }}>{error}</p>}
       {!error && stats === null && <p style={{ color: MUTED, fontSize: 14 }}>Loading…</p>}
